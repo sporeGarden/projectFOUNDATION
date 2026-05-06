@@ -13,6 +13,12 @@ The unified scientific lineage that gives foundation its substance.
   Intended for tooling that needs to enumerate threads, look up springs
   per domain, or generate validation workload manifests.
 
+- **BASECAMP_PAPER_MAP.toml** — Machine-readable mapping of all 26
+  baseCamp companion papers to threads, springs, public data repository
+  anchors (NCBI accessions, PhysioNet IDs, DrugBank entries), and
+  contacts. The rosetta stone between gen3 baseCamp science and gen4
+  foundation infrastructure.
+
 ## How to Read
 
 Start with `THE_UNIFIED_LINEAGE.md` for the narrative arc: why the

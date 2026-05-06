@@ -1,0 +1,192 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Data sources for Thread 8: Human Health & Clinical Translation
+# Public data anchors for healthSpring's 9 clinical tracks.
+# Pharmacological databases, biosignal repositories, clinical references.
+
+[meta]
+thread = 8
+thread_name = "Human Health & Clinical Translation"
+expression = "expressions/SOVEREIGN_HEALTH.md"
+last_updated = "2026-05-06"
+total_sources = 14
+
+# =============================================================================
+# PK/PD & Population Pharmacokinetics (Track 1)
+# =============================================================================
+
+[[sources]]
+id = "drugbank_reference"
+database = "DrugBank"
+description = "DrugBank Open Data — drug properties, ADMET, PK parameters"
+accessions = []
+url = "https://go.drugbank.com/releases/latest"
+format = "xml"
+blake3 = ""
+retrieved = ""
+paper = "13"
+notes = "Reference PK parameters for Hill, PBPK, population PK Monte Carlo, Michaelis-Menten. Content-address the release at retrieval."
+
+[[sources]]
+id = "pharmgkb_clinical"
+database = "PharmGKB"
+description = "PharmGKB pharmacogenomics knowledge base — clinical annotations"
+accessions = []
+url = "https://www.pharmgkb.org/"
+format = "tsv"
+blake3 = ""
+retrieved = ""
+paper = "13"
+notes = "Gene-drug-phenotype associations for personalized PK/PD modeling."
+
+[[sources]]
+id = "pk_summit_reference"
+database = "Literature"
+description = "Population PK reference datasets for NLME validation (NONMEM comparisons)"
+accessions = []
+url = ""
+format = "csv"
+blake3 = ""
+retrieved = ""
+paper = "13"
+notes = "Standard datasets used for NONMEM/Monolix benchmarking. healthSpring FOCE+SAEM validated against these."
+
+# =============================================================================
+# Biosignal & Waveform (Track 3)
+# =============================================================================
+
+[[sources]]
+id = "mitbih_arrhythmia"
+database = "PhysioNet"
+description = "MIT-BIH Arrhythmia Database — 48 half-hour ECG recordings"
+accessions = ["mitdb"]
+url = "https://physionet.org/content/mitdb/1.0.0/"
+format = "wfdb"
+blake3 = ""
+retrieved = ""
+paper = "13"
+notes = "Pan-Tompkins QRS detection reference. healthSpring validates at 99%+ sensitivity."
+
+[[sources]]
+id = "ptbxl_ecg"
+database = "PhysioNet"
+description = "PTB-XL 12-lead ECG database — 21,837 clinical records"
+accessions = ["ptb-xl"]
+url = "https://physionet.org/content/ptb-xl/1.0.3/"
+format = "wfdb"
+blake3 = ""
+retrieved = ""
+paper = "13"
+notes = "Extended cardiac classification dataset."
+
+[[sources]]
+id = "mimic_iii_waveform"
+database = "PhysioNet"
+description = "MIMIC-III Waveform Database — ICU physiological signals"
+accessions = ["mimic3wdb"]
+url = "https://physionet.org/content/mimic3wdb/1.0/"
+format = "wfdb"
+blake3 = ""
+retrieved = ""
+paper = "13"
+notes = "SpO2, EDA, multi-parameter physiological monitoring for biosignal track."
+
+# =============================================================================
+# Endocrinology (Track 4) — TRT & Testosterone PK
+# =============================================================================
+
+[[sources]]
+id = "trt_pk_literature"
+database = "Literature"
+description = "Testosterone pharmacokinetics reference data — injection PK, oral, transdermal"
+accessions = ["10.1007/s40262-014-0141-z"]
+url = "https://doi.org/10.1007/s40262-014-0141-z"
+format = "csv"
+blake3 = ""
+retrieved = ""
+paper = "13"
+notes = "Mok clinical TRT data. healthSpring Track 4: testosterone PK, TRT outcomes, gut axis."
+
+# =============================================================================
+# Microbiome (Track 2) — Gut, FMT, Antibiotics
+# =============================================================================
+
+[[sources]]
+id = "ncbi_gut_fmt"
+database = "NCBI BioProject"
+description = "Fecal microbiota transplant (FMT) clinical studies — engraftment dynamics"
+accessions = ["PRJNA388210"]
+url = "https://www.ncbi.nlm.nih.gov/bioproject/PRJNA388210"
+format = "sra"
+blake3 = ""
+retrieved = ""
+paper = "13"
+notes = "healthSpring Anderson gut lattice: FMT engraftment = colonization of disorder landscape."
+
+[[sources]]
+id = "ncbi_antibiotic_perturbation"
+database = "NCBI BioProject"
+description = "Antibiotic perturbation of human gut microbiome — recovery dynamics"
+accessions = ["PRJNA355023"]
+url = "https://www.ncbi.nlm.nih.gov/bioproject/PRJNA355023"
+format = "sra"
+blake3 = ""
+retrieved = ""
+paper = "13"
+notes = "Antibiotic → diversity collapse → recovery. Anderson localization predicts recovery trajectory."
+
+# =============================================================================
+# Comparative Medicine (Track 5) — Canine AD, Feline Hyperthyroid
+# =============================================================================
+
+[[sources]]
+id = "gonzales_canine_ad"
+database = "Literature"
+description = "Gonzales AJ — Canine atopic dermatitis clinical data, oclacitinib PK/PD"
+accessions = ["10.1111/vde.12101"]
+url = "https://doi.org/10.1111/vde.12101"
+format = "pdf"
+blake3 = ""
+retrieved = ""
+paper = "12, 13"
+notes = "Cross-species PK. Contact: Dr. Andrea J. Gonzales (MSU Pharmacology & Toxicology)."
+
+[[sources]]
+id = "ncbi_canine_genome"
+database = "NCBI Assembly"
+description = "Canis lupus familiaris reference genome — CanFam4"
+accessions = ["GCA_011100685.1"]
+url = "https://www.ncbi.nlm.nih.gov/assembly/GCA_011100685.1"
+format = "fasta"
+blake3 = ""
+retrieved = ""
+paper = "13"
+notes = "Comparative medicine: cross-species PK parameter anchoring."
+
+# =============================================================================
+# Toxicology (Track 7)
+# =============================================================================
+
+[[sources]]
+id = "epa_tox21"
+database = "EPA"
+description = "Tox21 high-throughput toxicology screening data"
+accessions = []
+url = "https://tripod.nih.gov/tox21/"
+format = "csv"
+blake3 = ""
+retrieved = ""
+paper = "13"
+notes = "healthSpring toxicology track: Anderson delocalization, hormesis, mithridatism."
+
+[[sources]]
+id = "ncbi_toxcast"
+database = "EPA"
+description = "ToxCast chemical screening data — dose-response for toxicology models"
+accessions = []
+url = "https://www.epa.gov/comptox-tools/toxicity-forecasting-toxcast"
+format = "csv"
+blake3 = ""
+retrieved = ""
+paper = "13"
+notes = "Dose-response data for hormesis modeling at low concentrations."

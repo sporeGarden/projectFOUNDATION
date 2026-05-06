@@ -1,85 +1,238 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 #
-# Data sources for Thread 2: Plasma Physics / Lattice QCD
-# Populated as hotSpring experiments validate plasma transport and QCD results.
+# Data sources for Thread 2: Plasma Physics, Lattice QCD & GPU Compute
+# Public data anchors for baseCamp Papers 07, 10, 15, 25.
+# arXiv preprints, lattice QCD reference configurations, and NIST data.
 
 [meta]
 thread = 2
-thread_name = "Plasma Physics / Lattice QCD"
+thread_name = "Plasma Physics, Lattice QCD & GPU Compute"
+expression = "expressions/PLASMA_QCD_SOVEREIGN_GPU.md"
 last_updated = "2026-05-06"
+total_sources = 18
 
-# --- Murillo Group: Yukawa OCP and Transport ---
+# =============================================================================
+# Warm Dense Matter (Paper 07) — Transport Coefficients
+# =============================================================================
 
 [[sources]]
-id = "murillo_yukawa_data"
+id = "murillo_md_transport"
 database = "Literature"
-description = "Yukawa OCP molecular dynamics reference data (Stanton & Murillo 2016)"
-accessions = []
-url = ""
+description = "Murillo group MD transport coefficients for OCP/Yukawa plasmas"
+accessions = ["10.1103/PhysRevLett.84.6026"]
+url = "https://doi.org/10.1103/PhysRevLett.84.6026"
 format = "csv"
 blake3 = ""
 retrieved = ""
 paper = "07"
-notes = "Self-diffusion, viscosity, thermal conductivity vs coupling parameter. 195 hotSpring checks validated."
+notes = "Reference viscosity and diffusion coefficients for hotSpring Tier 4 validation."
 
 [[sources]]
-id = "diaw_ttm_data"
-database = "Literature"
-description = "Temperature-relaxation and transport in dense plasmas (Diaw & Murillo)"
+id = "nist_atomic_spectra"
+database = "NIST ASD"
+description = "NIST Atomic Spectra Database — reference spectral lines for plasma diagnostics"
 accessions = []
-url = ""
+url = "https://physics.nist.gov/PhysRefData/ASD/lines_form.html"
 format = "csv"
 blake3 = ""
 retrieved = ""
 paper = "07"
 
-# --- Chuna: Lattice QCD ---
-
 [[sources]]
-id = "chuna_gradient_flow"
-database = "arXiv"
-description = "Gradient flow measurements for SU(3) Wilson gauge theory"
-accessions = ["arXiv:2101.05320"]
-url = "https://arxiv.org/abs/2101.05320"
-format = "pdf"
+id = "hansen_vieillefosse_ocp"
+database = "Literature"
+description = "Hansen-Vieillefosse OCP equation of state reference data"
+accessions = ["10.1016/0375-9601(76)90523-3"]
+url = "https://doi.org/10.1016/0375-9601(76)90523-3"
+format = "csv"
 blake3 = ""
 retrieved = ""
-paper = "10b"
-notes = "41/41 hotSpring checks validated."
+paper = "07"
+notes = "Classical OCP reference for hotSpring nuclear EOS validation."
 
 [[sources]]
-id = "chuna_bgk_dielectric"
-database = "Physical Review E"
-description = "BGK dielectric response function"
-accessions = ["Phys. Rev. E 111"]
-url = ""
-format = "pdf"
+id = "caillol_ocp_bridge"
+database = "Literature"
+description = "Caillol bridge function and pair correlation for OCP"
+accessions = ["10.1063/1.479903"]
+url = "https://doi.org/10.1063/1.479903"
+format = "csv"
 blake3 = ""
 retrieved = ""
-paper = "10b"
+paper = "07"
 
-# --- Bazavov: SU(3) and Abelian Higgs ---
+# =============================================================================
+# Lattice QCD (Paper 10, 25) — Gauge Configurations & Reference Data
+# =============================================================================
+
+[[sources]]
+id = "milc_gauge_configs"
+database = "MILC"
+description = "MILC Collaboration SU(3) gauge configurations for lattice QCD"
+accessions = []
+url = "https://www.physics.utah.edu/~detar/milc/milcv7.html"
+format = "binary"
+blake3 = ""
+retrieved = ""
+paper = "10, 25"
+notes = "Reference configurations for hotSpring dynamical QCD production. Pin lattice size and beta value."
 
 [[sources]]
 id = "bazavov_su3_wilson"
 database = "Literature"
-description = "SU(3) Wilson gauge theory reference configurations"
-accessions = []
-url = ""
-format = "binary"
+description = "Bazavov et al. SU(3) Wilson gauge theory reference — deconfinement transition"
+accessions = ["10.1103/PhysRevD.85.054503"]
+url = "https://doi.org/10.1103/PhysRevD.85.054503"
+format = "csv"
 blake3 = ""
 retrieved = ""
-paper = "25"
-notes = "12/12 checks validated on hotSpring."
+paper = "10"
+notes = "hotSpring Exp 024: β_c ~ 5.69 confirmed. 17 β-point scan. Reference for deconfinement transition location."
 
 [[sources]]
-id = "bazavov_abelian_higgs"
+id = "chuna_gradient_flow"
 database = "Literature"
-description = "Abelian Higgs model reference data"
-accessions = []
-url = ""
-format = "binary"
+description = "Gradient flow scale setting and topological charge reference data"
+accessions = ["10.1007/JHEP09(2010)034"]
+url = "https://doi.org/10.1007/JHEP09(2010)034"
+format = "csv"
 blake3 = ""
 retrieved = ""
-paper = "25"
-notes = "17/17 checks validated on hotSpring."
+paper = "10, 25"
+notes = "Lüscher gradient flow for scale setting. hotSpring Exp 099-103 gradient flow at volume."
+
+[[sources]]
+id = "bgk_dielectric"
+database = "Literature"
+description = "BGK dielectric function reference for conservative transport"
+accessions = []
+url = ""
+format = "csv"
+blake3 = ""
+retrieved = ""
+paper = "07"
+notes = "hotSpring Papers 43-45: conservative dielectric functions, kinetic-fluid coupling."
+
+[[sources]]
+id = "arxiv_dynamical_qcd"
+database = "arXiv"
+description = "Dynamical fermion QCD reference papers for Nf=2 and Nf=2+1 RHMC"
+accessions = ["hep-lat/0209106", "hep-lat/0510077"]
+url = "https://arxiv.org/"
+format = "pdf"
+blake3 = ""
+retrieved = ""
+paper = "10, 25"
+notes = "Clark & Kennedy RHMC reference. hotSpring Exp 099-103: GPU RHMC (Nf=2, 2+1), self-tuning calibrator."
+
+[[sources]]
+id = "flag_lattice_averages"
+database = "FLAG"
+description = "FLAG Working Group lattice QCD averages — reference for validation"
+accessions = []
+url = "https://flag.unibe.ch/"
+format = "csv"
+blake3 = ""
+retrieved = ""
+paper = "10, 25"
+notes = "FLAG review provides consensus lattice QCD results for validation targets."
+
+# =============================================================================
+# Anderson Localization Physics (Papers 01, 06, 07, 12)
+# =============================================================================
+
+[[sources]]
+id = "anderson_original"
+database = "Literature"
+description = "Anderson PW (1958) Absence of Diffusion in Certain Random Lattices — original paper"
+accessions = ["10.1103/PhysRev.109.1492"]
+url = "https://doi.org/10.1103/PhysRev.109.1492"
+format = "pdf"
+blake3 = ""
+retrieved = ""
+paper = "01, 06, 07, 12"
+notes = "Foundation paper. W_c (critical disorder) values are key validation targets across multiple threads."
+
+[[sources]]
+id = "evers_mirlin_anderson_review"
+database = "Literature"
+description = "Evers F, Mirlin AD (2008) Anderson transitions — comprehensive review"
+accessions = ["10.1103/RevModPhys.80.1355"]
+url = "https://doi.org/10.1103/RevModPhys.80.1355"
+format = "pdf"
+blake3 = ""
+retrieved = ""
+paper = "01, 06, 07"
+notes = "Reference for 3D Anderson transition at W_c ≈ 16.5. hotSpring/groundSpring spectral validation."
+
+# =============================================================================
+# GPU Hardware Reference Data (Paper 15)
+# =============================================================================
+
+[[sources]]
+id = "nvidia_volta_specs"
+database = "NVIDIA"
+description = "Volta (GV100) GPU architecture whitepaper — Titan V reference specs"
+accessions = []
+url = "https://images.nvidia.com/content/volta-architecture/pdf/volta-architecture-whitepaper.pdf"
+format = "pdf"
+blake3 = ""
+retrieved = ""
+paper = "15"
+notes = "Precision brain hardware target. NVVM device poisoning discovery documented in hotSpring Exp 049."
+
+[[sources]]
+id = "nvidia_ampere_specs"
+database = "NVIDIA"
+description = "Ampere (GA106) GPU architecture — RTX 4070/5060 reference specs"
+accessions = []
+url = ""
+format = "pdf"
+blake3 = ""
+retrieved = ""
+paper = "07, 15"
+notes = "RTX 5060 sovereign dispatch validated in hotSpring. metalForge cross-arch target."
+
+# =============================================================================
+# Kokkos Parity Reference (Paper 07)
+# =============================================================================
+
+[[sources]]
+id = "kokkos_reference"
+database = "GitHub"
+description = "Kokkos performance portability framework — parity target"
+accessions = []
+url = "https://github.com/kokkos/kokkos"
+format = "cpp"
+blake3 = ""
+retrieved = ""
+paper = "07"
+notes = "hotSpring Exp 053: live Kokkos parity — 9/9 cases, 12.4× gap (DF64 transcendental poisoning)."
+
+# =============================================================================
+# Nautilus Reservoir Computing (Paper 11)
+# =============================================================================
+
+[[sources]]
+id = "churchill_mtg_turing"
+database = "Literature"
+description = "Churchill et al. (2019) Magic: The Gathering is Turing Complete — cross-domain reference"
+accessions = ["arXiv:1904.09828"]
+url = "https://arxiv.org/abs/1904.09828"
+format = "pdf"
+blake3 = ""
+retrieved = ""
+paper = "11"
+notes = "Games@Home cross-domain transfer. Game tree complexity as a design metric."
+
+[[sources]]
+id = "folding_at_home_reference"
+database = "Literature"
+description = "Shirts & Pande (2000) Folding@Home — distributed computing isomorphism"
+accessions = ["10.1126/science.290.5498.1903"]
+url = "https://doi.org/10.1126/science.290.5498.1903"
+format = "pdf"
+blake3 = ""
+retrieved = ""
+paper = "11, 19"
+notes = "Folding@Home isomorphism across 12 concepts. Stack folding = protein folding."

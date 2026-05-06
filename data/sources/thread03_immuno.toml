@@ -1,0 +1,232 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Data sources for Thread 3: Immunology, Drug Discovery & Clinical Translation
+# Public data anchors for baseCamp Papers 12, 13, 22.
+# Drug databases, clinical references, and immunological data.
+
+[meta]
+thread = 3
+thread_name = "Immunology, Drug Discovery & Clinical Translation"
+expression = "expressions/IMMUNO_DRUG_DISCOVERY.md"
+last_updated = "2026-05-06"
+total_sources = 18
+
+# =============================================================================
+# Paper 12: Anderson in Immunological Signaling
+# =============================================================================
+
+[[sources]]
+id = "ncbi_skin_transcriptome"
+database = "NCBI GEO"
+description = "Atopic dermatitis skin transcriptome — IL-31/IL-4/IL-13 expression profiles"
+accessions = ["GSE32924"]
+url = "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE32924"
+format = "cel"
+blake3 = ""
+retrieved = ""
+paper = "12"
+notes = "Cytokine expression data for Anderson localization mapping in inflamed skin tissue."
+
+[[sources]]
+id = "ncbi_ad_microarray"
+database = "NCBI GEO"
+description = "Atopic dermatitis gene expression microarray — barrier disruption profiles"
+accessions = ["GSE36842"]
+url = "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE36842"
+format = "cel"
+blake3 = ""
+retrieved = ""
+paper = "12"
+notes = "AD barrier disruption = dimensional promotion (inverse of Paper 06 tillage collapse)."
+
+[[sources]]
+id = "uniprot_cytokines"
+database = "UniProt"
+description = "Human interleukin family — IL-31, IL-4, IL-13, JAK1/2/3, STAT proteins"
+accessions = ["Q6EBC2", "P05112", "P35225", "P23458", "O60674", "P42224"]
+url = "https://www.uniprot.org/"
+format = "fasta"
+blake3 = ""
+retrieved = ""
+paper = "12"
+notes = "IL-31 (Q6EBC2), IL-4 (P05112), IL-13 (P35225), JAK1 (P23458), JAK2 (O60674), STAT6 (P42224). Structural data for cytokine propagation modeling."
+
+[[sources]]
+id = "drugbank_jak_inhibitors"
+database = "DrugBank"
+description = "JAK inhibitor reference data — tofacitinib, baricitinib, ruxolitinib"
+accessions = ["DB08895", "DB11817", "DB08877"]
+url = "https://go.drugbank.com/"
+format = "json"
+blake3 = ""
+retrieved = ""
+paper = "12"
+notes = "Drug geometry for Fajgenbaum MATRIX drug-disease scoring + Anderson transport dimension."
+
+[[sources]]
+id = "fajgenbaum_matrix"
+database = "Literature"
+description = "Fajgenbaum DC et al. MATRIX drug repurposing scoring framework"
+accessions = ["10.1016/j.immuni.2020.06.007"]
+url = "https://doi.org/10.1016/j.immuni.2020.06.007"
+format = "pdf"
+blake3 = ""
+retrieved = ""
+paper = "12"
+notes = "Anderson-augmented MATRIX scores (neuralSpring nS-605). Geometry dimension added to scoring."
+
+# =============================================================================
+# ADDRC Drug Discovery Pipeline (Paper 12)
+# =============================================================================
+
+[[sources]]
+id = "addrc_compound_library"
+database = "MSU ADDRC"
+description = "ADDRC high-throughput screening compound library — 8,000+ compounds"
+accessions = []
+url = "https://addrc.msu.edu/"
+format = "sdf"
+blake3 = ""
+retrieved = ""
+paper = "12"
+notes = "Lisabeth (ADDRC Director) HTS library. Anderson-augmented MATRIX selects candidates. Contact: Erika Lisabeth."
+
+[[sources]]
+id = "pubchem_bioassay"
+database = "PubChem"
+description = "PubChem BioAssay — JAK/STAT pathway assay results, AD therapeutics"
+accessions = []
+url = "https://pubchem.ncbi.nlm.nih.gov/bioassay/"
+format = "json"
+blake3 = ""
+retrieved = ""
+paper = "12"
+notes = "Public HTS data for JAK/STAT pathway inhibitors. Cross-validates ADDRC screening."
+
+[[sources]]
+id = "chembl_jak_stat"
+database = "ChEMBL"
+description = "ChEMBL bioactivity data for JAK/STAT pathway targets"
+accessions = ["CHEMBL2093867"]
+url = "https://www.ebi.ac.uk/chembl/"
+format = "csv"
+blake3 = ""
+retrieved = ""
+paper = "12"
+notes = "JAK2 target (CHEMBL2093867). IC50, EC50, Ki values for drug geometry Anderson mapping."
+
+# =============================================================================
+# Paper 13: Sovereign Human Health Computing — PK/PD & Clinical
+# =============================================================================
+
+[[sources]]
+id = "drugbank_pkpd"
+database = "DrugBank"
+description = "DrugBank PK/PD reference — drug properties, PBPK parameters"
+accessions = []
+url = "https://go.drugbank.com/"
+format = "json"
+blake3 = ""
+retrieved = ""
+paper = "13"
+notes = "healthSpring PK/PD tracks: Hill equation, PBPK 5-tissue, population PK Monte Carlo, Michaelis-Menten nonlinear PK."
+
+[[sources]]
+id = "physionet_wfdb"
+database = "PhysioNet"
+description = "Waveform Database (WFDB) — ECG, PPG, EDA reference recordings"
+accessions = []
+url = "https://physionet.org/content/mitdb/"
+format = "wfdb"
+blake3 = ""
+retrieved = ""
+paper = "13"
+notes = "MIT-BIH Arrhythmia Database (mitdb). healthSpring Pan-Tompkins QRS + HRV + arrhythmia classification."
+
+[[sources]]
+id = "physionet_ptbxl"
+database = "PhysioNet"
+description = "PTB-XL 12-lead ECG database — 21,837 records for cardiac classification"
+accessions = []
+url = "https://physionet.org/content/ptb-xl/"
+format = "wfdb"
+blake3 = ""
+retrieved = ""
+paper = "13"
+notes = "Extended ECG dataset for biosignal track validation."
+
+[[sources]]
+id = "ncbi_gut_metabolome"
+database = "NCBI BioProject"
+description = "Gut metabolome studies — SCFA production, serotonin synthesis"
+accessions = ["PRJNA422434"]
+url = "https://www.ncbi.nlm.nih.gov/bioproject/PRJNA422434"
+format = "sra"
+blake3 = ""
+retrieved = ""
+paper = "13"
+notes = "healthSpring microbiome track: Anderson gut lattice, FMT engraftment, antibiotic perturbation, SCFA, gut-brain serotonin."
+
+[[sources]]
+id = "beal_sheiner_nonmem"
+database = "Literature"
+description = "Beal SL, Sheiner LB — NONMEM FOCE methodology reference"
+accessions = []
+url = ""
+format = "pdf"
+blake3 = ""
+retrieved = ""
+paper = "13"
+notes = "healthSpring NLME track: sovereign NONMEM (FOCE+SAEM). Reference for population PK algorithm validation."
+
+[[sources]]
+id = "kuhn_lavielle_saem"
+database = "Literature"
+description = "Kuhn E, Lavielle M — SAEM algorithm for NLME parameter estimation"
+accessions = ["10.1016/j.csda.2004.09.010"]
+url = "https://doi.org/10.1016/j.csda.2004.09.010"
+format = "pdf"
+blake3 = ""
+retrieved = ""
+paper = "13"
+notes = "healthSpring sovereign Monolix (SAEM). Reference for stochastic approximation EM."
+
+# =============================================================================
+# Paper 22: Zero-Knowledge Medical Provenance
+# =============================================================================
+
+[[sources]]
+id = "hipaa_privacy_rule"
+database = "HHS"
+description = "HIPAA Privacy Rule §164.524 — patient access requirements"
+accessions = []
+url = "https://www.hhs.gov/hipaa/for-professionals/privacy/"
+format = "html"
+blake3 = ""
+retrieved = ""
+paper = "22"
+notes = "Legal framework for patient-owned records via DID-based loamSpine certificates."
+
+[[sources]]
+id = "hl7_fhir_r5"
+database = "HL7"
+description = "HL7 FHIR R5 specification — interoperability target for loamSpine certificates"
+accessions = []
+url = "https://hl7.org/fhir/R5/"
+format = "json"
+blake3 = ""
+retrieved = ""
+paper = "22"
+notes = "FHIR/HL7 interop: loamSpine certificates → FHIR resources."
+
+[[sources]]
+id = "w3c_prov_o"
+database = "W3C"
+description = "W3C PROV-O ontology — provenance data model for attribution chains"
+accessions = []
+url = "https://www.w3.org/TR/prov-o/"
+format = "owl"
+blake3 = ""
+retrieved = ""
+paper = "12, 13, 22"
+notes = "sweetGrass PROV-O timeline export. Moreau & Missier (2013). Used across Papers 20-22."

@@ -1,0 +1,456 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# BASECAMP_PAPER_MAP.toml
+# Machine-readable mapping of all baseCamp companion papers to foundation
+# threads, springs, data sources, and public repository anchors.
+#
+# This is the rosetta stone between gen3 baseCamp science and gen4 foundation
+# infrastructure. Each paper entry declares which threads it contributes to,
+# which springs validate it, and which public data repos anchor its provenance.
+
+[meta]
+total_papers = 26
+last_updated = "2026-05-06"
+source = "whitePaper/gen3/baseCamp/README.md"
+notes = "Papers numbered 01-26 (14, 23, 24 are in baseCamp README but not listed as separate companion papers here — 14 covers sovereign compute hardware, 23 covers primal coordination, 24 covers all-silicon science)."
+
+# =============================================================================
+# Paper 01: Anderson Localization as QS Null Hypothesis
+# =============================================================================
+
+[[papers]]
+id = "01"
+title = "Anderson Localization as QS Null Hypothesis"
+domain = "Physics × Microbiology"
+status = "validated"
+threads = [4, 2]
+springs = ["wetSpring", "hotSpring", "groundSpring", "neuralSpring"]
+checks = 3421
+experiments = 198
+key_finding = "3D geometry necessary and sufficient for QS in diverse communities; W_c = 16.26 ± 0.95"
+ncbi_anchors = ["PRJNA237362", "PRJEB31985"]
+other_anchors = ["SILVA SSURef_NR99_138.2", "NCBI RefSeq 16S"]
+data_sources = "data/sources/thread04_enviro.toml"
+contacts = ["ABG community"]
+
+# =============================================================================
+# Paper 02: Extending the Frozen Fossil Record
+# =============================================================================
+
+[[papers]]
+id = "02"
+title = "Extending the Frozen Fossil Record"
+domain = "Evolutionary Biology"
+status = "proposal"
+threads = [4]
+springs = ["wetSpring", "neuralSpring", "groundSpring"]
+checks = 0
+experiments = 0
+key_finding = "Constrained evolution predictions for LTEE, permafrost, vent archives"
+ncbi_anchors = []
+other_anchors = ["Lenski LTEE frozen fossil collection"]
+data_sources = "data/sources/thread04_enviro.toml"
+contacts = []
+notes = "Awaiting LTEE sequencing data."
+
+# =============================================================================
+# Paper 03: Precision Microbiome for Tree Crops
+# =============================================================================
+
+[[papers]]
+id = "03"
+title = "Precision Microbiome for Tree Crops"
+domain = "Agricultural Microbiology"
+status = "proposal"
+threads = [4, 6]
+springs = ["wetSpring", "airSpring", "groundSpring"]
+checks = 0
+experiments = 0
+key_finding = "Soil biome geometry guides inoculant design; rhizosphere W ≈ 6.7"
+ncbi_anchors = ["PRJNA480600"]
+other_anchors = ["NOAA GHCN Michigan stations"]
+data_sources = "data/sources/thread04_enviro.toml"
+contacts = []
+
+# =============================================================================
+# Paper 04: Microbial Sentinels
+# =============================================================================
+
+[[papers]]
+id = "04"
+title = "Microbial Sentinels"
+domain = "Environmental Biosensing"
+status = "validated_on_live_hardware"
+threads = [4, 10]
+springs = ["wetSpring", "neuralSpring", "hotSpring", "groundSpring"]
+checks = 312
+experiments = 6
+key_finding = "NPU validated on real AKD1000: 18.8K Hz, coin-cell 11 years, online evolution 136 gen/sec"
+ncbi_anchors = ["PRJNA488170", "PRJNA285472", "PRJNA636789"]
+other_anchors = ["BrainChip AKD1000 SDK"]
+data_sources = "data/sources/thread04_enviro.toml"
+contacts = []
+
+# =============================================================================
+# Paper 05: Cross-Species Signaling in Symbiotic Systems
+# =============================================================================
+
+[[papers]]
+id = "05"
+title = "Cross-Species Signaling in Symbiotic Systems"
+domain = "Symbiotic Ecology"
+status = "validated"
+threads = [4]
+springs = ["wetSpring", "neuralSpring", "groundSpring"]
+checks = 299000
+experiments = 4
+key_finding = "299K QS genes across 170 metagenomes; eavesdropper enrichment confirmed"
+ncbi_anchors = ["PRJNA237362", "PRJNA503411", "PRJNA473816"]
+other_anchors = ["Pfam PF00196", "Pfam PF03472"]
+data_sources = "data/sources/thread04_enviro.toml"
+contacts = []
+
+# =============================================================================
+# Paper 06: Anderson Localization as No-Till Soil Health Mechanism
+# =============================================================================
+
+[[papers]]
+id = "06"
+title = "Anderson Localization as No-Till Soil Health Mechanism"
+domain = "Soil Microbial Ecology × Physics"
+status = "validated"
+threads = [4, 6]
+springs = ["wetSpring", "airSpring", "groundSpring", "neuralSpring"]
+checks = 321
+experiments = 13
+key_finding = "Tillage = dimensional collapse of QS-active 3D pore network"
+ncbi_anchors = ["PRJNA524590"]
+other_anchors = ["NOAA GHCN", "Brandt farm time series"]
+data_sources = "data/sources/thread04_enviro.toml"
+contacts = []
+
+# =============================================================================
+# Paper 07: Sovereign Warm Dense Matter on Consumer GPU
+# =============================================================================
+
+[[papers]]
+id = "07"
+title = "Sovereign Warm Dense Matter on Consumer GPU"
+domain = "Plasma Physics × Distributed Computing"
+status = "validated"
+threads = [2]
+springs = ["hotSpring", "neuralSpring", "groundSpring"]
+checks = 1031
+experiments = 23
+key_finding = "WDM transport on $600 GPU; deconfinement at β_c=5.69"
+ncbi_anchors = []
+other_anchors = ["NIST ASD", "Murillo MD transport data", "Kokkos parity target"]
+data_sources = "data/sources/thread02_plasma.toml"
+contacts = []
+
+# =============================================================================
+# Paper 08: Neuromorphic Edge Intelligence for Agricultural IoT
+# =============================================================================
+
+[[papers]]
+id = "08"
+title = "Neuromorphic Edge Intelligence for Sovereign Agricultural IoT"
+domain = "Agricultural IoT × Neuromorphic Computing"
+status = "validated_on_live_hardware"
+threads = [6, 10]
+springs = ["airSpring", "wetSpring", "neuralSpring"]
+checks = 88
+experiments = 2
+key_finding = "NPU inference at 0.0009% of active cycle energy; 10.7× more efficient than cloud"
+ncbi_anchors = []
+other_anchors = ["BrainChip AKD1000 SDK", "NOAA GHCN"]
+data_sources = "data/sources/thread04_enviro.toml"
+contacts = []
+
+# =============================================================================
+# Paper 09: Sovereign Field Genomics
+# =============================================================================
+
+[[papers]]
+id = "09"
+title = "Sovereign Field Genomics — Nanopore + NPU"
+domain = "Environmental Genomics × Edge Inference"
+status = "architecture_defined"
+threads = [4, 10]
+springs = ["wetSpring", "airSpring", "neuralSpring", "groundSpring"]
+checks = 0
+experiments = 0
+key_finding = "MinION + AKD1000 + BarraCuda = autonomous field sentinel. NPU 37x read-rate headroom."
+ncbi_anchors = ["PRJNA546013"]
+other_anchors = ["SILVA SSURef_NR99_138.2", "BrainChip AKD1000"]
+data_sources = "data/sources/thread04_enviro.toml"
+contacts = []
+notes = "Awaiting sequencer hardware."
+
+# =============================================================================
+# Paper 10: First Dynamical QCD on Consumer GPU
+# =============================================================================
+
+[[papers]]
+id = "10"
+title = "First Dynamical QCD Production on Consumer GPU"
+domain = "Lattice QCD × Neuromorphic Computing"
+status = "complete_and_evolving"
+threads = [2]
+springs = ["hotSpring", "neuralSpring", "groundSpring"]
+checks = 1031
+experiments = 17
+key_finding = "17 β points, Nf=2+1 RHMC, self-tuning calibrator. guideStone-certified."
+ncbi_anchors = []
+other_anchors = ["MILC gauge configs", "FLAG lattice averages", "Bazavov SU(3) Wilson reference"]
+data_sources = "data/sources/thread02_plasma.toml"
+contacts = []
+
+# =============================================================================
+# Paper 11: Nautilus Shell — Evolutionary Reservoir Computing
+# =============================================================================
+
+[[papers]]
+id = "11"
+title = "Nautilus Shell — Evolutionary Reservoir Computing from Bingo Boards"
+domain = "Reservoir Computing × Evolutionary Algorithms"
+status = "validated"
+threads = [2, 9]
+springs = ["hotSpring", "neuralSpring"]
+checks = 31
+experiments = 5
+key_finding = "5.3% LOO CG error, 2.6% blind prediction; absorbed into ToadStool S80"
+ncbi_anchors = []
+other_anchors = ["Churchill et al. 2019 (MTG Turing completeness)"]
+data_sources = "data/sources/thread02_plasma.toml"
+contacts = []
+
+# =============================================================================
+# Paper 12: Anderson in Immunological Signaling
+# =============================================================================
+
+[[papers]]
+id = "12"
+title = "Anderson Localization in Immunological Signaling"
+domain = "Immunology × Condensed Matter × Pharmacology"
+status = "validated_and_evolving"
+threads = [3, 4]
+springs = ["wetSpring", "neuralSpring", "airSpring", "groundSpring"]
+checks = 782
+experiments = 20
+key_finding = "Cytokine propagation follows Anderson localization; Fajgenbaum MATRIX gains geometry"
+ncbi_anchors = ["GSE32924", "GSE36842"]
+other_anchors = ["DrugBank DB08895/DB11817/DB08877", "ChEMBL CHEMBL2093867", "ADDRC compound library"]
+data_sources = "data/sources/thread03_immuno.toml"
+data_targets = "data/targets/thread03_immuno_targets.toml"
+contacts = ["Dr. Andrea J. Gonzales (MSU)", "Erika Lisabeth (ADDRC)", "Richard Neubig"]
+
+# =============================================================================
+# Paper 13: Sovereign Human Health Computing
+# =============================================================================
+
+[[papers]]
+id = "13"
+title = "Sovereign Human Health Computing"
+domain = "Human Health × 9 Clinical Tracks"
+status = "validated"
+threads = [3, 8]
+springs = ["healthSpring", "wetSpring", "groundSpring"]
+checks = 928
+experiments = 83
+key_finding = "9-track sovereign health computing; NLME FOCE+SAEM; 113/113 cross-validation"
+ncbi_anchors = ["PRJNA422434", "PRJNA388210", "PRJNA355023"]
+other_anchors = ["PhysioNet mitdb", "PhysioNet ptb-xl", "DrugBank", "PharmGKB", "EPA Tox21"]
+data_sources = "data/sources/thread08_health.toml"
+contacts = ["Dr. Andrea J. Gonzales", "Mok (clinical TRT)", "Beal & Sheiner (FOCE)", "Kuhn & Lavielle (SAEM)"]
+
+# =============================================================================
+# Paper 15: Self-Routing Precision Brain
+# =============================================================================
+
+[[papers]]
+id = "15"
+title = "Self-Routing Precision Brain for Heterogeneous GPU Compute"
+domain = "GPU Computing × Precision Engineering"
+status = "validated"
+threads = [2]
+springs = ["hotSpring"]
+checks = 3
+experiments = 3
+key_finding = "12-domain self-routing brain; survives NVIDIA NVVM device poisoning; PrecisionBrain absorbed by toadStool"
+ncbi_anchors = []
+other_anchors = ["NVIDIA Volta whitepaper"]
+data_sources = "data/sources/thread02_plasma.toml"
+contacts = []
+
+# =============================================================================
+# Paper 16: Anaerobic-Aerobic QS Phase Transition
+# =============================================================================
+
+[[papers]]
+id = "16"
+title = "Anaerobic-Aerobic QS Phase Transition"
+domain = "Microbial Ecology × Environmental Engineering"
+status = "computationally_validated"
+threads = [4, 8]
+springs = ["wetSpring", "healthSpring", "airSpring", "neuralSpring", "groundSpring"]
+checks = 54
+experiments = 1
+key_finding = "O₂-modulated W model (r=0.851); diversity IS disorder, oxygen adds second dimension"
+ncbi_anchors = ["PRJNA547561", "PRJNA517152", "PRJNA398089"]
+other_anchors = []
+data_sources = "data/sources/thread04_enviro.toml"
+contacts = ["Wei Liao (ADREC, MSU BAE)"]
+
+# =============================================================================
+# Paper 17: Game Design as Rigorous Science
+# =============================================================================
+
+[[papers]]
+id = "17"
+title = "Game Design as Rigorous Science"
+domain = "Game Science × HCI × Procedural Generation"
+status = "validated"
+threads = [5, 9]
+springs = ["ludoSpring", "wetSpring", "hotSpring"]
+checks = 1692
+experiments = 75
+key_finding = "13 validated HCI models; flow state discriminates quality; cross-spring provenance"
+ncbi_anchors = []
+other_anchors = []
+data_sources = ""
+contacts = ["Csikszentmihalyi (Flow)", "Fitts", "Yannakakis & Togelius"]
+
+# =============================================================================
+# Paper 18: RPGPT — Sovereign RPG Engine
+# =============================================================================
+
+[[papers]]
+id = "18"
+title = "RPGPT — Sovereign RPG Engine with Ingestible Rulesets"
+domain = "Game Science × Provenance × AI"
+status = "architecture_defined"
+threads = [5, 9]
+springs = ["ludoSpring", "rhizoCrypt", "loamSpine", "sweetGrass"]
+checks = 321
+experiments = 9
+key_finding = "Anti-cheat = chain-of-custody isomorphism; rulesets as loamSpine certificates constrain AI"
+ncbi_anchors = []
+other_anchors = ["ORC (PF2e)", "CC-BY (FATE Core)"]
+data_sources = ""
+contacts = []
+
+# =============================================================================
+# Paper 19: Games@Home — Distributed Human Computation
+# =============================================================================
+
+[[papers]]
+id = "19"
+title = "Games@Home — Distributed Human Computation via Interactive Systems"
+domain = "Game Science × Combinatorics × Distributed Computing"
+status = "validated"
+threads = [5, 9]
+springs = ["ludoSpring", "rhizoCrypt", "sweetGrass", "loamSpine"]
+checks = 127
+experiments = 4
+key_finding = "Human gameplay as compute engine; MTG game tree is 2^ℵ₀; every game produces novel data"
+ncbi_anchors = []
+other_anchors = ["Churchill et al. 2019", "Pande Folding@Home"]
+data_sources = ""
+contacts = []
+
+# =============================================================================
+# Paper 20: Novel Ferment Transcript Economics
+# =============================================================================
+
+[[papers]]
+id = "20"
+title = "Novel Ferment Transcript Economics — Radiating Attribution"
+domain = "Economics × Provenance × Cryptography"
+status = "validated"
+threads = [9]
+springs = ["ludoSpring", "rhizoCrypt", "loamSpine", "sweetGrass", "BearDog"]
+checks = 89
+experiments = 1
+key_finding = "Memory-bound digital objects; value from accumulated history, not artificial scarcity"
+ncbi_anchors = []
+other_anchors = ["W3C PROV-O"]
+data_sources = ""
+contacts = ["Merkle (1987)", "Diffie & Hellman (1976)"]
+
+# =============================================================================
+# Paper 21: Sovereign Sample Provenance
+# =============================================================================
+
+[[papers]]
+id = "21"
+title = "Sovereign Sample Provenance — Field-to-Publication Chain-of-Custody"
+domain = "Field Genomics × Provenance × Fraud Detection"
+status = "validated"
+threads = [4, 9]
+springs = ["ludoSpring", "rhizoCrypt", "loamSpine", "sweetGrass", "BearDog", "wetSpring"]
+checks = 193
+experiments = 4
+key_finding = "Same provenance tracks game items and biological samples; 6 fraud types, >80% structural similarity"
+ncbi_anchors = []
+other_anchors = ["ISO 17025 (2017)", "W3C PROV-O"]
+data_sources = ""
+contacts = []
+
+# =============================================================================
+# Paper 22: Zero-Knowledge Medical Provenance
+# =============================================================================
+
+[[papers]]
+id = "22"
+title = "Zero-Knowledge Medical Provenance — Patient-Owned Records"
+domain = "Medical Data × Provenance × Zero-Knowledge"
+status = "validated"
+threads = [3, 8, 9]
+springs = ["ludoSpring", "rhizoCrypt", "loamSpine", "sweetGrass", "BearDog", "healthSpring"]
+checks = 189
+experiments = 4
+key_finding = "Patient-owned records via DID loamSpine; consent as scoped loans; 5 fraud types detected"
+ncbi_anchors = []
+other_anchors = ["HIPAA Privacy Rule §164.524", "HL7 FHIR R5", "W3C PROV-O"]
+data_sources = "data/sources/thread03_immuno.toml"
+data_targets = "data/targets/thread03_immuno_targets.toml"
+contacts = []
+
+# =============================================================================
+# Paper 25: Self-Tuning Simulation for Lattice QCD
+# =============================================================================
+
+[[papers]]
+id = "25"
+title = "Self-Tuning Simulation — Physics-Validated Parameter Discovery"
+domain = "Lattice QCD × Adaptive Algorithms"
+status = "phases_1_4_complete"
+threads = [2]
+springs = ["hotSpring"]
+checks = 5
+experiments = 5
+key_finding = "Zero hand-tuned magic numbers in RHMC; spectral probe, acceptance-driven adaptation"
+ncbi_anchors = []
+other_anchors = ["FLAG lattice averages", "Clark & Kennedy RHMC"]
+data_sources = "data/sources/thread02_plasma.toml"
+contacts = []
+
+# =============================================================================
+# Paper 26: Primal Composition as Scientific Methodology
+# =============================================================================
+
+[[papers]]
+id = "26"
+title = "Primal Composition as Scientific Methodology"
+domain = "Composition × Deploy Graphs × IPC"
+status = "validated"
+threads = [9]
+springs = ["ludoSpring", "primalSpring"]
+checks = 90
+experiments = 11
+key_finding = "Springs compose FROM primals independently; BYOB deploy graph schema; ecosystem evolution map"
+ncbi_anchors = []
+other_anchors = []
+data_sources = ""
+contacts = []

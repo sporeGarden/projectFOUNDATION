@@ -1,15 +1,19 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 #
 # Validation targets for Thread 1: Whole-Cell Modeling
-# Expected numerical results from ABG papers A-G that NUCLEUS must reproduce.
+# Expected numerical and qualitative results that NUCLEUS must reproduce.
+# Each target is a provenance chain endpoint — the result our rebuild must match.
 
 [meta]
 thread = 1
 thread_name = "Whole-Cell Modeling"
 expression = "expressions/ABG_WHOLE_CELL_REBUILD.md"
 last_updated = "2026-05-06"
+total_targets = 24
 
-# --- Paper A: Karr et al. 2012 ---
+# =============================================================================
+# Paper A: Karr et al. 2012 — M. genitalium whole-cell model
+# =============================================================================
 
 [[targets]]
 id = "paper_a_cell_cycle"
@@ -18,7 +22,19 @@ description = "Cell cycle duration for M. genitalium whole-cell model"
 expected_value = 9.0
 unit = "hours"
 tolerance = 0.5
-source = "Karr et al. 2012, Figure 3"
+source = "Karr et al. 2012, Table S4"
+spring = "hotSpring"
+blake3 = ""
+validated = false
+
+[[targets]]
+id = "paper_a_growth_rate"
+paper = "A"
+description = "Cellular growth rate"
+expected_value = 0.077
+unit = "per_hour"
+tolerance = 0.01
+source = "Karr et al. 2012, Figure 2"
 spring = "hotSpring"
 blake3 = ""
 validated = false
@@ -26,28 +42,43 @@ validated = false
 [[targets]]
 id = "paper_a_gene_essentiality"
 paper = "A"
-description = "Gene essentiality prediction accuracy"
+description = "Gene essentiality prediction accuracy (single-gene disruptions)"
 expected_value = 79.0
 unit = "percent"
 tolerance = 3.0
-source = "Karr et al. 2012, Table S5"
+source = "Karr et al. 2012, Figure 5, Table S5"
 spring = "wetSpring"
 blake3 = ""
 validated = false
 
 [[targets]]
-id = "paper_a_growth_rate"
+id = "paper_a_submodel_steady_states"
 paper = "A"
-description = "Cellular growth rate matches experimental doubling time"
-expected_value = 9.0
-unit = "hours"
-tolerance = 1.0
-source = "Karr et al. 2012, comparison to experimental ~10-12h"
+description = "28 submodel metabolite concentrations within published ranges"
+expected_value = 28.0
+unit = "submodels_at_steady_state"
+tolerance = 2.0
+source = "Karr et al. 2012, Supplementary"
 spring = "hotSpring"
 blake3 = ""
 validated = false
 
-# --- Paper C: Rees-Garbutt et al. 2020 ---
+[[targets]]
+id = "paper_a_single_cell_variability"
+paper = "A"
+description = "Stochastic variation in division timing across population"
+expected_value = 9.0
+unit = "hours_mean_with_stochastic_spread"
+tolerance = 2.0
+source = "Karr et al. 2012, Figure 3"
+spring = "hotSpring"
+blake3 = ""
+validated = false
+notes = "Qualitative target: division timing shows realistic cell-to-cell variation."
+
+# =============================================================================
+# Paper C: Rees-Garbutt et al. 2020 — Genome minimization
+# =============================================================================
 
 [[targets]]
 id = "paper_c_gama_genomes"
@@ -62,35 +93,141 @@ blake3 = ""
 validated = false
 
 [[targets]]
-id = "paper_c_max_removal"
+id = "paper_c_gama_max_removal"
 paper = "C"
 description = "Maximum gene removal by GAMA algorithm"
 expected_value = 237.0
-unit = "genes"
+unit = "genes_removed"
 tolerance = 5.0
 source = "Rees-Garbutt et al. 2020, Figure 3"
 spring = "wetSpring"
 blake3 = ""
 validated = false
 
-# --- Paper D: Thornburg et al. 2022 ---
+[[targets]]
+id = "paper_c_minesweeper_removal"
+paper = "C"
+description = "Minesweeper greedy removal — genes remaining"
+expected_value = 310.0
+unit = "genes_remaining"
+tolerance = 10.0
+source = "Rees-Garbutt et al. 2020, Figure 2"
+spring = "wetSpring"
+blake3 = ""
+validated = false
 
 [[targets]]
-id = "paper_d_cell_cycle"
+id = "paper_c_viability_landscape"
+paper = "C"
+description = "Viability landscape topology consistent with published fitness landscape"
+expected_value = 1.0
+unit = "qualitative_match"
+tolerance = 0.0
+source = "Rees-Garbutt et al. 2020, Figure 4"
+spring = "wetSpring"
+blake3 = ""
+validated = false
+notes = "Qualitative target: landscape shape and viable/inviable boundary structure."
+
+# =============================================================================
+# Paper D: Sun et al. 2020 — E. coli whole-cell model
+# =============================================================================
+
+[[targets]]
+id = "paper_d_multigenerational"
 paper = "D"
+description = "Multi-generation lineage simulation — mother/daughter cell behavior"
+expected_value = 1.0
+unit = "qualitative_match"
+tolerance = 0.0
+source = "Sun et al. 2020, Figure 3"
+spring = "hotSpring"
+blake3 = ""
+validated = false
+notes = "Qualitative: growth, division, and multi-generation behavior reproduce."
+
+[[targets]]
+id = "paper_d_deep_curation_coverage"
+paper = "D"
+description = "Gene products characterized via deep curation"
+expected_value = 2000.0
+unit = "gene_products"
+tolerance = 100.0
+source = "Sun et al. 2020, Results"
+spring = "wetSpring"
+blake3 = ""
+validated = false
+
+# =============================================================================
+# Paper E: Thornburg et al. 2022 — JCVI-syn3A kinetic model
+# =============================================================================
+
+[[targets]]
+id = "paper_e_cell_cycle"
+paper = "E"
 description = "JCVI-syn3A cell cycle duration"
 expected_value = 111.0
 unit = "minutes"
 tolerance = 10.0
+source = "Thornburg et al. 2022, Figure 1"
+spring = "hotSpring"
+blake3 = ""
+validated = false
+
+[[targets]]
+id = "paper_e_ribosome_count"
+paper = "E"
+description = "Ribosome count dynamics over cell cycle"
+expected_value = 500.0
+unit = "ribosomes_at_birth"
+tolerance = 50.0
+source = "Thornburg et al. 2022, Figure 3"
+spring = "hotSpring"
+blake3 = ""
+validated = false
+notes = "Grows from ~500 at birth to ~1000 at division."
+
+[[targets]]
+id = "paper_e_atp_steady_state"
+paper = "E"
+description = "ATP concentration at steady state within experimental range"
+expected_value = 1.0
+unit = "qualitative_match"
+tolerance = 0.0
+source = "Thornburg et al. 2022, Figure 2"
+spring = "hotSpring"
+blake3 = ""
+validated = false
+notes = "Qualitative: ATP concentration trajectory matches published experimental range."
+
+[[targets]]
+id = "paper_e_mrna_spatial"
+paper = "E"
+description = "mRNA spatial distribution non-uniform, consistent with gene position"
+expected_value = 1.0
+unit = "qualitative_match"
+tolerance = 0.0
+source = "Thornburg et al. 2022, Figure 4"
+spring = "hotSpring"
+blake3 = ""
+validated = false
+
+[[targets]]
+id = "paper_e_metabolite_trajectories"
+paper = "E"
+description = "7 key metabolite concentration trajectories matching experimental time courses"
+expected_value = 7.0
+unit = "metabolites_matching"
+tolerance = 1.0
 source = "Thornburg et al. 2022, Figure 2"
 spring = "hotSpring"
 blake3 = ""
 validated = false
 
 [[targets]]
-id = "paper_d_dna_replication"
-paper = "D"
-description = "DNA replication timing matches experimental observations"
+id = "paper_e_dna_replication"
+paper = "E"
+description = "DNA replication timing"
 expected_value = 40.0
 unit = "minutes"
 tolerance = 5.0
@@ -99,32 +236,132 @@ spring = "hotSpring"
 blake3 = ""
 validated = false
 
-# --- Paper E: Stevens et al. 2023 ---
+# =============================================================================
+# Paper F: Stevens et al. 2023 — CG-MD simulation
+# =============================================================================
 
 [[targets]]
-id = "paper_e_atom_count"
-paper = "E"
-description = "Total atom count in all-atom simulation"
-expected_value = 3.2e9
-unit = "atoms"
-tolerance = 1.0e8
-source = "Stevens et al. 2023, Abstract"
+id = "paper_f_cg_beads"
+paper = "F"
+description = "Total CG beads in simulation"
+expected_value = 561000000.0
+unit = "beads"
+tolerance = 5000000.0
+source = "Stevens et al. 2023, Methods"
 spring = "hotSpring"
 blake3 = ""
 validated = false
-notes = "Validation target is the ability to construct the system, not just count atoms."
+notes = "System construction target — can we build the same system?"
 
-# --- Paper G: Thornburg et al. 2026 ---
+[[targets]]
+id = "paper_f_stability"
+paper = "F"
+description = "Simulation stability over 200 ns trajectory"
+expected_value = 200.0
+unit = "nanoseconds"
+tolerance = 10.0
+source = "Stevens et al. 2023, Figure S2"
+spring = "hotSpring"
+blake3 = ""
+validated = false
+
+[[targets]]
+id = "paper_f_diffusion"
+paper = "F"
+description = "Protein diffusion coefficients within 2x of experimental FRAP values"
+expected_value = 2.0
+unit = "fold_experimental"
+tolerance = 0.5
+source = "Stevens et al. 2023, Figure 4"
+spring = "hotSpring"
+blake3 = ""
+validated = false
+
+[[targets]]
+id = "paper_f_membrane_thickness"
+paper = "F"
+description = "Membrane thickness consistent with CG Martini"
+expected_value = 4.0
+unit = "nanometers"
+tolerance = 0.5
+source = "Stevens et al. 2023, Figure 3"
+spring = "hotSpring"
+blake3 = ""
+validated = false
+
+[[targets]]
+id = "paper_f_ribosome_density"
+paper = "F"
+description = "Ribosome spatial density consistent with cryo-ET tomograms"
+expected_value = 1.0
+unit = "qualitative_match"
+tolerance = 0.0
+source = "Stevens et al. 2023, Figure 5"
+spring = "hotSpring"
+blake3 = ""
+validated = false
+
+# =============================================================================
+# Paper G: Thornburg et al. 2026 — 4D cell cycle
+# =============================================================================
 
 [[targets]]
 id = "paper_g_division_time"
 paper = "G"
-description = "Complete cell division cycle including FtsZ ring formation and septation"
+description = "Complete cell division cycle including FtsZ ring and septation"
 expected_value = 120.0
 unit = "minutes"
 tolerance = 15.0
+source = "Thornburg et al. 2026, Figure 1"
+spring = "hotSpring"
+blake3 = ""
+validated = false
+notes = "Most complex validation target — 4D (xyz + time) simulation."
+
+[[targets]]
+id = "paper_g_chromosome_segregation"
+paper = "G"
+description = "Chromosome segregation timing consistent with experimental observations"
+expected_value = 1.0
+unit = "qualitative_match"
+tolerance = 0.0
+source = "Thornburg et al. 2026, Figure 3"
+spring = "hotSpring"
+blake3 = ""
+validated = false
+
+[[targets]]
+id = "paper_g_constriction_dynamics"
+paper = "G"
+description = "Membrane constriction rate matching FtsZ kinetics"
+expected_value = 1.0
+unit = "qualitative_match"
+tolerance = 0.0
 source = "Thornburg et al. 2026, Figure 4"
 spring = "hotSpring"
 blake3 = ""
 validated = false
-notes = "4D (xyz + time) simulation. Most complex validation target."
+
+[[targets]]
+id = "paper_g_daughter_asymmetry"
+paper = "G"
+description = "Daughter cell mass ratio and content distribution"
+expected_value = 1.0
+unit = "qualitative_match"
+tolerance = 0.0
+source = "Thornburg et al. 2026, Figure 5"
+spring = "hotSpring"
+blake3 = ""
+validated = false
+
+[[targets]]
+id = "paper_g_metabolic_oscillations"
+paper = "G"
+description = "Cell-cycle-coupled metabolite fluctuations"
+expected_value = 1.0
+unit = "qualitative_match"
+tolerance = 0.0
+source = "Thornburg et al. 2026, Figure 2"
+spring = "hotSpring"
+blake3 = ""
+validated = false

@@ -6,9 +6,30 @@ Data source manifests and validation targets for the unified lineage.
 
 ```
 data/
-  sources/          Per-thread data source manifests
-  targets/          Per-thread validation target manifests
+  sources/
+    thread01_wcm.toml         Whole-Cell Modeling (27 sources, 7 ABG papers)
+    thread02_plasma.toml       Plasma Physics & Lattice QCD (18 sources)
+    thread03_immuno.toml       Immunology & Drug Discovery (18 sources)
+    thread04_enviro.toml       Environmental Genomics & Field Science (23 sources)
+    thread08_health.toml       Human Health & Clinical Translation (14 sources)
+  targets/
+    thread01_wcm_targets.toml  Whole-Cell Modeling (24 targets across Papers A-G)
+    thread03_immuno_targets.toml  Immunology & Drug Discovery (12 targets)
 ```
+
+## Public Data Repository Anchors
+
+NCBI BioProjects, UniProt proteomes, PhysioNet waveform databases,
+DrugBank entries, ChEMBL bioactivity data, KEGG pathway maps, SILVA
+reference taxonomies, and PDB/AlphaFold structures serve as **provenance
+chain starting points**. Each is a fetchable, versionable, content-
+addressable resource that NUCLEUS hashes and tracks through the entire
+computation pipeline via the provenance trio.
+
+When a database updates, the old BLAKE3 hash remains in NestGate and the
+new retrieval creates a new ledger entry. The diff between database
+versions is structural, not editorial — enabling evolution opportunities
+as public data improves.
 
 ## Data Source Manifests (`sources/`)
 

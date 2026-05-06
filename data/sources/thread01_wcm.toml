@@ -1,27 +1,75 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 #
 # Data sources for Thread 1: Whole-Cell Modeling
-# Populated as springs validate each paper's data requirements.
+# Public data repository anchors for provenance chains and braids.
+# Each source is a BLAKE3-anchorable starting point.
 
 [meta]
 thread = 1
 thread_name = "Whole-Cell Modeling"
 expression = "expressions/ABG_WHOLE_CELL_REBUILD.md"
 last_updated = "2026-05-06"
+total_sources = 27
 
-# --- Paper A: Karr et al. 2012 (M. genitalium whole-cell model) ---
+# =============================================================================
+# Paper A: Karr et al. 2012 — M. genitalium whole-cell model
+# =============================================================================
+
+[[sources]]
+id = "ncbi_mg_genome"
+database = "NCBI Nucleotide"
+description = "M. genitalium G37 complete genome (525 protein-coding genes)"
+accessions = ["NC_000908.2"]
+url = "https://www.ncbi.nlm.nih.gov/nuccore/NC_000908.2"
+format = "genbank"
+blake3 = ""
+retrieved = ""
+paper = "A"
+
+[[sources]]
+id = "ncbi_mg_assembly"
+database = "NCBI Assembly"
+description = "M. genitalium G37 reference assembly"
+accessions = ["GCA_000027325.1"]
+url = "https://www.ncbi.nlm.nih.gov/assembly/GCA_000027325.1"
+format = "fasta"
+blake3 = ""
+retrieved = ""
+paper = "A"
+
+[[sources]]
+id = "uniprot_mg_proteome"
+database = "UniProt"
+description = "M. genitalium complete reference proteome (484 proteins)"
+accessions = ["UP000000807"]
+url = "https://www.uniprot.org/proteomes/UP000000807"
+format = "fasta"
+blake3 = ""
+retrieved = ""
+paper = "A"
+
+[[sources]]
+id = "kegg_mg"
+database = "KEGG"
+description = "M. genitalium metabolic network and gene-reaction mappings"
+accessions = ["mge"]
+url = "https://www.genome.jp/kegg-bin/show_organism?org=mge"
+format = "kgml"
+blake3 = ""
+retrieved = ""
+paper = "A"
 
 [[sources]]
 id = "brenda_mg_kinetics"
 database = "BRENDA"
-description = "Enzyme kinetics (Km, kcat, Vmax) for M. genitalium metabolic enzymes"
+description = "Enzyme kinetics (Km, kcat, Vmax) for M. genitalium metabolic enzymes — ~1,900 parameters across 28 submodels"
 accessions = []
 url = "https://www.brenda-enzymes.org/"
 format = "json"
 blake3 = ""
 retrieved = ""
 paper = "A"
-notes = "~1,900 parameters across 28 submodels. Accessions to be enumerated from Paper A supplementary."
+notes = "Paper A draws from >900 publications for parameters. Accessions need systematic enumeration from Paper A Table S7. BRENDA updates continuously — version pinning at retrieval time is critical."
 
 [[sources]]
 id = "ecocyc_pathways"
@@ -35,122 +83,242 @@ retrieved = ""
 paper = "A"
 
 [[sources]]
-id = "kegg_mg"
-database = "KEGG"
-description = "M. genitalium metabolic network and gene-reaction mappings"
-accessions = ["mge"]
-url = "https://www.genome.jp/kegg/"
-format = "kgml"
+id = "wholecell_github"
+database = "GitHub"
+description = "WholeCell MATLAB source code (Karr et al. original implementation)"
+accessions = []
+url = "https://github.com/CovertLab/WholeCell"
+format = "matlab"
 blake3 = ""
 retrieved = ""
 paper = "A"
+notes = "Reference implementation for validation comparison. Pin to specific commit."
+
+# =============================================================================
+# Paper C: Rees-Garbutt et al. 2020 — Genome minimization
+# =============================================================================
 
 [[sources]]
-id = "uniprot_mg_proteome"
-database = "UniProt"
-description = "M. genitalium complete proteome"
-accessions = ["UP000000807"]
-url = "https://www.uniprot.org/proteomes/UP000000807"
-format = "fasta"
+id = "paper_c_supplementary"
+database = "Nature Communications"
+description = "Supplementary data: gene essentiality calls, GAMA algorithm parameters"
+accessions = ["10.1038/s41467-020-14545-0"]
+url = "https://doi.org/10.1038/s41467-020-14545-0"
+format = "xlsx"
 blake3 = ""
 retrieved = ""
-paper = "A"
+paper = "C"
+notes = "Paper C inherits ALL Paper A parameters. The supplementary provides the Minesweeper/GAMA algorithm parameters and genome evaluation results."
+
+# =============================================================================
+# Paper D: Sun et al. 2020 — E. coli whole-cell model
+# =============================================================================
 
 [[sources]]
-id = "ncbi_mg_genome"
-database = "NCBI"
-description = "M. genitalium G37 complete genome"
-accessions = ["NC_000908.2"]
-url = "https://www.ncbi.nlm.nih.gov/nuccore/NC_000908.2"
+id = "ncbi_ecoli_genome"
+database = "NCBI Nucleotide"
+description = "E. coli K-12 MG1655 complete genome (4,623 genes)"
+accessions = ["NC_000913.3"]
+url = "https://www.ncbi.nlm.nih.gov/nuccore/NC_000913.3"
 format = "genbank"
 blake3 = ""
 retrieved = ""
-paper = "A"
+paper = "D"
 
-# --- Paper D: Thornburg et al. 2022 (JCVI-syn3A kinetic model) ---
+[[sources]]
+id = "uniprot_ecoli_proteome"
+database = "UniProt"
+description = "E. coli K-12 reference proteome (4,403 proteins)"
+accessions = ["UP000000625"]
+url = "https://www.uniprot.org/proteomes/UP000000625"
+format = "fasta"
+blake3 = ""
+retrieved = ""
+paper = "D"
+
+[[sources]]
+id = "kegg_ecoli"
+database = "KEGG"
+description = "E. coli K-12 metabolic network"
+accessions = ["eco"]
+url = "https://www.genome.jp/kegg-bin/show_organism?org=eco"
+format = "kgml"
+blake3 = ""
+retrieved = ""
+paper = "D"
+
+[[sources]]
+id = "vivarium_github"
+database = "GitHub"
+description = "Vivarium framework source code (multi-process cell simulation)"
+accessions = []
+url = "https://github.com/vivarium-collective/vivarium-core"
+format = "python"
+blake3 = ""
+retrieved = ""
+paper = "D"
+notes = "Python multi-process architecture that parallels NUCLEUS composition."
+
+# =============================================================================
+# Paper E: Thornburg et al. 2022 — JCVI-syn3A kinetic model
+# =============================================================================
 
 [[sources]]
 id = "ncbi_syn3a_genome"
-database = "NCBI"
-description = "JCVI-syn3A complete genome"
+database = "NCBI Nucleotide"
+description = "JCVI-syn3A complete genome (493 genes)"
 accessions = ["CP016816.2"]
 url = "https://www.ncbi.nlm.nih.gov/nuccore/CP016816.2"
 format = "genbank"
 blake3 = ""
 retrieved = ""
-paper = "D"
+paper = "E"
+
+[[sources]]
+id = "ncbi_syn3a_bioproject"
+database = "NCBI BioProject"
+description = "JCVI synthetic biology project — source of proteomics, transcriptomics, metabolomics"
+accessions = ["PRJNA357500"]
+url = "https://www.ncbi.nlm.nih.gov/bioproject/PRJNA357500"
+format = "sra"
+blake3 = ""
+retrieved = ""
+paper = "E"
 
 [[sources]]
 id = "brenda_syn3a_kinetics"
 database = "BRENDA"
-description = "Enzyme kinetics for JCVI-syn3A metabolic enzymes"
+description = "Enzyme kinetics for JCVI-syn3A metabolic enzymes (493-gene subset)"
 accessions = []
 url = "https://www.brenda-enzymes.org/"
 format = "json"
 blake3 = ""
 retrieved = ""
-paper = "D"
-notes = "Subset of BRENDA entries relevant to syn3A's 493 genes. Many inherited from Paper A."
+paper = "E"
+notes = "Many constants inherited from Paper A (M. genitalium). Cross-organism parameter borrowing is a major jelly string — sweetGrass braids must track which M. genitalium values were used for syn3A."
 
 [[sources]]
 id = "tecr_thermodynamics"
-database = "TECRdb"
+database = "TECRdb (NIST)"
 description = "Thermodynamic equilibrium constants for metabolic reactions"
 accessions = []
-url = "https://www.nist.gov/mml/bmd/thermodynamics-enzyme-catalyzed-reactions-database"
+url = "https://randr.nist.gov/enzyme/"
 format = "csv"
 blake3 = ""
 retrieved = ""
-paper = "D"
-
-# --- Paper E: Stevens et al. 2023 (All-atom MD) ---
+paper = "E"
+notes = "NIST Thermodynamics of Enzyme-Catalyzed Reactions database. Pin version at retrieval."
 
 [[sources]]
-id = "pdb_structures"
-database = "PDB"
-description = "Protein structures for syn3A proteome (all-atom modeling)"
+id = "breuer_proteomics"
+database = "Literature"
+description = "Proteomics copy numbers for JCVI-syn3A proteins (Breuer et al. 2019)"
+accessions = ["10.1016/j.cell.2019.02.020"]
+url = "https://doi.org/10.1016/j.cell.2019.02.020"
+format = "xlsx"
+blake3 = ""
+retrieved = ""
+paper = "E"
+notes = "Initial protein copy numbers used by Papers E, F, and G. A key provenance chain anchor — content-address the supplementary table."
+
+[[sources]]
+id = "lattice_microbes_github"
+database = "GitHub"
+description = "Lattice Microbes source code (C++/CUDA spatial stochastic simulator)"
 accessions = []
-url = "https://www.rcsb.org/"
+url = "https://github.com/Luthey-Schulten-Lab/Lattice_Microbes"
+format = "cpp"
+blake3 = ""
+retrieved = ""
+paper = "E"
+notes = "Core compute engine for Papers E and G. Pin CUDA version and commit hash."
+
+# =============================================================================
+# Paper F: Stevens et al. 2023 — CG-MD simulation
+# =============================================================================
+
+[[sources]]
+id = "martini3_forcefield"
+database = "Martini"
+description = "Martini 3 coarse-grained force field parameters (Souza et al. 2021)"
+accessions = ["10.1038/s41592-021-01098-3"]
+url = "http://www.cgmartini.nl/"
+format = "itp"
+blake3 = ""
+retrieved = ""
+paper = "F"
+notes = "Martini 3.0.0. Version pinning critical — CG parameters directly affect all structural results."
+
+[[sources]]
+id = "alphafold2_syn3a_structures"
+database = "AlphaFold DB"
+description = "AlphaFold2 structure predictions for all 493 JCVI-syn3A gene products"
+accessions = []
+url = "https://alphafold.ebi.ac.uk/"
 format = "pdb"
 blake3 = ""
 retrieved = ""
-paper = "E"
-notes = "Specific PDB IDs to be enumerated from Paper E supplementary materials."
+paper = "F"
+notes = "AF2 model weights version MUST be pinned. Predictions evolve with model updates. Which version of AF2 was used? Content-address each prediction file."
 
 [[sources]]
-id = "charmm36_forcefield"
-database = "CHARMM"
-description = "CHARMM36m force field parameters for all-atom simulation"
-accessions = []
-url = "https://mackerell.umaryland.edu/charmm_ff.shtml"
-format = "prm"
+id = "uniprot_mmycoides"
+database = "UniProt"
+description = "M. mycoides subsp. capri reference proteome (closest to syn3A)"
+accessions = ["UP000018174"]
+url = "https://www.uniprot.org/proteomes/UP000018174"
+format = "fasta"
 blake3 = ""
 retrieved = ""
-paper = "E"
-notes = "Version pinning critical — results depend on exact force field version."
+paper = "F"
 
-# --- Paper G: Thornburg et al. 2026 (4D cell cycle) ---
+[[sources]]
+id = "gromacs_software"
+database = "GROMACS"
+description = "GROMACS molecular dynamics engine"
+accessions = []
+url = "https://www.gromacs.org/"
+format = "binary"
+blake3 = ""
+retrieved = ""
+paper = "F"
+notes = "GROMACS 2021.x vs 2022.x have known numerical differences. Pin exact version."
+
+# =============================================================================
+# Paper G: Thornburg et al. 2026 — 4D cell cycle
+# =============================================================================
 
 [[sources]]
 id = "cryoet_structures"
-database = "EMDB/PDB"
-description = "Cryo-ET structural data for FtsZ ring, membrane proteins"
+database = "EMDB"
+description = "Cryo-ET structural data for FtsZ ring, membrane proteins, and division machinery"
 accessions = []
 url = "https://www.ebi.ac.uk/emdb/"
 format = "mrc"
 blake3 = ""
 retrieved = ""
 paper = "G"
-notes = "New cryo-ET data from Thornburg 2026. Accessions pending publication."
+notes = "New cryo-ET data from Thornburg 2026. EMDB accessions to be added upon publication."
 
 [[sources]]
 id = "ftsz_kinetics"
 database = "Literature"
-description = "FtsZ polymerization kinetics from published measurements"
+description = "FtsZ polymerization kinetics — assembly rates, GTP hydrolysis, treadmilling"
 accessions = []
 url = ""
 format = "csv"
 blake3 = ""
 retrieved = ""
 paper = "G"
-notes = "Rate constants for FtsZ assembly, GTP hydrolysis, treadmilling. From Thornburg 2026 supplementary."
+notes = "Rate constants from Thornburg 2026 supplementary. Several key division parameters are 'estimated from literature' — a jelly string that sweetGrass must track."
+
+[[sources]]
+id = "ncbi_syn3a_assembly"
+database = "NCBI Assembly"
+description = "JCVI-syn3.0 reference assembly"
+accessions = ["GCA_900015295.1"]
+url = "https://www.ncbi.nlm.nih.gov/assembly/GCA_900015295.1"
+format = "fasta"
+blake3 = ""
+retrieved = ""
+paper = "G"

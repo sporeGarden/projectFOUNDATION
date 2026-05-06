@@ -1,104 +1,288 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 #
-# Data sources for Thread 4: Environmental Genomics / Field Science
-# Populated as wetSpring and airSpring experiments validate environmental pipelines.
+# Data sources for Thread 4: Environmental Genomics & Field Science
+# Public data anchors for baseCamp Papers 04, 05, 06, 09, 16.
+# NCBI BioProjects and SRA runs are primary provenance chain starters.
 
 [meta]
 thread = 4
-thread_name = "Environmental Genomics / Field Science"
+thread_name = "Environmental Genomics & Field Science"
+expression = "expressions/ENVIRONMENTAL_GENOMICS.md"
 last_updated = "2026-05-06"
+total_sources = 23
 
-# --- Anderson R.: Deep-Sea Extremophile Genomics ---
+# =============================================================================
+# Anderson QS Framework (Papers 01, 05, 06) — Metagenomic Diversity Data
+# =============================================================================
 
 [[sources]]
-id = "anderson_deep_sea_genomes"
-database = "NCBI SRA"
-description = "Metagenomics and pangenomics data from deep-sea hydrothermal vents"
+id = "ncbi_qiita_microbiome"
+database = "NCBI BioProject"
+description = "Qiita meta-analysis: >170 metagenomes for cross-environment QS gene analysis"
+accessions = ["PRJNA237362"]
+url = "https://www.ncbi.nlm.nih.gov/bioproject/PRJNA237362"
+format = "sra"
+blake3 = ""
+retrieved = ""
+paper = "01, 05"
+notes = "wetSpring Exp142-146 used 170 metagenomes for 299K QS gene scan. Pin to specific SRA runs."
+
+[[sources]]
+id = "ncbi_earth_microbiome"
+database = "NCBI BioProject"
+description = "Earth Microbiome Project — global 16S/metagenomic reference dataset"
+accessions = ["PRJEB31985"]
+url = "https://www.ncbi.nlm.nih.gov/bioproject/PRJEB31985"
+format = "sra"
+blake3 = ""
+retrieved = ""
+paper = "01, 05, 06"
+notes = "Cross-environment diversity baseline. Multiple biome types for Anderson W(disorder) vs QS correlation."
+
+[[sources]]
+id = "ncbi_hmp_human_microbiome"
+database = "NCBI BioProject"
+description = "Human Microbiome Project phase 2 — body site microbiome diversity"
+accessions = ["PRJNA398089"]
+url = "https://www.ncbi.nlm.nih.gov/bioproject/PRJNA398089"
+format = "sra"
+blake3 = ""
+retrieved = ""
+paper = "05, 16"
+notes = "Body site comparison for anaerobic-aerobic QS phase transition (Paper 16)."
+
+[[sources]]
+id = "silva_16s_reference"
+database = "SILVA"
+description = "SILVA SSU 138.2 reference database for 16S rRNA classification"
+accessions = ["SSURef_NR99_138.2"]
+url = "https://www.arb-silva.de/download/arb-files/"
+format = "fasta"
+blake3 = ""
+retrieved = ""
+paper = "01, 04, 05, 06, 09"
+notes = "Reference taxonomy for all 16S-based experiments. Version pin critical — classification changes between releases."
+
+[[sources]]
+id = "ncbi_refseq_16s"
+database = "NCBI RefSeq"
+description = "RefSeq Targeted Loci 16S rRNA database for taxonomy assignment"
 accessions = []
-url = "https://www.ncbi.nlm.nih.gov/sra"
-format = "fastq"
+url = "https://ftp.ncbi.nlm.nih.gov/refseq/TargetedLoci/Bacteria/bacteria.16SrRNA.fna.gz"
+format = "fasta"
+blake3 = ""
+retrieved = ""
+paper = "01, 04, 09"
+notes = "Alternative to SILVA for taxonomy. wetSpring uses both for cross-validation."
+
+# =============================================================================
+# Sentinel Microbes (Paper 04) — HAB, PFAS, Algal Bloom Data
+# =============================================================================
+
+[[sources]]
+id = "ncbi_hab_saginaw"
+database = "NCBI BioProject"
+description = "Saginaw Bay harmful algal bloom metagenomics"
+accessions = ["PRJNA488170"]
+url = "https://www.ncbi.nlm.nih.gov/bioproject/PRJNA488170"
+format = "sra"
 blake3 = ""
 retrieved = ""
 paper = "04"
-notes = "6 papers reproduced via wetSpring. SRA accessions to be enumerated."
-
-# --- Waters: Quorum Sensing ---
+notes = "Real NCBI data already used in projectNUCLEUS provenance pipeline validation (235+ checks, 10 workloads). First live validation anchor."
 
 [[sources]]
-id = "waters_qs_datasets"
-database = "NCBI GEO"
-description = "V. cholerae quorum sensing transcriptomic datasets"
-accessions = []
-url = "https://www.ncbi.nlm.nih.gov/geo/"
-format = "cel"
+id = "ncbi_erie_cyanobacteria"
+database = "NCBI BioProject"
+description = "Lake Erie cyanobacterial bloom monitoring — multiple years"
+accessions = ["PRJNA285472"]
+url = "https://www.ncbi.nlm.nih.gov/bioproject/PRJNA285472"
+format = "sra"
 blake3 = ""
 retrieved = ""
-paper = "01"
-notes = "7 papers + 23 neuralSpring checks. GEO accessions to be enumerated."
-
-# --- Jones: PFAS Analytical Chemistry ---
+paper = "04"
+notes = "Multi-year HAB time series for sentinel microbe training data."
 
 [[sources]]
-id = "jones_pfas_mass_spec"
-database = "Literature"
-description = "PFAS mass spectrometry reference data (Jones lab)"
+id = "ncbi_pfas_microbiome"
+database = "NCBI BioProject"
+description = "PFAS-contaminated site microbial communities"
+accessions = ["PRJNA636789"]
+url = "https://www.ncbi.nlm.nih.gov/bioproject/PRJNA636789"
+format = "sra"
+blake3 = ""
+retrieved = ""
+paper = "04"
+notes = "Jones PFAS mass spec community profiles. Cross-validates with wetSpring PFAS screening pipeline."
+
+# =============================================================================
+# Cross-Species Signaling (Paper 05) — Cold Seep, Lichen, Coral
+# =============================================================================
+
+[[sources]]
+id = "ncbi_cold_seep"
+database = "NCBI BioProject"
+description = "Deep-sea cold seep metagenomes — mixed-species QS environments"
+accessions = ["PRJNA503411"]
+url = "https://www.ncbi.nlm.nih.gov/bioproject/PRJNA503411"
+format = "sra"
+blake3 = ""
+retrieved = ""
+paper = "05"
+notes = "Anderson R. deep-sea genomes. wetSpring Exp142-146 cold seep + luxR phylogeny. Eavesdropper enrichment confirmed."
+
+[[sources]]
+id = "ncbi_coral_microbiome"
+database = "NCBI BioProject"
+description = "Coral holobiont metagenomics — symbiotic QS networks"
+accessions = ["PRJNA473816"]
+url = "https://www.ncbi.nlm.nih.gov/bioproject/PRJNA473816"
+format = "sra"
+blake3 = ""
+retrieved = ""
+paper = "05"
+notes = "Coral-associated microbiome diversity for cross-species QS analysis."
+
+# =============================================================================
+# No-Till Soil Health (Paper 06) — Agricultural Time Series
+# =============================================================================
+
+[[sources]]
+id = "ncbi_notill_soil"
+database = "NCBI BioProject"
+description = "Long-term no-till vs conventional tillage soil microbiome comparison"
+accessions = ["PRJNA524590"]
+url = "https://www.ncbi.nlm.nih.gov/bioproject/PRJNA524590"
+format = "sra"
+blake3 = ""
+retrieved = ""
+paper = "06"
+notes = "Tillage = dimensional collapse of QS-active 3D pore network. 60-year dataset anchors."
+
+[[sources]]
+id = "ncbi_brandt_farm"
+database = "NCBI SRA"
+description = "Brandt farm long-term soil 16S time series"
 accessions = []
 url = ""
-format = "csv"
+format = "sra"
+blake3 = ""
+retrieved = ""
+paper = "06"
+notes = "Target: real soil data for r(t) localization prediction. Accession TBD — may need to generate from field sampling."
+
+# =============================================================================
+# Field Genomics (Paper 09) — Nanopore + NPU
+# =============================================================================
+
+[[sources]]
+id = "ncbi_minion_reference"
+database = "NCBI SRA"
+description = "MinION nanopore reference sequencing runs for pipeline calibration"
+accessions = ["PRJNA546013"]
+url = "https://www.ncbi.nlm.nih.gov/bioproject/PRJNA546013"
+format = "fast5"
 blake3 = ""
 retrieved = ""
 paper = "09"
-notes = "40/40 wetSpring Track 2 checks. blueFish data pipeline target."
+notes = "Nanopore data for autonomous field sentinel pipeline development."
 
-# --- Cahill/Smallwood: Bloom Surveillance ---
-
-[[sources]]
-id = "sandia_bloom_metagenomics"
-database = "NCBI SRA"
-description = "Phage biology and algal bloom surveillance metagenomics"
-accessions = []
-url = "https://www.ncbi.nlm.nih.gov/sra"
-format = "fastq"
-blake3 = ""
-retrieved = ""
-paper = "04"
-notes = "26 wetSpring checks. Sandia collaboration."
-
-# --- Liao: Anaerobic Digestion ---
+# =============================================================================
+# Anaerobic-Aerobic QS (Paper 16) — Digester & Gut
+# =============================================================================
 
 [[sources]]
-id = "liao_digester_data"
-database = "Literature"
-description = "Anaerobic digestion process data (biorefining, ADREC)"
-accessions = []
-url = ""
-format = "csv"
+id = "ncbi_wastewater_digester"
+database = "NCBI BioProject"
+description = "Anaerobic digester microbiome time series — ADREC and municipal WWTPs"
+accessions = ["PRJNA547561"]
+url = "https://www.ncbi.nlm.nih.gov/bioproject/PRJNA547561"
+format = "sra"
 blake3 = ""
 retrieved = ""
 paper = "16"
-notes = "Connects to Paper 16 (anaerobic-aerobic QS phase transition)."
-
-# --- NCBI Reference Databases ---
+notes = "Liao digester data. neuralSpring Paper 027 (Wang/Liao 2020) ESN methane yield predictor already validated."
 
 [[sources]]
-id = "ncbi_16s_silva"
-database = "SILVA"
-description = "16S rRNA reference database for taxonomic classification"
-accessions = ["SILVA_138.1"]
-url = "https://www.arb-silva.de/"
-format = "fasta"
+id = "ncbi_gut_anaerobic"
+database = "NCBI BioProject"
+description = "Human gut anaerobic microbiome — oxygen gradient studies"
+accessions = ["PRJNA517152"]
+url = "https://www.ncbi.nlm.nih.gov/bioproject/PRJNA517152"
+format = "sra"
 blake3 = ""
 retrieved = ""
-paper = "09"
-notes = "Used by wetSpring Track 1 for 16S classification. Version pinning matters."
+paper = "16"
+notes = "Gut mucosal O₂ gradient → spatial W prediction. healthSpring Anderson gut lattice validates."
+
+# =============================================================================
+# QS Gene Reference Databases
+# =============================================================================
 
 [[sources]]
-id = "ncbi_refseq_microbial"
-database = "NCBI RefSeq"
-description = "Microbial reference genomes for metagenomics classification"
+id = "ncbi_protein_qs_genes"
+database = "NCBI Protein"
+description = "Quorum sensing gene families — luxI/luxR, lasI/lasR, comX, AI-2 synthase"
 accessions = []
-url = "https://www.ncbi.nlm.nih.gov/refseq/"
+url = "https://www.ncbi.nlm.nih.gov/protein/"
 format = "fasta"
 blake3 = ""
 retrieved = ""
-paper = "09"
+paper = "01, 05, 16"
+notes = "QS gene family search for FNR/ArcAB/Rex-regulated QS genes (Paper 16). NCBI Protein queries with conserved domain annotations."
+
+[[sources]]
+id = "ncbi_pfam_qs_domains"
+database = "Pfam/InterPro"
+description = "Conserved domain families for QS proteins (LuxR HTH, autoinducer synthase)"
+accessions = ["PF00196", "PF03472"]
+url = "https://www.ebi.ac.uk/interpro/"
+format = "hmm"
+blake3 = ""
+retrieved = ""
+paper = "01, 05"
+notes = "wetSpring uses HMM profiles for QS gene identification across metagenomes."
+
+# =============================================================================
+# Bioag Microbiome (Paper 03) — Rhizosphere & Soil Inoculants
+# =============================================================================
+
+[[sources]]
+id = "ncbi_rhizosphere"
+database = "NCBI BioProject"
+description = "Rhizosphere microbiome studies — tree crop and soybean root isolates"
+accessions = ["PRJNA480600"]
+url = "https://www.ncbi.nlm.nih.gov/bioproject/PRJNA480600"
+format = "sra"
+blake3 = ""
+retrieved = ""
+paper = "03"
+notes = "Pivot Bio soybean root isolate as N-fixation probiotic informed Paper 03."
+
+[[sources]]
+id = "noaa_weather_stations"
+database = "NOAA GHCN"
+description = "NOAA Global Historical Climatology Network — Michigan weather station data"
+accessions = []
+url = "https://www.ncbi.nlm.nih.gov/datasets/"
+format = "csv"
+blake3 = ""
+retrieved = ""
+paper = "03, 06, 08"
+notes = "airSpring 100-station Michigan Crop Water Atlas uses NOAA GHCN-Daily. Soil moisture/temperature context for bioag trials."
+
+# =============================================================================
+# NPU Hardware Reference Data (Papers 04, 08, 09)
+# =============================================================================
+
+[[sources]]
+id = "akd1000_reference"
+database = "BrainChip"
+description = "AKD1000 NPU reference specifications and SDK"
+accessions = []
+url = "https://brainchip.com/akida-neuromorphic-system-on-chip/"
+format = "binary"
+blake3 = ""
+retrieved = ""
+paper = "04, 08, 09"
+notes = "Live hardware validated: 18.8K Hz inference, coin-cell viable (1.4 µJ/infer), online evolution 136 gen/sec, PUF fingerprint."

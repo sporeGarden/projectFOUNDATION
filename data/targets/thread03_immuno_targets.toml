@@ -1,0 +1,175 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Validation targets for Thread 3: Immunology, Drug Discovery & Clinical Translation
+# Expected results from baseCamp Papers 12, 13, 22.
+
+[meta]
+thread = 3
+thread_name = "Immunology, Drug Discovery & Clinical Translation"
+expression = "expressions/IMMUNO_DRUG_DISCOVERY.md"
+last_updated = "2026-05-06"
+total_targets = 12
+
+# =============================================================================
+# Paper 12: Anderson in Immunological Signaling
+# =============================================================================
+
+[[targets]]
+id = "paper_12_cytokine_anderson"
+paper = "12"
+description = "Cytokine (IL-31/IL-4/IL-13) propagation through inflamed skin follows Anderson localization"
+expected_value = 1.0
+unit = "qualitative_match"
+tolerance = 0.0
+source = "wetSpring Exp273-286 (359/359 checks)"
+spring = "wetSpring"
+blake3 = ""
+validated = true
+notes = "Already validated. AD barrier disruption = dimensional promotion."
+
+[[targets]]
+id = "paper_12_fajgenbaum_matrix"
+paper = "12"
+description = "Anderson-augmented MATRIX drug-disease scoring outperforms unaugmented"
+expected_value = 1.0
+unit = "qualitative_match"
+tolerance = 0.0
+source = "neuralSpring nS-605 (329/329 checks)"
+spring = "neuralSpring"
+blake3 = ""
+validated = true
+notes = "Geometry dimension via Anderson transport added to Fajgenbaum scoring."
+
+[[targets]]
+id = "paper_12_gonzales_ipsc"
+paper = "12"
+description = "Gonzales iPSC validation pipeline — G1-G6 experiments complete"
+expected_value = 6.0
+unit = "experiments_validated"
+tolerance = 0.0
+source = "baseCamp Paper 12, Gonzales collaboration"
+spring = "neuralSpring"
+blake3 = ""
+validated = true
+notes = "Contact: Dr. Andrea J. Gonzales (MSU Pharmacology & Toxicology)."
+
+[[targets]]
+id = "paper_12_groundspring_spectral"
+paper = "12"
+description = "2D/3D spectral validation for epidermal Anderson lattice"
+expected_value = 4.0
+unit = "experiments_validated"
+tolerance = 0.0
+source = "groundSpring Exp 008/012/015/018"
+spring = "groundSpring"
+blake3 = ""
+validated = true
+notes = "Exp 008: spectral validation, 012: cytokine transport, 015: uncertainty bridge, 018: band edge."
+
+# =============================================================================
+# Paper 13: Sovereign Human Health Computing
+# =============================================================================
+
+[[targets]]
+id = "paper_13_pkpd_tracks"
+paper = "13"
+description = "9-track human health spring complete — all cross-validation checks pass"
+expected_value = 113.0
+unit = "cross_validation_checks"
+tolerance = 0.0
+source = "healthSpring Exp001-111 (113/113 checks)"
+spring = "healthSpring"
+blake3 = ""
+validated = true
+notes = "PK/PD, Microbiome, Biosignal, Endocrine, Comparative Medicine, Drug Discovery, Toxicology, Simulation, NLME."
+
+[[targets]]
+id = "paper_13_hill_equation"
+paper = "13"
+description = "Hill equation dose-response curve fitting accuracy"
+expected_value = 0.99
+unit = "r_squared"
+tolerance = 0.01
+source = "healthSpring Track 1"
+spring = "healthSpring"
+blake3 = ""
+validated = true
+
+[[targets]]
+id = "paper_13_nlme_foce"
+paper = "13"
+description = "NLME FOCE parameter estimation matches NONMEM reference within tolerance"
+expected_value = 1.0
+unit = "qualitative_match"
+tolerance = 0.0
+source = "healthSpring Track 1 (Beal & Sheiner reference)"
+spring = "healthSpring"
+blake3 = ""
+validated = true
+notes = "Sovereign NONMEM. FOCE + SAEM both validated."
+
+[[targets]]
+id = "paper_13_pan_tompkins"
+paper = "13"
+description = "Pan-Tompkins QRS detection sensitivity on MIT-BIH"
+expected_value = 99.0
+unit = "percent"
+tolerance = 1.0
+source = "healthSpring Track 3 (Pan & Tompkins 1985 reference)"
+spring = "healthSpring"
+blake3 = ""
+validated = true
+
+[[targets]]
+id = "paper_13_anderson_gut"
+paper = "13"
+description = "Anderson gut lattice model — FMT engraftment dynamics match published patterns"
+expected_value = 1.0
+unit = "qualitative_match"
+tolerance = 0.0
+source = "healthSpring Track 2"
+spring = "healthSpring"
+blake3 = ""
+validated = true
+
+# =============================================================================
+# Paper 22: Zero-Knowledge Medical Provenance
+# =============================================================================
+
+[[targets]]
+id = "paper_22_consent_certificates"
+paper = "22"
+description = "Consent-gated medical record access — all fraud types detected"
+expected_value = 5.0
+unit = "fraud_types_detected"
+tolerance = 0.0
+source = "ludoSpring exp063 (35/35 checks)"
+spring = "ludoSpring"
+blake3 = ""
+validated = true
+notes = "UnauthorizedAccess, ExpiredConsent, ScopeViolation, PhantomAccess, ConsentForgery."
+
+[[targets]]
+id = "paper_22_cross_domain_fraud"
+paper = "22"
+description = "Cross-domain fraud detection structural similarity > 80%"
+expected_value = 80.0
+unit = "percent_similarity"
+tolerance = 5.0
+source = "ludoSpring exp065 (74/74 checks)"
+spring = "ludoSpring"
+blake3 = ""
+validated = true
+notes = "Same code path detects fraud in gaming and medical records."
+
+[[targets]]
+id = "paper_22_radiating_attribution"
+paper = "22"
+description = "Radiating attribution — patient as Creator in provenance chain"
+expected_value = 1.0
+unit = "qualitative_match"
+tolerance = 0.0
+source = "ludoSpring exp066 (41/41 checks)"
+spring = "ludoSpring"
+blake3 = ""
+validated = true
