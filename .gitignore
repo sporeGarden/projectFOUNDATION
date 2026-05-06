@@ -1,0 +1,7 @@
+# Fetched data cache (populated by deploy/fetch_sources.sh)
+# These are public data downloads — reproducible from manifests.
+.data/
+
+# Validation run results (committed selectively, not bulk)
+# Individual runs may be committed after review.
+# validation/run-*/

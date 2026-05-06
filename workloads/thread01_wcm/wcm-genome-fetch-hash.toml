@@ -1,0 +1,29 @@
+# Thread 1: Whole-Cell Modeling — Genome Fetch + BLAKE3 Anchor
+#
+# Fetches M. genitalium (NC_000908.2), JCVI-syn3A (CP016816.2), and
+# E. coli K-12 (NC_000913.3) genomes from NCBI. Computes BLAKE3 hashes
+# and reports provenance anchors.
+#
+# This is the first step in the WCM validation pipeline: establish
+# content-addressed genome data as the foundation for all downstream
+# computation.
+
+[metadata]
+name = "wcm-genome-fetch-hash"
+description = "Fetch WCM reference genomes from NCBI and establish BLAKE3 anchors"
+version = "0.1.0"
+thread = "01"
+thread_name = "Whole-Cell Modeling"
+
+[execution]
+type = "native"
+command = "/usr/bin/bash"
+args = ["-c", "cd ${FOUNDATION_ROOT:-$(dirname $(dirname $(dirname $0)))} && bash deploy/fetch_sources.sh --thread wcm --data-dir .data && echo '[OK] WCM genome anchors established' && for f in .data/ncbi/nucleotide/*.gb; do echo \"[OK] $(basename $f): $(b3sum $f | cut -c1-16)…\"; done && for f in .data/uniprot/*.fasta.gz; do echo \"[OK] $(basename $f): $(b3sum $f | cut -c1-16)…\"; done"]
+working_dir = "/home/irongate/Development/ecoPrimals/sporeGarden/foundation"
+
+[resources]
+max_memory_bytes = 1073741824
+max_cpu_percent = 50.0
+
+[security]
+isolation_level = "None"

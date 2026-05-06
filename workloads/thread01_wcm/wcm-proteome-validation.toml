@@ -1,0 +1,51 @@
+# Thread 1: Whole-Cell Modeling — Proteome Validation
+#
+# Validates that fetched UniProt proteomes match expected gene counts
+# for the three WCM organisms:
+#   M. genitalium G37:  UP000000807 (~484 proteins, 525 genes)
+#   E. coli K-12:       UP000000625 (~4,403 proteins, 4,623 genes)
+#   M. mycoides:        UP000018174 (closest to JCVI-syn3A)
+#
+# Compares fetched proteome sizes against Paper A/D/E expectations.
+
+[metadata]
+name = "wcm-proteome-validation"
+description = "Validate WCM proteome sizes against published gene counts"
+version = "0.1.0"
+thread = "01"
+thread_name = "Whole-Cell Modeling"
+
+[execution]
+type = "native"
+command = "/usr/bin/bash"
+args = ["-c", """
+DATA_DIR="${FOUNDATION_ROOT:-.}/.data"
+
+validate_proteome() {
+    local file="$1" expected_name="$2" min_seqs="$3" max_seqs="$4"
+    if [ ! -f "$file" ]; then
+        echo "[FAIL] $expected_name: file not found ($file)"
+        return
+    fi
+    local count
+    count=$(zgrep -c '^>' "$file" 2>/dev/null || echo 0)
+    if [ "$count" -ge "$min_seqs" ] && [ "$count" -le "$max_seqs" ]; then
+        echo "[OK] $expected_name: $count sequences (expected $min_seqs-$max_seqs)"
+    else
+        echo "[FAIL] $expected_name: $count sequences (expected $min_seqs-$max_seqs)"
+    fi
+    echo "[OK] $expected_name BLAKE3: $(b3sum "$file" | cut -c1-16)…"
+}
+
+validate_proteome "$DATA_DIR/uniprot/UP000000807.fasta.gz" "M. genitalium (Paper A)" 400 600
+validate_proteome "$DATA_DIR/uniprot/UP000000625.fasta.gz" "E. coli K-12 (Paper D)" 4000 5000
+validate_proteome "$DATA_DIR/uniprot/UP000018174.fasta.gz" "M. mycoides (Papers E-G)" 800 1200
+"""]
+working_dir = "/home/irongate/Development/ecoPrimals/sporeGarden/foundation"
+
+[resources]
+max_memory_bytes = 536870912
+max_cpu_percent = 30.0
+
+[security]
+isolation_level = "None"

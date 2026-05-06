@@ -81,37 +81,42 @@ and presents them for a particular audience.
 | **Patient Records** | 8, 10 | Clinicians, patients |
 | **Games@Home** | 9 | Players, citizen scientists |
 
-## Deploying via projectNUCLEUS
-
-foundation does not deploy primals directly. It references projectNUCLEUS
-graphs and plasmidBin binaries for validation runs.
+## Launch a Validation Run
 
 ```bash
-# Validate a data thread using NUCLEUS infrastructure
-# 1. Ensure plasmidBin binaries are available
-cd ../../infra/plasmidBin && ./fetch.sh && ./doctor.sh
-
-# 2. Deploy the foundation validation composition via projectNUCLEUS
-cd ../../sporeGarden/projectNUCLEUS/deploy
+# 1. Deploy NUCLEUS composition (via projectNUCLEUS)
+cd ../../projectNUCLEUS/deploy
 bash deploy.sh --composition nest --gate irongate
 
-# 3. Run a foundation validation workload
-# (toadStool dispatches, provenance trio records, NestGate stores)
-toadstool execute ../../sporeGarden/foundation/graphs/foundation_validation.toml
+# 2. Fetch public data sources and run validation with full provenance
+cd ../../foundation/deploy
+bash foundation_validate.sh --thread wcm
 ```
+
+This fetches genomes from NCBI, proteomes from UniProt, pathway maps from
+KEGG — hashes everything with BLAKE3, registers artifacts in NestGate,
+executes validation workloads through toadStool, and commits the complete
+provenance chain (rhizoCrypt DAG + loamSpine ledger + sweetGrass braid).
+
+See `deploy/README.md` for full options and the sediment layer model.
 
 ## Repo Structure
 
 ```
-lineage/            The unified lineage — master map and machine-readable thread index
+lineage/            The unified lineage — master map and thread index
   THE_UNIFIED_LINEAGE.md    Master document: 10 threads, all papers/springs/contacts
   THREAD_INDEX.toml         Machine-readable inventory for tooling
+  BASECAMP_PAPER_MAP.toml   All 26 baseCamp papers → threads, springs, data anchors
 expressions/        Domain thread expression documents
   ABG_WHOLE_CELL_REBUILD.md Thread 1: whole-cell modeling (first expression)
 data/               Data source manifests and validation targets
-  sources/          Per-thread data source TOMLs (accessions, databases, URLs)
-  targets/          Per-thread validation target TOMLs (expected results)
+  sources/          Per-thread data source TOMLs (100 sources across 5 threads)
+  targets/          Per-thread validation target TOMLs (36 targets)
 graphs/             Foundation-specific deploy graphs (references projectNUCLEUS)
+deploy/             Operational scripts
+  fetch_sources.sh  Fetch NCBI/UniProt/KEGG data, compute BLAKE3 hashes
+  foundation_validate.sh  Full validation pipeline with provenance wrapping
+workloads/          toadStool-executable workload definitions per thread
 specs/              Contracts and authoring guides
 validation/         Validation results, provenance manifests, gap reports
 docs/               External-facing primers and guides

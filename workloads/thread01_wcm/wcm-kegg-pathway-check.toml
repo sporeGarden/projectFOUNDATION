@@ -1,0 +1,50 @@
+# Thread 1: Whole-Cell Modeling — KEGG Pathway Validation
+#
+# Verifies that KEGG pathway data was fetched for the WCM organisms
+# and contains expected metabolic pathway entries.
+#
+# Papers A, D use KEGG pathway maps as parameter sources.
+# Content-addressing these pathway files pins the metabolic network
+# definitions used in the whole-cell models.
+
+[metadata]
+name = "wcm-kegg-pathway-check"
+description = "Validate KEGG metabolic pathway data for WCM organisms"
+version = "0.1.0"
+thread = "01"
+thread_name = "Whole-Cell Modeling"
+
+[execution]
+type = "native"
+command = "/usr/bin/bash"
+args = ["-c", """
+DATA_DIR="${FOUNDATION_ROOT:-.}/.data"
+
+check_kegg() {
+    local file="$1" org="$2" min_pathways="$3"
+    if [ ! -f "$file" ]; then
+        echo "[FAIL] KEGG $org: file not found"
+        return
+    fi
+    local count
+    count=$(wc -l < "$file" 2>/dev/null || echo 0)
+    if [ "$count" -ge "$min_pathways" ]; then
+        echo "[OK] KEGG $org: $count pathway entries (min $min_pathways)"
+    else
+        echo "[FAIL] KEGG $org: only $count pathway entries (expected >= $min_pathways)"
+    fi
+    echo "[OK] KEGG $org BLAKE3: $(b3sum "$file" | cut -c1-16)…"
+}
+
+check_kegg "$DATA_DIR/kegg/mge_pathways.json" "M. genitalium (mge)" 20
+check_kegg "$DATA_DIR/kegg/eco_pathways.json" "E. coli K-12 (eco)" 100
+check_kegg "$DATA_DIR/kegg/mmc_pathways.json" "M. mycoides (mmc)" 20
+"""]
+working_dir = "/home/irongate/Development/ecoPrimals/sporeGarden/foundation"
+
+[resources]
+max_memory_bytes = 268435456
+max_cpu_percent = 20.0
+
+[security]
+isolation_level = "None"
