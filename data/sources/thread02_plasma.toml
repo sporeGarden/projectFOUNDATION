@@ -1,0 +1,85 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Data sources for Thread 2: Plasma Physics / Lattice QCD
+# Populated as hotSpring experiments validate plasma transport and QCD results.
+
+[meta]
+thread = 2
+thread_name = "Plasma Physics / Lattice QCD"
+last_updated = "2026-05-06"
+
+# --- Murillo Group: Yukawa OCP and Transport ---
+
+[[sources]]
+id = "murillo_yukawa_data"
+database = "Literature"
+description = "Yukawa OCP molecular dynamics reference data (Stanton & Murillo 2016)"
+accessions = []
+url = ""
+format = "csv"
+blake3 = ""
+retrieved = ""
+paper = "07"
+notes = "Self-diffusion, viscosity, thermal conductivity vs coupling parameter. 195 hotSpring checks validated."
+
+[[sources]]
+id = "diaw_ttm_data"
+database = "Literature"
+description = "Temperature-relaxation and transport in dense plasmas (Diaw & Murillo)"
+accessions = []
+url = ""
+format = "csv"
+blake3 = ""
+retrieved = ""
+paper = "07"
+
+# --- Chuna: Lattice QCD ---
+
+[[sources]]
+id = "chuna_gradient_flow"
+database = "arXiv"
+description = "Gradient flow measurements for SU(3) Wilson gauge theory"
+accessions = ["arXiv:2101.05320"]
+url = "https://arxiv.org/abs/2101.05320"
+format = "pdf"
+blake3 = ""
+retrieved = ""
+paper = "10b"
+notes = "41/41 hotSpring checks validated."
+
+[[sources]]
+id = "chuna_bgk_dielectric"
+database = "Physical Review E"
+description = "BGK dielectric response function"
+accessions = ["Phys. Rev. E 111"]
+url = ""
+format = "pdf"
+blake3 = ""
+retrieved = ""
+paper = "10b"
+
+# --- Bazavov: SU(3) and Abelian Higgs ---
+
+[[sources]]
+id = "bazavov_su3_wilson"
+database = "Literature"
+description = "SU(3) Wilson gauge theory reference configurations"
+accessions = []
+url = ""
+format = "binary"
+blake3 = ""
+retrieved = ""
+paper = "25"
+notes = "12/12 checks validated on hotSpring."
+
+[[sources]]
+id = "bazavov_abelian_higgs"
+database = "Literature"
+description = "Abelian Higgs model reference data"
+accessions = []
+url = ""
+format = "binary"
+blake3 = ""
+retrieved = ""
+paper = "25"
+notes = "17/17 checks validated on hotSpring."

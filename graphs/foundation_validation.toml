@@ -1,0 +1,155 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Foundation Validation Graph
+#
+# Minimum composition for validating data thread expressions.
+# Provenance-heavy: Nest Atomic (storage + provenance trio) is required;
+# Node Atomic (compute dispatch) is required for numerical validation.
+# Tower Atomic provides the trust boundary.
+#
+# This graph references projectNUCLEUS atomics but is specific to
+# foundation validation workflows.
+#
+# Usage:
+#   toadstool execute graphs/foundation_validation.toml
+
+[graph]
+name = "foundation_validation"
+description = "Foundation data thread validation — provenance-heavy composition"
+version = "1.0.0"
+coordination = "sequential"
+bonding_policy = "btsp_required"
+
+[graph.metadata]
+security_model = "btsp_enforced"
+transport = "uds_only"
+purpose = "Validate foundation data sources and reproduce published results with full provenance"
+fragments = ["tower_atomic", "node_atomic", "nest_atomic"]
+
+# Phase 0: biomeOS substrate
+[[graph.node]]
+name = "biomeos_neural_api"
+binary = "biomeos"
+order = 0
+required = true
+spawn = false
+health_method = "graph.list"
+by_capability = "orchestration"
+
+# Phase 1: Tower Atomic (trust boundary)
+[[graph.node]]
+name = "beardog"
+binary = "beardog_primal"
+order = 1
+required = true
+depends_on = ["biomeos_neural_api"]
+health_method = "health.liveness"
+by_capability = "security"
+capabilities = ["crypto.sign", "crypto.verify", "crypto.encrypt"]
+
+[[graph.node]]
+name = "songbird"
+binary = "songbird_primal"
+order = 2
+required = true
+depends_on = ["biomeos_neural_api"]
+health_method = "health.liveness"
+by_capability = "discovery"
+capabilities = ["discovery.find_primals", "discovery.announce"]
+
+# Phase 2: Node Atomic (compute dispatch)
+[[graph.node]]
+name = "toadstool"
+binary = "toadstool"
+order = 3
+required = true
+depends_on = ["beardog", "songbird"]
+health_method = "health.liveness"
+by_capability = "dispatch"
+capabilities = ["workload.execute", "workload.status"]
+
+[[graph.node]]
+name = "barracuda"
+binary = "barracuda"
+order = 4
+required = true
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "math"
+capabilities = ["stats.mean", "stats.variance", "linalg.matmul"]
+
+[[graph.node]]
+name = "coralreef"
+binary = "coralreef"
+order = 5
+required = false
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "shader"
+capabilities = ["shader.compile", "shader.list"]
+fallback = "skip"
+
+# Phase 3: Nest Atomic (storage + provenance — all required for foundation)
+[[graph.node]]
+name = "nestgate"
+binary = "nestgate"
+order = 6
+required = true
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "storage"
+capabilities = ["store.put", "store.get", "store.hash"]
+
+[[graph.node]]
+name = "rhizocrypt"
+binary = "rhizocrypt"
+order = 7
+required = true
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "dag"
+capabilities = ["dag.session_start", "dag.append", "dag.session_end"]
+
+[[graph.node]]
+name = "loamspine"
+binary = "loamspine"
+order = 8
+required = true
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "ledger"
+capabilities = ["ledger.commit", "ledger.query"]
+
+[[graph.node]]
+name = "sweetgrass"
+binary = "sweetgrass"
+order = 9
+required = true
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "attribution"
+capabilities = ["braid.create", "braid.query"]
+
+# Phase 4: Visualization (optional — enriches validation with live rendering)
+[[graph.node]]
+name = "petaltongue"
+binary = "petaltongue"
+order = 10
+required = false
+depends_on = ["beardog", "songbird"]
+health_method = "health.liveness"
+by_capability = "visualization"
+capabilities = ["render.scene", "render.text", "interaction.poll"]
+fallback = "skip"
+
+# Phase 5: AI (optional — ML-assisted parameter estimation)
+[[graph.node]]
+name = "squirrel"
+binary = "squirrel"
+order = 11
+required = false
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "ai"
+capabilities = ["inference.query", "inference.models"]
+fallback = "skip"

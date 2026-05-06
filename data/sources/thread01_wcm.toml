@@ -1,0 +1,156 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Data sources for Thread 1: Whole-Cell Modeling
+# Populated as springs validate each paper's data requirements.
+
+[meta]
+thread = 1
+thread_name = "Whole-Cell Modeling"
+expression = "expressions/ABG_WHOLE_CELL_REBUILD.md"
+last_updated = "2026-05-06"
+
+# --- Paper A: Karr et al. 2012 (M. genitalium whole-cell model) ---
+
+[[sources]]
+id = "brenda_mg_kinetics"
+database = "BRENDA"
+description = "Enzyme kinetics (Km, kcat, Vmax) for M. genitalium metabolic enzymes"
+accessions = []
+url = "https://www.brenda-enzymes.org/"
+format = "json"
+blake3 = ""
+retrieved = ""
+paper = "A"
+notes = "~1,900 parameters across 28 submodels. Accessions to be enumerated from Paper A supplementary."
+
+[[sources]]
+id = "ecocyc_pathways"
+database = "EcoCyc"
+description = "Metabolic pathway definitions cross-referenced for M. genitalium"
+accessions = []
+url = "https://ecocyc.org/"
+format = "xml"
+blake3 = ""
+retrieved = ""
+paper = "A"
+
+[[sources]]
+id = "kegg_mg"
+database = "KEGG"
+description = "M. genitalium metabolic network and gene-reaction mappings"
+accessions = ["mge"]
+url = "https://www.genome.jp/kegg/"
+format = "kgml"
+blake3 = ""
+retrieved = ""
+paper = "A"
+
+[[sources]]
+id = "uniprot_mg_proteome"
+database = "UniProt"
+description = "M. genitalium complete proteome"
+accessions = ["UP000000807"]
+url = "https://www.uniprot.org/proteomes/UP000000807"
+format = "fasta"
+blake3 = ""
+retrieved = ""
+paper = "A"
+
+[[sources]]
+id = "ncbi_mg_genome"
+database = "NCBI"
+description = "M. genitalium G37 complete genome"
+accessions = ["NC_000908.2"]
+url = "https://www.ncbi.nlm.nih.gov/nuccore/NC_000908.2"
+format = "genbank"
+blake3 = ""
+retrieved = ""
+paper = "A"
+
+# --- Paper D: Thornburg et al. 2022 (JCVI-syn3A kinetic model) ---
+
+[[sources]]
+id = "ncbi_syn3a_genome"
+database = "NCBI"
+description = "JCVI-syn3A complete genome"
+accessions = ["CP016816.2"]
+url = "https://www.ncbi.nlm.nih.gov/nuccore/CP016816.2"
+format = "genbank"
+blake3 = ""
+retrieved = ""
+paper = "D"
+
+[[sources]]
+id = "brenda_syn3a_kinetics"
+database = "BRENDA"
+description = "Enzyme kinetics for JCVI-syn3A metabolic enzymes"
+accessions = []
+url = "https://www.brenda-enzymes.org/"
+format = "json"
+blake3 = ""
+retrieved = ""
+paper = "D"
+notes = "Subset of BRENDA entries relevant to syn3A's 493 genes. Many inherited from Paper A."
+
+[[sources]]
+id = "tecr_thermodynamics"
+database = "TECRdb"
+description = "Thermodynamic equilibrium constants for metabolic reactions"
+accessions = []
+url = "https://www.nist.gov/mml/bmd/thermodynamics-enzyme-catalyzed-reactions-database"
+format = "csv"
+blake3 = ""
+retrieved = ""
+paper = "D"
+
+# --- Paper E: Stevens et al. 2023 (All-atom MD) ---
+
+[[sources]]
+id = "pdb_structures"
+database = "PDB"
+description = "Protein structures for syn3A proteome (all-atom modeling)"
+accessions = []
+url = "https://www.rcsb.org/"
+format = "pdb"
+blake3 = ""
+retrieved = ""
+paper = "E"
+notes = "Specific PDB IDs to be enumerated from Paper E supplementary materials."
+
+[[sources]]
+id = "charmm36_forcefield"
+database = "CHARMM"
+description = "CHARMM36m force field parameters for all-atom simulation"
+accessions = []
+url = "https://mackerell.umaryland.edu/charmm_ff.shtml"
+format = "prm"
+blake3 = ""
+retrieved = ""
+paper = "E"
+notes = "Version pinning critical — results depend on exact force field version."
+
+# --- Paper G: Thornburg et al. 2026 (4D cell cycle) ---
+
+[[sources]]
+id = "cryoet_structures"
+database = "EMDB/PDB"
+description = "Cryo-ET structural data for FtsZ ring, membrane proteins"
+accessions = []
+url = "https://www.ebi.ac.uk/emdb/"
+format = "mrc"
+blake3 = ""
+retrieved = ""
+paper = "G"
+notes = "New cryo-ET data from Thornburg 2026. Accessions pending publication."
+
+[[sources]]
+id = "ftsz_kinetics"
+database = "Literature"
+description = "FtsZ polymerization kinetics from published measurements"
+accessions = []
+url = ""
+format = "csv"
+blake3 = ""
+retrieved = ""
+paper = "G"
+notes = "Rate constants for FtsZ assembly, GTP hydrolysis, treadmilling. From Thornburg 2026 supplementary."

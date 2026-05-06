@@ -1,0 +1,104 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Data sources for Thread 4: Environmental Genomics / Field Science
+# Populated as wetSpring and airSpring experiments validate environmental pipelines.
+
+[meta]
+thread = 4
+thread_name = "Environmental Genomics / Field Science"
+last_updated = "2026-05-06"
+
+# --- Anderson R.: Deep-Sea Extremophile Genomics ---
+
+[[sources]]
+id = "anderson_deep_sea_genomes"
+database = "NCBI SRA"
+description = "Metagenomics and pangenomics data from deep-sea hydrothermal vents"
+accessions = []
+url = "https://www.ncbi.nlm.nih.gov/sra"
+format = "fastq"
+blake3 = ""
+retrieved = ""
+paper = "04"
+notes = "6 papers reproduced via wetSpring. SRA accessions to be enumerated."
+
+# --- Waters: Quorum Sensing ---
+
+[[sources]]
+id = "waters_qs_datasets"
+database = "NCBI GEO"
+description = "V. cholerae quorum sensing transcriptomic datasets"
+accessions = []
+url = "https://www.ncbi.nlm.nih.gov/geo/"
+format = "cel"
+blake3 = ""
+retrieved = ""
+paper = "01"
+notes = "7 papers + 23 neuralSpring checks. GEO accessions to be enumerated."
+
+# --- Jones: PFAS Analytical Chemistry ---
+
+[[sources]]
+id = "jones_pfas_mass_spec"
+database = "Literature"
+description = "PFAS mass spectrometry reference data (Jones lab)"
+accessions = []
+url = ""
+format = "csv"
+blake3 = ""
+retrieved = ""
+paper = "09"
+notes = "40/40 wetSpring Track 2 checks. blueFish data pipeline target."
+
+# --- Cahill/Smallwood: Bloom Surveillance ---
+
+[[sources]]
+id = "sandia_bloom_metagenomics"
+database = "NCBI SRA"
+description = "Phage biology and algal bloom surveillance metagenomics"
+accessions = []
+url = "https://www.ncbi.nlm.nih.gov/sra"
+format = "fastq"
+blake3 = ""
+retrieved = ""
+paper = "04"
+notes = "26 wetSpring checks. Sandia collaboration."
+
+# --- Liao: Anaerobic Digestion ---
+
+[[sources]]
+id = "liao_digester_data"
+database = "Literature"
+description = "Anaerobic digestion process data (biorefining, ADREC)"
+accessions = []
+url = ""
+format = "csv"
+blake3 = ""
+retrieved = ""
+paper = "16"
+notes = "Connects to Paper 16 (anaerobic-aerobic QS phase transition)."
+
+# --- NCBI Reference Databases ---
+
+[[sources]]
+id = "ncbi_16s_silva"
+database = "SILVA"
+description = "16S rRNA reference database for taxonomic classification"
+accessions = ["SILVA_138.1"]
+url = "https://www.arb-silva.de/"
+format = "fasta"
+blake3 = ""
+retrieved = ""
+paper = "09"
+notes = "Used by wetSpring Track 1 for 16S classification. Version pinning matters."
+
+[[sources]]
+id = "ncbi_refseq_microbial"
+database = "NCBI RefSeq"
+description = "Microbial reference genomes for metagenomics classification"
+accessions = []
+url = "https://www.ncbi.nlm.nih.gov/refseq/"
+format = "fasta"
+blake3 = ""
+retrieved = ""
+paper = "09"

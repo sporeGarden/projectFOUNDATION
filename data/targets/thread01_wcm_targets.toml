@@ -1,0 +1,130 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Validation targets for Thread 1: Whole-Cell Modeling
+# Expected numerical results from ABG papers A-G that NUCLEUS must reproduce.
+
+[meta]
+thread = 1
+thread_name = "Whole-Cell Modeling"
+expression = "expressions/ABG_WHOLE_CELL_REBUILD.md"
+last_updated = "2026-05-06"
+
+# --- Paper A: Karr et al. 2012 ---
+
+[[targets]]
+id = "paper_a_cell_cycle"
+paper = "A"
+description = "Cell cycle duration for M. genitalium whole-cell model"
+expected_value = 9.0
+unit = "hours"
+tolerance = 0.5
+source = "Karr et al. 2012, Figure 3"
+spring = "hotSpring"
+blake3 = ""
+validated = false
+
+[[targets]]
+id = "paper_a_gene_essentiality"
+paper = "A"
+description = "Gene essentiality prediction accuracy"
+expected_value = 79.0
+unit = "percent"
+tolerance = 3.0
+source = "Karr et al. 2012, Table S5"
+spring = "wetSpring"
+blake3 = ""
+validated = false
+
+[[targets]]
+id = "paper_a_growth_rate"
+paper = "A"
+description = "Cellular growth rate matches experimental doubling time"
+expected_value = 9.0
+unit = "hours"
+tolerance = 1.0
+source = "Karr et al. 2012, comparison to experimental ~10-12h"
+spring = "hotSpring"
+blake3 = ""
+validated = false
+
+# --- Paper C: Rees-Garbutt et al. 2020 ---
+
+[[targets]]
+id = "paper_c_gama_genomes"
+paper = "C"
+description = "GAMA algorithm explores genome design space"
+expected_value = 53451.0
+unit = "genomes_explored"
+tolerance = 100.0
+source = "Rees-Garbutt et al. 2020, Results"
+spring = "wetSpring"
+blake3 = ""
+validated = false
+
+[[targets]]
+id = "paper_c_max_removal"
+paper = "C"
+description = "Maximum gene removal by GAMA algorithm"
+expected_value = 237.0
+unit = "genes"
+tolerance = 5.0
+source = "Rees-Garbutt et al. 2020, Figure 3"
+spring = "wetSpring"
+blake3 = ""
+validated = false
+
+# --- Paper D: Thornburg et al. 2022 ---
+
+[[targets]]
+id = "paper_d_cell_cycle"
+paper = "D"
+description = "JCVI-syn3A cell cycle duration"
+expected_value = 111.0
+unit = "minutes"
+tolerance = 10.0
+source = "Thornburg et al. 2022, Figure 2"
+spring = "hotSpring"
+blake3 = ""
+validated = false
+
+[[targets]]
+id = "paper_d_dna_replication"
+paper = "D"
+description = "DNA replication timing matches experimental observations"
+expected_value = 40.0
+unit = "minutes"
+tolerance = 5.0
+source = "Thornburg et al. 2022, Figure 3"
+spring = "hotSpring"
+blake3 = ""
+validated = false
+
+# --- Paper E: Stevens et al. 2023 ---
+
+[[targets]]
+id = "paper_e_atom_count"
+paper = "E"
+description = "Total atom count in all-atom simulation"
+expected_value = 3.2e9
+unit = "atoms"
+tolerance = 1.0e8
+source = "Stevens et al. 2023, Abstract"
+spring = "hotSpring"
+blake3 = ""
+validated = false
+notes = "Validation target is the ability to construct the system, not just count atoms."
+
+# --- Paper G: Thornburg et al. 2026 ---
+
+[[targets]]
+id = "paper_g_division_time"
+paper = "G"
+description = "Complete cell division cycle including FtsZ ring formation and septation"
+expected_value = 120.0
+unit = "minutes"
+tolerance = 15.0
+source = "Thornburg et al. 2026, Figure 4"
+spring = "hotSpring"
+blake3 = ""
+validated = false
+notes = "4D (xyz + time) simulation. Most complex validation target."
