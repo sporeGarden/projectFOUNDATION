@@ -1,0 +1,26 @@
+# Thread 6+7: groundSpring — guideStone Level 3 Validation
+#
+# Runs the groundspring_guidestone binary which checks:
+# - 5 bare properties (deterministic, traceable, self-verifying, agnostic, documented)
+# - 6 NUCLEUS additive IPC parity checks (when primals are available)
+
+[metadata]
+name = "gs-guidestone"
+description = "guideStone Level 3: bare properties + NUCLEUS IPC parity"
+version = "0.1.0"
+thread = "06"
+thread_name = "Agricultural Science + Anderson Mathematics"
+spring = "groundSpring"
+
+[execution]
+type = "native"
+command = "cargo"
+args = ["run", "--release", "--bin", "groundspring_guidestone", "--features", "guidestone"]
+working_dir = "${GROUNDSPRING_ROOT:-/home/eastgate/Development/ecoPrimals/springs/groundSpring}"
+
+[resources]
+max_memory_bytes = 1073741824
+max_cpu_percent = 50.0
+
+[security]
+isolation_level = "None"

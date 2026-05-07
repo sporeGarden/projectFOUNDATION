@@ -1,0 +1,25 @@
+# Thread 6+7: groundSpring — Full Validation Suite
+#
+# Runs validate_all meta-runner which executes all 29 Python-parity validators
+# in sequence. Exit code 0 = all pass, 1 = any failure.
+
+[metadata]
+name = "gs-validate-all"
+description = "Run all 29 groundSpring validation binaries (395/395 checks)"
+version = "0.1.0"
+thread = "06"
+thread_name = "Agricultural Science + Anderson Mathematics"
+spring = "groundSpring"
+
+[execution]
+type = "native"
+command = "cargo"
+args = ["run", "--release", "--bin", "validate_all", "--", "--workspace"]
+working_dir = "${GROUNDSPRING_ROOT:-/home/eastgate/Development/ecoPrimals/springs/groundSpring}"
+
+[resources]
+max_memory_bytes = 2147483648
+max_cpu_percent = 80.0
+
+[security]
+isolation_level = "None"

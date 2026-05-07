@@ -7,6 +7,7 @@ toadStool-executable workload definitions for foundation validation.
 ```
 workloads/
   thread01_wcm/       Whole-Cell Modeling validation workloads
+  groundspring/       Agricultural Science + Anderson Mathematics (first spring complete)
   thread04_enviro/    Environmental Genomics (future)
   thread03_immuno/    Immunology & Drug Discovery (future)
   thread08_health/    Human Health (future)
@@ -46,6 +47,15 @@ isolation_level = "None"
 | `wcm-genome-fetch-hash` | NCBI genome downloads + BLAKE3 anchoring |
 | `wcm-proteome-validation` | UniProt proteome sizes match published gene counts |
 | `wcm-kegg-pathway-check` | KEGG metabolic pathway data for WCM organisms |
+
+### Threads 6+7: groundSpring (Agricultural + Anderson)
+
+| Workload | Validates |
+|----------|-----------|
+| `gs-validate-all` | All 29 Rust validators (395/395 checks) |
+| `gs-guidestone` | guideStone Level 3 (5 bare + 6 NUCLEUS IPC) |
+| `gs-bench-gpu` | Three-mode GPU benchmark (110 delegations) |
+| `gs-python-baselines` | All 29 Python baselines for provenance |
 
 ## Execution
 

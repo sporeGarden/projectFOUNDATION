@@ -1,0 +1,161 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Data sources for Thread 7: Anderson Mathematics
+# Cross-cutting thread — Anderson localization connects condensed matter,
+# microbial ecology, immunology, agricultural sensing, and plasma physics.
+
+[meta]
+thread = 7
+thread_name = "Anderson Mathematics"
+expression = "expressions/MEASUREMENT_SCIENCE.md"
+last_updated = "2026-05-07"
+total_sources = 11
+cross_cutting = true
+
+# =============================================================================
+# Foundational Anderson Theory (Anderson 1958, Thouless, Bourgain-Kachkovskiy)
+# =============================================================================
+
+[[sources]]
+id = "anderson_1958"
+database = "Physical Review"
+description = "Anderson (1958) Absence of Diffusion in Certain Random Lattices — the founding paper"
+accessions = []
+url = "https://doi.org/10.1103/PhysRev.109.1492"
+format = "reference"
+blake3 = ""
+retrieved = ""
+paper = "01"
+notes = "1D tight-binding model. Lyapunov exponent, transfer matrix method. groundSpring Exp 008."
+
+[[sources]]
+id = "bourgain_kachkovskiy_2018"
+database = "GAFA"
+description = "Bourgain & Kachkovskiy (2018) Anderson localization for quasi-periodic operators"
+accessions = []
+url = "https://doi.org/10.1007/s00039-019-00478-4"
+format = "reference"
+blake3 = ""
+retrieved = ""
+paper = "05"
+notes = "GAFA 29:3-43. Quasiperiodic Almost-Mathieu model. groundSpring Exp 009. Kachkovskiy (MSU Math)."
+
+[[sources]]
+id = "thouless_1972"
+database = "Journal of Physics C"
+description = "Thouless (1972) scaling theory for Anderson localization"
+accessions = []
+url = "https://doi.org/10.1088/0022-3719/5/1/010"
+format = "reference"
+blake3 = ""
+retrieved = ""
+paper = "01"
+notes = "Thouless scaling: xi ~ C/W^2. Verified in groundSpring Exp 008."
+
+[[sources]]
+id = "jitomirskaya_1999"
+database = "Annals of Mathematics"
+description = "Jitomirskaya (1999) Metal-insulator transition for Almost-Mathieu operator"
+accessions = []
+url = "https://doi.org/10.2307/120966"
+format = "reference"
+blake3 = ""
+retrieved = ""
+paper = "05"
+notes = "Aubry-André transition at lambda=2. groundSpring Exp 009."
+
+[[sources]]
+id = "evers_mirlin_2008"
+database = "Reviews of Modern Physics"
+description = "Evers & Mirlin (2008) Anderson transitions review"
+accessions = []
+url = "https://doi.org/10.1103/RevModPhys.80.1355"
+format = "reference"
+blake3 = ""
+retrieved = ""
+paper = "05"
+notes = "3D Anderson transition at W_c ~ 16.5. hotSpring/groundSpring spectral validation."
+
+# =============================================================================
+# Biological Anderson: QS, Drift, Tissue
+# =============================================================================
+
+[[sources]]
+id = "fernandez_waters_2020"
+database = "PNAS"
+description = "Fernandez, Waters et al. (2020) Bistable c-di-GMP phenotypic switching"
+accessions = []
+url = "https://doi.org/10.1073/pnas.2008224117"
+format = "reference"
+blake3 = ""
+retrieved = ""
+paper = "04"
+notes = "PNAS 117:26058. Bistable ODE. groundSpring Exp 010. Waters Lab (MSU MMG)."
+
+[[sources]]
+id = "hammer_bassler_2007"
+database = "Molecular Microbiology"
+description = "Hammer & Bassler (2007) Multi-signal QS integration in V. cholerae"
+accessions = []
+url = "https://doi.org/10.1111/j.1365-2958.2007.05671.x"
+format = "reference"
+blake3 = ""
+retrieved = ""
+paper = "04"
+notes = "Dual-signal parallel pathway ODE. groundSpring Exp 011."
+
+[[sources]]
+id = "massie_2012_pnas"
+database = "PNAS"
+description = "Massie et al. (2012) Signal specificity in quorum sensing"
+accessions = []
+url = "https://doi.org/10.1073/pnas.1208781109"
+format = "reference"
+blake3 = ""
+retrieved = ""
+paper = "04"
+notes = "Gillespie SSA for QS signaling. groundSpring Exp 006."
+
+# =============================================================================
+# Inverse Problems (Bazavov — Lattice QCD → Anderson)
+# =============================================================================
+
+[[sources]]
+id = "bazavov_lattice_qcd"
+database = "Literature"
+description = "Bazavov et al. — Lattice QCD inverse problem methods (jackknife, freeze-out, spectral recon)"
+accessions = []
+url = ""
+format = "reference"
+blake3 = ""
+retrieved = ""
+paper = "07"
+notes = "Connects Thread 2 (Plasma/QCD) and Thread 7 (Anderson math). groundSpring Exp 019, 020, 021."
+
+# =============================================================================
+# Eigen / Dolson: Quasispecies + Error Threshold
+# =============================================================================
+
+[[sources]]
+id = "eigen_1971_selforganization"
+database = "Naturwissenschaften"
+description = "Eigen (1971) Self-organization of matter — error catastrophe threshold"
+accessions = []
+url = "https://doi.org/10.1007/BF00623322"
+format = "reference"
+blake3 = ""
+retrieved = ""
+paper = "10a"
+notes = "Error threshold for replication. groundSpring Exp 017. Dolson (MSU CSE)."
+
+[[sources]]
+id = "wright_fisher_model"
+database = "Literature"
+description = "Wright-Fisher neutral drift model for microbial population genetics"
+accessions = []
+url = ""
+format = "reference"
+blake3 = ""
+retrieved = ""
+paper = "05"
+notes = "Drift vs selection. groundSpring Exp 014. R. Anderson (Carleton College)."

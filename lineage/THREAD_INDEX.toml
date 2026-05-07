@@ -4,8 +4,8 @@
 # Used by tooling for thread enumeration, spring lookups, and workload generation.
 
 [meta]
-version = "1.0.0"
-generated = "2026-05-06"
+version = "1.1.0"
+generated = "2026-05-07"
 total_threads = 10
 total_basecamp_papers = 28
 total_springs = 8
@@ -90,10 +90,10 @@ basecamp_papers = ["03", "06", "08"]
 springs = ["airSpring", "groundSpring", "wetSpring"]
 contacts = ["Dong", "Liao"]
 external_lineages = []
-expression = ""
-data_sources = ""
-data_targets = ""
-status = "mapped"
+expression = "expressions/MEASUREMENT_SCIENCE.md"
+data_sources = "data/sources/thread06_ag.toml"
+data_targets = "data/targets/thread06_ag_targets.toml"
+status = "active"
 
 [[threads]]
 id = 7
@@ -104,10 +104,10 @@ springs = ["hotSpring", "groundSpring", "wetSpring", "neuralSpring"]
 contacts = ["Kachkovskiy"]
 external_lineages = ["Kachkovskiy/Anderson Math (11 papers, Anderson 1958 - BK 2018)"]
 cross_cutting = true
-expression = ""
-data_sources = ""
-data_targets = ""
-status = "mapped"
+expression = "expressions/MEASUREMENT_SCIENCE.md"
+data_sources = "data/sources/thread07_anderson.toml"
+data_targets = "data/targets/thread06_ag_targets.toml"
+status = "active"
 
 [[threads]]
 id = 8

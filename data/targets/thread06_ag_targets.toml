@@ -1,0 +1,421 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Validation targets for Thread 6: Agricultural Science + Thread 7: Anderson Mathematics
+# Expected results from groundSpring experiments — the first spring to complete
+# all 29 baselines as publication-grade notebooks with 395/395 checks passing.
+
+[meta]
+thread = 6
+thread_name = "Agricultural Science + Anderson Mathematics"
+expression = "expressions/MEASUREMENT_SCIENCE.md"
+last_updated = "2026-05-07"
+total_targets = 29
+
+# =============================================================================
+# Measurement Domain: Signal vs Noise (Pillar 1)
+# =============================================================================
+
+[[targets]]
+id = "exp001_sensor_noise"
+paper = "01"
+description = "Sensor noise decomposition: bias fraction > 0.5 for EC5, mixed for CS616"
+expected_value = 36.0
+unit = "checks_passing"
+tolerance = 0.0
+source = "groundSpring Exp 001 — Dong et al. (2020)"
+spring = "groundSpring"
+blake3 = ""
+validated = true
+notes = "11.6× faster than Python. Decomposes factory calibration error into bias + noise."
+
+[[targets]]
+id = "exp002_observation_gap"
+paper = "01"
+description = "Observation gap analysis — ERA5 vs GHCN-Daily weather station comparison"
+expected_value = 13.0
+unit = "checks_passing"
+tolerance = 0.0
+source = "groundSpring Exp 002 — NOAA/ERA5"
+spring = "groundSpring"
+blake3 = ""
+validated = true
+notes = "8.2× faster than Python. Quantifies gap fill accuracy."
+
+[[targets]]
+id = "exp003_error_propagation"
+paper = "03"
+description = "FAO-56 Penman-Monteith error propagation through ET0 equations"
+expected_value = 15.0
+unit = "checks_passing"
+tolerance = 0.0
+source = "groundSpring Exp 003 — Allen et al. (1998) FAO-56"
+spring = "groundSpring"
+blake3 = ""
+validated = true
+notes = "9.4× faster. Validates error propagation through multi-parameter ET0."
+
+[[targets]]
+id = "exp024_aggregate_stability"
+paper = "06"
+description = "Aggregate stability noise analysis for soil structure assessment"
+expected_value = 8.0
+unit = "checks_passing"
+tolerance = 0.0
+source = "groundSpring Exp 024 — Cross-spring airSpring"
+spring = "groundSpring"
+blake3 = ""
+validated = true
+notes = "9.3× faster. Noise propagation through soil aggregate measurements."
+
+# =============================================================================
+# Biological Domain: QS, Drift, Rare Biosphere (Pillar 2)
+# =============================================================================
+
+[[targets]]
+id = "exp004_sequencing_noise"
+paper = "06"
+description = "Sequencing noise rarefaction for 16S amplicon data"
+expected_value = 15.0
+unit = "checks_passing"
+tolerance = 0.0
+source = "groundSpring Exp 004 — Synthetic community"
+spring = "groundSpring"
+blake3 = ""
+validated = true
+notes = "7.1× faster. Rarefaction curve convergence validation."
+
+[[targets]]
+id = "exp006_signal_specificity"
+paper = "04"
+description = "Gillespie SSA for QS signal specificity — Massie et al. (2012)"
+expected_value = 12.0
+unit = "checks_passing"
+tolerance = 0.0
+source = "groundSpring Exp 006 — Waters Lab (MSU)"
+spring = "groundSpring"
+blake3 = ""
+validated = true
+notes = "30.5× faster. Stochastic simulation of QS signaling specificity."
+
+[[targets]]
+id = "exp010_bistable_switching"
+paper = "04"
+description = "Bistable phenotypic switching ODE — two attractors verified"
+expected_value = 10.0
+unit = "checks_passing"
+tolerance = 0.0
+source = "groundSpring Exp 010 — Fernandez, Waters et al. (2020)"
+spring = "groundSpring"
+blake3 = ""
+validated = true
+notes = "18.5× faster. 5-variable c-di-GMP ODE with RK4 + Euler-Maruyama."
+
+[[targets]]
+id = "exp011_multisignal_qs"
+paper = "04"
+description = "Multi-signal QS integration — dual-pathway parallel ODE"
+expected_value = 9.0
+unit = "checks_passing"
+tolerance = 0.0
+source = "groundSpring Exp 011 — Hammer & Bassler (2007)"
+spring = "groundSpring"
+blake3 = ""
+validated = true
+notes = "46.2× faster. Vectorized multi-signal ODE integration."
+
+[[targets]]
+id = "exp014_drift_selection"
+paper = "05"
+description = "Drift vs selection in microbial populations — Wright-Fisher + Moran"
+expected_value = 7.0
+unit = "checks_passing"
+tolerance = 0.0
+source = "groundSpring Exp 014 — R. Anderson (Carleton)"
+spring = "groundSpring"
+blake3 = ""
+validated = true
+notes = "6.9× faster. Neutral drift separability from selection."
+
+[[targets]]
+id = "exp016_rare_biosphere"
+paper = "05"
+description = "Rare biosphere signal detection above noise floor"
+expected_value = 12.0
+unit = "checks_passing"
+tolerance = 0.0
+source = "groundSpring Exp 016 — R. Anderson (Carleton)"
+spring = "groundSpring"
+blake3 = ""
+validated = true
+notes = "8.7× faster. Noise floor for rare taxa detection."
+
+[[targets]]
+id = "exp017_quasispecies"
+paper = "10a"
+description = "Quasispecies error threshold — Eigen 1971 error catastrophe"
+expected_value = 6.0
+unit = "checks_passing"
+tolerance = 0.0
+source = "groundSpring Exp 017 — Dolson (MSU)"
+spring = "groundSpring"
+blake3 = ""
+validated = true
+notes = "11.2× faster. Mutation rate threshold for replication fidelity."
+
+# =============================================================================
+# Anderson Mathematics Domain (Thread 7, cross-cutting)
+# =============================================================================
+
+[[targets]]
+id = "exp008_anderson_localization"
+paper = "01"
+description = "1D Anderson localization — Lyapunov exponent, Thouless scaling"
+expected_value = 8.0
+unit = "checks_passing"
+tolerance = 0.0
+source = "groundSpring Exp 008 — Anderson (1958), Kachkovskiy (MSU)"
+spring = "groundSpring"
+blake3 = ""
+validated = true
+notes = "29.9× faster. Transfer matrix method. Thouless C = xi * W^2 ≈ 105."
+
+[[targets]]
+id = "exp009_quasiperiodic"
+paper = "05"
+description = "Almost-Mathieu quasiperiodic localization — Aubry-André transition"
+expected_value = 8.0
+unit = "checks_passing"
+tolerance = 0.0
+source = "groundSpring Exp 009 — Bourgain & Kachkovskiy (2018)"
+spring = "groundSpring"
+blake3 = ""
+validated = true
+notes = "49.5× faster (peak Rust vs Python). Sturm tridiagonal eigenvalue."
+
+[[targets]]
+id = "exp012_spin_transport"
+paper = "05"
+description = "Spin chain wavepacket transport — localization MSD"
+expected_value = 18.0
+unit = "checks_passing"
+tolerance = 0.0
+source = "groundSpring Exp 012 — Kachkovskiy / Gonzales (Paper 12)"
+spring = "groundSpring"
+blake3 = ""
+validated = true
+notes = "12.3× faster. MSD saturation proves Anderson localization."
+
+[[targets]]
+id = "exp018_band_edge"
+paper = "05"
+description = "Band edge spectral gap detection in Anderson Hamiltonian"
+expected_value = 10.0
+unit = "checks_passing"
+tolerance = 0.0
+source = "groundSpring Exp 018 — Kachkovskiy (MSU)"
+spring = "groundSpring"
+blake3 = ""
+validated = true
+notes = "22.4× faster. Spectral gap detection for localization diagnostics."
+
+[[targets]]
+id = "exp015_uncertainty_bridge"
+paper = "01"
+description = "Uncertainty bridge: sensor noise → localization length propagation"
+expected_value = 8.0
+unit = "checks_passing"
+tolerance = 0.0
+source = "groundSpring Exp 015 — Cross-domain bridge"
+spring = "groundSpring"
+blake3 = ""
+validated = true
+notes = "14.1× faster. Maps measurement noise to Anderson localization."
+
+# =============================================================================
+# Inverse Problems (Bazavov — Thread 2 × Thread 7)
+# =============================================================================
+
+[[targets]]
+id = "exp019_jackknife"
+paper = "07"
+description = "Jackknife error estimation for systematic uncertainty"
+expected_value = 9.0
+unit = "checks_passing"
+tolerance = 0.0
+source = "groundSpring Exp 019 — Bazavov (MSU)"
+spring = "groundSpring"
+blake3 = ""
+validated = true
+notes = "3.8× faster. QCD-grade delete-one + block jackknife."
+
+[[targets]]
+id = "exp020_freeze_out"
+paper = "07"
+description = "Freeze-out temperature inverse problem"
+expected_value = 8.0
+unit = "checks_passing"
+tolerance = 0.0
+source = "groundSpring Exp 020 — Bazavov (MSU)"
+spring = "groundSpring"
+blake3 = ""
+validated = true
+notes = "7.6× faster. Lattice QCD inverse problem."
+
+[[targets]]
+id = "exp021_spectral_recon"
+paper = "07"
+description = "Tikhonov spectral reconstruction from noisy correlators"
+expected_value = 8.0
+unit = "checks_passing"
+tolerance = 0.0
+source = "groundSpring Exp 021 — Bazavov (MSU)"
+spring = "groundSpring"
+blake3 = ""
+validated = true
+notes = "5.4× faster. Regularized inverse problem."
+
+# =============================================================================
+# Statistics Domain
+# =============================================================================
+
+[[targets]]
+id = "exp007_rawr"
+paper = "03"
+description = "RAWR weighted bootstrap resampling"
+expected_value = 11.0
+unit = "checks_passing"
+tolerance = 0.0
+source = "groundSpring Exp 007 — Liu (MSU)"
+spring = "groundSpring"
+blake3 = ""
+validated = true
+notes = "7.3× faster. Weighted bootstrap for heterogeneous data."
+
+[[targets]]
+id = "exp013_resampling_conv"
+paper = "03"
+description = "Resampling convergence analysis — CLT verification"
+expected_value = 8.0
+unit = "checks_passing"
+tolerance = 0.0
+source = "groundSpring Exp 013"
+spring = "groundSpring"
+blake3 = ""
+validated = true
+notes = "5.8× faster. Bootstrap CLT convergence rate."
+
+# =============================================================================
+# Geophysics Domain
+# =============================================================================
+
+[[targets]]
+id = "exp005_seismic"
+paper = "08"
+description = "Seismic wave propagation — New Madrid Seismic Zone"
+expected_value = 9.0
+unit = "checks_passing"
+tolerance = 0.0
+source = "groundSpring Exp 005 — NMSZ synthetic"
+spring = "groundSpring"
+blake3 = ""
+validated = true
+notes = "4.2× faster. 1D/2D wave equation with absorbing boundaries."
+
+# =============================================================================
+# Cross-Spring + Hydrology
+# =============================================================================
+
+[[targets]]
+id = "exp022_et0_anderson"
+paper = "03"
+description = "ET0-Anderson error propagation: FAO-56 → localization length"
+expected_value = 7.0
+unit = "checks_passing"
+tolerance = 0.0
+source = "groundSpring Exp 022 — Cross-spring airSpring"
+spring = "groundSpring"
+blake3 = ""
+validated = true
+notes = "8.9× faster. Maps ET0 error to Anderson localization."
+
+[[targets]]
+id = "exp023_notill"
+paper = "06"
+description = "No-till vs tilled 16S sampling noise"
+expected_value = 7.0
+unit = "checks_passing"
+tolerance = 0.0
+source = "groundSpring Exp 023 — Cross-spring wetSpring"
+spring = "groundSpring"
+blake3 = ""
+validated = true
+notes = "6.1× faster. Sampling noise for soil management comparison."
+
+# =============================================================================
+# WDM / Hardware Validation
+# =============================================================================
+
+[[targets]]
+id = "exp025_precision_drift"
+paper = "07"
+description = "f32 vs f64 precision drift in WDM simulation"
+expected_value = 7.0
+unit = "checks_passing"
+tolerance = 0.0
+source = "groundSpring Exp 025 — WDM"
+spring = "groundSpring"
+blake3 = ""
+validated = true
+notes = "4.5× faster. Float precision analysis."
+
+[[targets]]
+id = "exp026_size_convergence"
+paper = "07"
+description = "System-size convergence for WDM simulation"
+expected_value = 7.0
+unit = "checks_passing"
+tolerance = 0.0
+source = "groundSpring Exp 026 — WDM"
+spring = "groundSpring"
+blake3 = ""
+validated = true
+notes = "3.9× faster. O(1/N) convergence rate."
+
+[[targets]]
+id = "exp027_vendor_parity"
+paper = "07"
+description = "GPU vendor parity — cross-vendor WDM agreement"
+expected_value = 7.0
+unit = "checks_passing"
+tolerance = 0.0
+source = "groundSpring Exp 027 — WDM"
+spring = "groundSpring"
+blake3 = ""
+validated = true
+notes = "2.1× faster. NVIDIA vs AMD vs Intel agreement."
+
+[[targets]]
+id = "exp028_npu"
+paper = "08"
+description = "NPU Anderson regime classification — BrainChip AKD1000"
+expected_value = 9.0
+unit = "checks_passing"
+tolerance = 0.0
+source = "groundSpring Exp 028 — metalForge NPU"
+spring = "groundSpring"
+blake3 = ""
+validated = true
+notes = "Neuromorphic hardware classification of Anderson localization regimes."
+
+[[targets]]
+id = "exp029_et0_methods"
+paper = "03"
+description = "Multi-method ET0: PM, Hargreaves, Makkink, Turc, Hamon"
+expected_value = 19.0
+unit = "checks_passing"
+tolerance = 0.0
+source = "groundSpring Exp 035 — 5 ET0 methods compared"
+spring = "groundSpring"
+blake3 = ""
+validated = true
+notes = "All 5 methods validated against published values. Delegated to barraCuda."

@@ -1,0 +1,26 @@
+# Thread 6+7: groundSpring — GPU Benchmark (three-mode)
+#
+# Runs the bench_gpu_vs_kokkos binary comparing:
+# default features → barraCuda CPU → barraCuda GPU
+# Reports timing, delegation counts, and cross-substrate agreement.
+
+[metadata]
+name = "gs-bench-gpu"
+description = "Three-mode GPU benchmark: default → CPU → GPU delegation"
+version = "0.1.0"
+thread = "06"
+thread_name = "Agricultural Science + Anderson Mathematics"
+spring = "groundSpring"
+
+[execution]
+type = "native"
+command = "cargo"
+args = ["run", "--release", "--bin", "bench_gpu_vs_kokkos", "--features", "barracuda-gpu"]
+working_dir = "${GROUNDSPRING_ROOT:-/home/eastgate/Development/ecoPrimals/springs/groundSpring}"
+
+[resources]
+max_memory_bytes = 4294967296
+max_cpu_percent = 100.0
+
+[security]
+isolation_level = "None"

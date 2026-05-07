@@ -1,0 +1,232 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Data sources for Thread 6: Agricultural Science
+# Public data repository anchors for measurement noise, soil sensing,
+# hydrology, and agricultural IoT validation.
+
+[meta]
+thread = 6
+thread_name = "Agricultural Science"
+expression = "expressions/MEASUREMENT_SCIENCE.md"
+last_updated = "2026-05-07"
+total_sources = 18
+
+# =============================================================================
+# Paper 01: Sensor Noise Characterization (Dong et al. 2020)
+# =============================================================================
+
+[[sources]]
+id = "dong_2020_agriculture"
+database = "MDPI Agriculture"
+description = "Performance evaluation of soil moisture sensors in coarse- and fine-textured Michigan soils"
+accessions = []
+url = "https://doi.org/10.3390/agriculture10120598"
+format = "csv"
+blake3 = ""
+retrieved = ""
+paper = "01"
+notes = "Dong, Miller, Kelley (2020). CS616 + EC5 factory calibration vs corrected. groundSpring Exp 001."
+
+[[sources]]
+id = "noaa_ghcnd_michigan"
+database = "NOAA GHCN-Daily"
+description = "Michigan weather station data for observation gap analysis"
+accessions = ["USW00014836", "USW00094847"]
+url = "https://www.ncei.noaa.gov/products/land-based-station/global-historical-climatology-network-daily"
+format = "csv"
+blake3 = ""
+retrieved = ""
+paper = "01"
+notes = "GHCN-Daily stations for Exp 002 (observation gap) and Exp 029 (real GHCND ET0)."
+
+# =============================================================================
+# Paper 03: Error Propagation FAO-56 (Allen et al. 1998)
+# =============================================================================
+
+[[sources]]
+id = "fao56_paper"
+database = "FAO"
+description = "FAO Irrigation and Drainage Paper 56 — Penman-Monteith ET0 equations"
+accessions = ["FAO-56"]
+url = "https://www.fao.org/3/x0490e/x0490e00.htm"
+format = "pdf"
+blake3 = ""
+retrieved = ""
+paper = "03"
+notes = "Canonical reference for ET0 computation. groundSpring Exp 003, 022, 029, 035."
+
+[[sources]]
+id = "era5_reanalysis"
+database = "ECMWF Copernicus"
+description = "ERA5 hourly reanalysis data for weather gap analysis"
+accessions = []
+url = "https://cds.climate.copernicus.eu/datasets/reanalysis-era5-single-levels"
+format = "netcdf"
+blake3 = ""
+retrieved = ""
+paper = "03"
+notes = "Used for Exp 002 observation gap cross-validation with NOAA GHCN-Daily."
+
+# =============================================================================
+# Paper 06: No-Till Soil Health (Cross-spring with wetSpring)
+# =============================================================================
+
+[[sources]]
+id = "ncbi_notill_16s"
+database = "NCBI SRA"
+description = "16S rRNA amplicon sequencing from no-till vs conventional tillage soils"
+accessions = ["PRJNA524590"]
+url = "https://www.ncbi.nlm.nih.gov/bioproject/PRJNA524590"
+format = "fastq"
+blake3 = ""
+retrieved = ""
+paper = "06"
+notes = "Liao et al. no-till study. groundSpring Exp 023 (sampling noise), wetSpring 16S pipeline."
+
+[[sources]]
+id = "ncbi_rhizosphere"
+database = "NCBI SRA"
+description = "Rhizosphere microbiome profiles for soil health assessment"
+accessions = ["PRJNA480600"]
+url = "https://www.ncbi.nlm.nih.gov/bioproject/PRJNA480600"
+format = "fastq"
+blake3 = ""
+retrieved = ""
+paper = "06"
+notes = "Complementary dataset for soil diversity analysis."
+
+# =============================================================================
+# Paper 08: Agricultural IoT / Sensor Networks
+# =============================================================================
+
+[[sources]]
+id = "iris_seismic_events"
+database = "IRIS FDSN"
+description = "New Madrid Seismic Zone event waveforms for seismic validation"
+accessions = []
+url = "https://service.iris.edu/fdsnws/event/1/"
+format = "miniseed"
+blake3 = ""
+retrieved = ""
+paper = "08"
+notes = "IRIS FDSN web services. groundSpring Exp 005, 032 (seismic wave propagation)."
+
+[[sources]]
+id = "iris_station_metadata"
+database = "IRIS FDSN"
+description = "Station metadata for NMSZ broadband sensors"
+accessions = []
+url = "https://service.iris.edu/fdsnws/station/1/"
+format = "stationxml"
+blake3 = ""
+retrieved = ""
+paper = "08"
+notes = "Station response for instrument correction. groundSpring Exp 032."
+
+[[sources]]
+id = "ncbi_16s_silva"
+database = "SILVA"
+description = "SILVA SSU reference database for 16S taxonomic classification"
+accessions = ["SSU138.1"]
+url = "https://www.arb-silva.de/download/archive/qiime/"
+format = "fasta"
+blake3 = ""
+retrieved = ""
+paper = "06"
+notes = "Reference database for rarefaction validation (Exp 004, 016, 023)."
+
+# =============================================================================
+# Hydrology: ET0 Methods (Paper 03 extensions)
+# =============================================================================
+
+[[sources]]
+id = "hargreaves_samani_1985"
+database = "Literature"
+description = "Hargreaves-Samani ET0 temperature-based method"
+accessions = []
+url = "https://doi.org/10.13031/2013.26773"
+format = "reference"
+blake3 = ""
+retrieved = ""
+paper = "03"
+notes = "Alternative ET0 method validated in groundSpring Exp 035 (multi-method comparison)."
+
+[[sources]]
+id = "makkink_1957"
+database = "Literature"
+description = "Makkink radiation-based ET0 method"
+accessions = []
+url = ""
+format = "reference"
+blake3 = ""
+retrieved = ""
+paper = "03"
+notes = "Radiation-based ET0 method. Exp 035."
+
+[[sources]]
+id = "turc_1961"
+database = "Literature"
+description = "Turc ET0 method for humid regions"
+accessions = []
+url = ""
+format = "reference"
+blake3 = ""
+retrieved = ""
+paper = "03"
+notes = "Humid-climate ET0 estimator. Exp 035."
+
+[[sources]]
+id = "hamon_1963"
+database = "Literature"
+description = "Hamon temperature-daylight ET0 method"
+accessions = []
+url = ""
+format = "reference"
+blake3 = ""
+retrieved = ""
+paper = "03"
+notes = "Simplest temperature-based ET0. Exp 035."
+
+# =============================================================================
+# WDM: Warm Dense Matter precision validation
+# =============================================================================
+
+[[sources]]
+id = "stanton_murillo_2016"
+database = "Literature"
+description = "Stanton & Murillo WDM Yukawa bridge function method"
+accessions = []
+url = "https://doi.org/10.1103/PhysRevE.93.043203"
+format = "reference"
+blake3 = ""
+retrieved = ""
+paper = "07"
+notes = "Reference for WDM f32/f64 precision drift (Exp 025), size convergence (Exp 026). Cross-thread 2."
+
+# =============================================================================
+# NPU: BrainChip AKD1000
+# =============================================================================
+
+[[sources]]
+id = "akd1000_datasheet"
+database = "BrainChip"
+description = "AKD1000 Akida neuromorphic processor specifications"
+accessions = []
+url = "https://brainchip.com/akida-neural-processor-soc/"
+format = "reference"
+blake3 = ""
+retrieved = ""
+paper = "08"
+notes = "NPU substrate for Anderson regime classification (Exp 028). metalForge GPU→NPU bypass."
+
+[[sources]]
+id = "anderson_1958_original"
+database = "Physical Review"
+description = "Anderson (1958) Absence of Diffusion in Certain Random Lattices"
+accessions = []
+url = "https://doi.org/10.1103/PhysRev.109.1492"
+format = "reference"
+blake3 = ""
+retrieved = ""
+paper = "01"
+notes = "Foundational reference for Anderson localization. Cross-thread 7."

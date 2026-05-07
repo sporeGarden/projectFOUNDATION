@@ -1,0 +1,26 @@
+# Thread 6+7: groundSpring — Python Baseline Validation
+#
+# Runs all 29 Python baseline scripts via baseline_runner.py.
+# Each script compares its computations against benchmark JSON values
+# and reports PASS/FAIL with exit codes.
+
+[metadata]
+name = "gs-python-baselines"
+description = "Execute all 29 Python baselines for provenance verification"
+version = "0.1.0"
+thread = "06"
+thread_name = "Agricultural Science + Anderson Mathematics"
+spring = "groundSpring"
+
+[execution]
+type = "native"
+command = "python3"
+args = ["control/baseline_runner.py", "--all"]
+working_dir = "${GROUNDSPRING_ROOT:-/home/eastgate/Development/ecoPrimals/springs/groundSpring}"
+
+[resources]
+max_memory_bytes = 2147483648
+max_cpu_percent = 80.0
+
+[security]
+isolation_level = "None"
