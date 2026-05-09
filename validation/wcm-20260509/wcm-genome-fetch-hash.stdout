@@ -1,0 +1,39 @@
+{"timestamp":"2026-05-09T15:03:33.993544Z","level":"WARN","fields":{"message":"🚨 SECURITY WARNING: This ToadStool instance has incomplete cryptographic verification"}}
+{"timestamp":"2026-05-09T15:03:33.993583Z","level":"WARN","fields":{"message":"🚨 Service discovery and permission validation are not fully implemented"}}
+{"timestamp":"2026-05-09T15:03:33.993589Z","level":"WARN","fields":{"message":"🚨 Do NOT use in production environments without proper security audit"}}
+{"timestamp":"2026-05-09T15:03:33.993594Z","level":"WARN","fields":{"message":"🚨 Set TOADSTOOL_SECURITY_WARNING_ACKNOWLEDGED=1 to suppress this warning"}}
+{"timestamp":"2026-05-09T15:03:33.993605Z","level":"INFO","fields":{"message":"🚀 Executing workload: workloads/thread01_wcm/wcm-genome-fetch-hash.toml"}}
+{"timestamp":"2026-05-09T15:03:33.993993Z","level":"INFO","fields":{"message":"📖 Loading workload specification: workloads/thread01_wcm/wcm-genome-fetch-hash.toml"}}
+{"timestamp":"2026-05-09T15:03:33.994267Z","level":"INFO","fields":{"message":"✅ Loaded workload: wcm-genome-fetch-hash"}}
+{"timestamp":"2026-05-09T15:03:33.994275Z","level":"INFO","fields":{"message":"   Description: Fetch WCM reference genomes from NCBI and establish BLAKE3 anchors"}}
+{"timestamp":"2026-05-09T15:03:33.994280Z","level":"INFO","fields":{"message":"🔧 Initializing runtime orchestrator"}}
+{"timestamp":"2026-05-09T15:03:33.994377Z","level":"INFO","fields":{"message":"Registering runtime engine: Native"}}
+{"timestamp":"2026-05-09T15:03:33.994572Z","level":"INFO","fields":{"message":"Successfully registered runtime engine"}}
+{"timestamp":"2026-05-09T15:03:33.994579Z","level":"INFO","fields":{"message":"   ✅ Native runtime registered"}}
+{"timestamp":"2026-05-09T15:03:33.994584Z","level":"INFO","fields":{"message":"Creating WebAssembly runtime engine (wasmi 1.0 - Pure Rust!)"}}
+{"timestamp":"2026-05-09T15:03:33.994591Z","level":"INFO","fields":{"message":"✅ Wasmi engine created - 100% Pure Rust interpreter ready!"}}
+{"timestamp":"2026-05-09T15:03:33.994600Z","level":"INFO","fields":{"message":"Registering runtime engine: Wasm"}}
+{"timestamp":"2026-05-09T15:03:33.994609Z","level":"INFO","fields":{"message":"Successfully registered runtime engine"}}
+{"timestamp":"2026-05-09T15:03:33.994613Z","level":"INFO","fields":{"message":"   ✅ WASM runtime registered"}}
+{"timestamp":"2026-05-09T15:03:33.994623Z","level":"INFO","fields":{"message":"🚀 Executing workload: wcm-genome-fetch-hash"}}
+{"timestamp":"2026-05-09T15:03:33.994628Z","level":"INFO","fields":{"message":"Starting execution: b0d1760b-eef0-4dc2-964b-6e1c9a299064"}}
+{"timestamp":"2026-05-09T15:03:33.994644Z","level":"INFO","fields":{"message":"Executing native workload: b0d1760b-eef0-4dc2-964b-6e1c9a299064"}}
+{"timestamp":"2026-05-09T15:03:33.994658Z","level":"WARN","fields":{"message":"working_dir not in trusted_directories or temp — falling back to temp_dir","working_dir":"/home/irongate/Development/ecoPrimals/sporeGarden/foundation","isolation":"Standard"}}
+{"timestamp":"2026-05-09T15:03:33.997366Z","level":"INFO","fields":{"message":"Execution b0d1760b-eef0-4dc2-964b-6e1c9a299064 completed successfully in 2.700501ms"}}
+
+═══════════════════════════════════════════════════════════
+✅ Execution Complete!
+═══════════════════════════════════════════════════════════
+
+Workload:      wcm-genome-fetch-hash
+Execution ID:  b0d1760b-eef0-4dc2-964b-6e1c9a299064
+Status:        Failed { error: "Process exited with code: Some(127)" }
+Duration:      0.003s
+Exit Code:     127
+
+Standard Error:
+────────────────────────────────────────────────────────────
+bash: deploy/fetch_sources.sh: No such file or directory
+
+────────────────────────────────────────────────────────────
+

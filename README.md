@@ -86,7 +86,7 @@ and presents them for a particular audience.
 ```bash
 # 1. Deploy NUCLEUS composition (via projectNUCLEUS)
 cd ../../projectNUCLEUS/deploy
-bash deploy.sh --composition nest --gate irongate
+bash deploy.sh --composition nest --gate <active-gate>
 
 # 2. Fetch public data sources and run validation with full provenance
 cd ../../foundation/deploy
@@ -119,14 +119,18 @@ deploy/             Operational scripts
 workloads/          toadStool-executable workload definitions per thread
 specs/              Contracts and authoring guides
 validation/         Validation results, provenance manifests, gap reports
+  handbacks/        Geological record from projectNUCLEUS deployment validation
+  COMPOSITION_GAPS.md  Composition-level capability mismatches
 docs/               External-facing primers and guides
+  BONDING_MODELS.md Atomic bonding architecture (covalent/ionic/metallic)
+  NUCLEUS_PRIMER.md Ecosystem primer — orientation for new contributors
 ```
 
 ## Relationship to Other Repos
 
 | Repo | Org | Relationship |
 |------|-----|-------------|
-| **projectNUCLEUS** | sporeGarden | The spore — deploys primals that foundation targets reference |
+| **projectNUCLEUS** | sporeGarden | The spore — deploys primals, produces gap handbacks that settle here as geological record |
 | **plasmidBin** | ecoPrimals/infra | Binary depot — foundation validation runs use primals from here |
 | **primalSpring** | syntheticChemistry | Composition validation — foundation references validated graphs |
 | **wateringHole** | ecoPrimals/infra | Standards and guidance — foundation follows these |

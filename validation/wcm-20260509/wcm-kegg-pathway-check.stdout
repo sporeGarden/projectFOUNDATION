@@ -1,0 +1,41 @@
+{"timestamp":"2026-05-09T15:03:34.002096Z","level":"WARN","fields":{"message":"🚨 SECURITY WARNING: This ToadStool instance has incomplete cryptographic verification"}}
+{"timestamp":"2026-05-09T15:03:34.002118Z","level":"WARN","fields":{"message":"🚨 Service discovery and permission validation are not fully implemented"}}
+{"timestamp":"2026-05-09T15:03:34.002122Z","level":"WARN","fields":{"message":"🚨 Do NOT use in production environments without proper security audit"}}
+{"timestamp":"2026-05-09T15:03:34.002125Z","level":"WARN","fields":{"message":"🚨 Set TOADSTOOL_SECURITY_WARNING_ACKNOWLEDGED=1 to suppress this warning"}}
+{"timestamp":"2026-05-09T15:03:34.002132Z","level":"INFO","fields":{"message":"🚀 Executing workload: workloads/thread01_wcm/wcm-kegg-pathway-check.toml"}}
+{"timestamp":"2026-05-09T15:03:34.002139Z","level":"INFO","fields":{"message":"📖 Loading workload specification: workloads/thread01_wcm/wcm-kegg-pathway-check.toml"}}
+{"timestamp":"2026-05-09T15:03:34.002298Z","level":"INFO","fields":{"message":"✅ Loaded workload: wcm-kegg-pathway-check"}}
+{"timestamp":"2026-05-09T15:03:34.002302Z","level":"INFO","fields":{"message":"   Description: Validate KEGG metabolic pathway data for WCM organisms"}}
+{"timestamp":"2026-05-09T15:03:34.002305Z","level":"INFO","fields":{"message":"🔧 Initializing runtime orchestrator"}}
+{"timestamp":"2026-05-09T15:03:34.002338Z","level":"INFO","fields":{"message":"Registering runtime engine: Native"}}
+{"timestamp":"2026-05-09T15:03:34.002346Z","level":"INFO","fields":{"message":"Successfully registered runtime engine"}}
+{"timestamp":"2026-05-09T15:03:34.002348Z","level":"INFO","fields":{"message":"   ✅ Native runtime registered"}}
+{"timestamp":"2026-05-09T15:03:34.002351Z","level":"INFO","fields":{"message":"Creating WebAssembly runtime engine (wasmi 1.0 - Pure Rust!)"}}
+{"timestamp":"2026-05-09T15:03:34.002355Z","level":"INFO","fields":{"message":"✅ Wasmi engine created - 100% Pure Rust interpreter ready!"}}
+{"timestamp":"2026-05-09T15:03:34.002360Z","level":"INFO","fields":{"message":"Registering runtime engine: Wasm"}}
+{"timestamp":"2026-05-09T15:03:34.002363Z","level":"INFO","fields":{"message":"Successfully registered runtime engine"}}
+{"timestamp":"2026-05-09T15:03:34.002366Z","level":"INFO","fields":{"message":"   ✅ WASM runtime registered"}}
+{"timestamp":"2026-05-09T15:03:34.002372Z","level":"INFO","fields":{"message":"🚀 Executing workload: wcm-kegg-pathway-check"}}
+{"timestamp":"2026-05-09T15:03:34.002375Z","level":"INFO","fields":{"message":"Starting execution: fdac37c7-d724-410b-a2b7-ad76c9a6acbc"}}
+{"timestamp":"2026-05-09T15:03:34.002384Z","level":"INFO","fields":{"message":"Executing native workload: fdac37c7-d724-410b-a2b7-ad76c9a6acbc"}}
+{"timestamp":"2026-05-09T15:03:34.002397Z","level":"WARN","fields":{"message":"working_dir not in trusted_directories or temp — falling back to temp_dir","working_dir":"/home/irongate/Development/ecoPrimals/sporeGarden/foundation","isolation":"Standard"}}
+{"timestamp":"2026-05-09T15:03:34.003258Z","level":"INFO","fields":{"message":"Execution fdac37c7-d724-410b-a2b7-ad76c9a6acbc completed successfully in 853.671µs"}}
+
+═══════════════════════════════════════════════════════════
+✅ Execution Complete!
+═══════════════════════════════════════════════════════════
+
+Workload:      wcm-kegg-pathway-check
+Execution ID:  fdac37c7-d724-410b-a2b7-ad76c9a6acbc
+Status:        Success
+Duration:      0.001s
+Exit Code:     0
+
+Standard Output:
+────────────────────────────────────────────────────────────
+[FAIL] KEGG : file not found
+[FAIL] KEGG : file not found
+[FAIL] KEGG : file not found
+
+────────────────────────────────────────────────────────────
+

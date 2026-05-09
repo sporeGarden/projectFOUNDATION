@@ -1,0 +1,31 @@
+[11:03:42] ═══════════════════════════════════════════════════════════
+[11:03:42]   Foundation Data Source Fetcher
+[11:03:42]   Data directory: .data
+[11:03:42]   Thread filter: wcm
+[11:03:42] ═══════════════════════════════════════════════════════════
+[11:03:42] 
+[11:03:42] ── Thread 1: Whole-Cell Modeling ──
+[11:03:42]   [EXIST] ncbi:NC_000908.2 — already fetched
+[11:03:42]   [EXIST] ncbi:CP016816.2 — already fetched
+[11:03:42]   [EXIST] ncbi:NC_000913.3 — already fetched
+[11:03:42]   [EXIST] assembly:GCA_000027325.1 — already fetched
+[11:03:42]   [EXIST] assembly:GCA_900015295.1 — already fetched
+[11:03:42]   [EXIST] uniprot:UP000000807 — already fetched
+[11:03:42]   [EXIST] uniprot:UP000000625 — already fetched
+[11:03:42]   [EXIST] uniprot:UP000018174 — already fetched
+[11:03:42]   [EXIST] kegg:mge — already fetched
+[11:03:42]   [EXIST] kegg:eco — already fetched
+[11:03:42]   [EXIST] kegg:mmc — already fetched
+[11:03:42]   [EXIST] bioproject:PRJNA357500 — already fetched
+[11:03:42] 
+[11:03:42] ═══════════════════════════════════════════════════════════
+[11:03:42]   Fetch complete: 0 fetched, 12 cached, 0 failed
+[11:03:42]   Data directory: .data
+[11:03:42] ═══════════════════════════════════════════════════════════
+[OK] WCM genome anchors established
+[OK] CP016816.2.gb: 0687f00d56d0d477…
+[OK] NC_000908.2.gb: 7b247198c66e6fa7…
+[OK] NC_000913.3.gb: 67dee55704e1183e…
+[OK] UP000000625.fasta.gz: 79497129a06cbfca…
+[OK] UP000000807.fasta.gz: 5c1e27ec868405be…
+[OK] UP000018174.fasta.gz: 0d7f72a9a0fcdbed…

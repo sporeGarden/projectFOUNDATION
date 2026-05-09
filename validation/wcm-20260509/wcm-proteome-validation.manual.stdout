@@ -1,0 +1,9 @@
+[OK] M. genitalium (Paper A): 483 sequences (expected 400-600)
+[OK] M. genitalium (Paper A) BLAKE3: 5c1e27ec868405be…
+[OK] E. coli K-12 (Paper D): 4403 sequences (expected 4000-5000)
+[OK] E. coli K-12 (Paper D) BLAKE3: 79497129a06cbfca…
+environment: line 14: [: 0
+0: integer expression expected
+[FAIL] M. mycoides (Papers E-G): 0
+0 sequences (expected 800-1200)
+[OK] M. mycoides (Papers E-G) BLAKE3: 0d7f72a9a0fcdbed…

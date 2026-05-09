@@ -1,0 +1,41 @@
+{"timestamp":"2026-05-09T15:03:34.007905Z","level":"WARN","fields":{"message":"🚨 SECURITY WARNING: This ToadStool instance has incomplete cryptographic verification"}}
+{"timestamp":"2026-05-09T15:03:34.007926Z","level":"WARN","fields":{"message":"🚨 Service discovery and permission validation are not fully implemented"}}
+{"timestamp":"2026-05-09T15:03:34.007929Z","level":"WARN","fields":{"message":"🚨 Do NOT use in production environments without proper security audit"}}
+{"timestamp":"2026-05-09T15:03:34.007932Z","level":"WARN","fields":{"message":"🚨 Set TOADSTOOL_SECURITY_WARNING_ACKNOWLEDGED=1 to suppress this warning"}}
+{"timestamp":"2026-05-09T15:03:34.007938Z","level":"INFO","fields":{"message":"🚀 Executing workload: workloads/thread01_wcm/wcm-proteome-validation.toml"}}
+{"timestamp":"2026-05-09T15:03:34.007944Z","level":"INFO","fields":{"message":"📖 Loading workload specification: workloads/thread01_wcm/wcm-proteome-validation.toml"}}
+{"timestamp":"2026-05-09T15:03:34.008083Z","level":"INFO","fields":{"message":"✅ Loaded workload: wcm-proteome-validation"}}
+{"timestamp":"2026-05-09T15:03:34.008087Z","level":"INFO","fields":{"message":"   Description: Validate WCM proteome sizes against published gene counts"}}
+{"timestamp":"2026-05-09T15:03:34.008090Z","level":"INFO","fields":{"message":"🔧 Initializing runtime orchestrator"}}
+{"timestamp":"2026-05-09T15:03:34.008123Z","level":"INFO","fields":{"message":"Registering runtime engine: Native"}}
+{"timestamp":"2026-05-09T15:03:34.008129Z","level":"INFO","fields":{"message":"Successfully registered runtime engine"}}
+{"timestamp":"2026-05-09T15:03:34.008133Z","level":"INFO","fields":{"message":"   ✅ Native runtime registered"}}
+{"timestamp":"2026-05-09T15:03:34.008135Z","level":"INFO","fields":{"message":"Creating WebAssembly runtime engine (wasmi 1.0 - Pure Rust!)"}}
+{"timestamp":"2026-05-09T15:03:34.008140Z","level":"INFO","fields":{"message":"✅ Wasmi engine created - 100% Pure Rust interpreter ready!"}}
+{"timestamp":"2026-05-09T15:03:34.008145Z","level":"INFO","fields":{"message":"Registering runtime engine: Wasm"}}
+{"timestamp":"2026-05-09T15:03:34.008148Z","level":"INFO","fields":{"message":"Successfully registered runtime engine"}}
+{"timestamp":"2026-05-09T15:03:34.008151Z","level":"INFO","fields":{"message":"   ✅ WASM runtime registered"}}
+{"timestamp":"2026-05-09T15:03:34.008158Z","level":"INFO","fields":{"message":"🚀 Executing workload: wcm-proteome-validation"}}
+{"timestamp":"2026-05-09T15:03:34.008161Z","level":"INFO","fields":{"message":"Starting execution: aec54f5a-09b0-4b98-b0d2-9975297f82fe"}}
+{"timestamp":"2026-05-09T15:03:34.008169Z","level":"INFO","fields":{"message":"Executing native workload: aec54f5a-09b0-4b98-b0d2-9975297f82fe"}}
+{"timestamp":"2026-05-09T15:03:34.008180Z","level":"WARN","fields":{"message":"working_dir not in trusted_directories or temp — falling back to temp_dir","working_dir":"/home/irongate/Development/ecoPrimals/sporeGarden/foundation","isolation":"Standard"}}
+{"timestamp":"2026-05-09T15:03:34.009455Z","level":"INFO","fields":{"message":"Execution aec54f5a-09b0-4b98-b0d2-9975297f82fe completed successfully in 1.266615ms"}}
+
+═══════════════════════════════════════════════════════════
+✅ Execution Complete!
+═══════════════════════════════════════════════════════════
+
+Workload:      wcm-proteome-validation
+Execution ID:  aec54f5a-09b0-4b98-b0d2-9975297f82fe
+Status:        Success
+Duration:      0.001s
+Exit Code:     0
+
+Standard Output:
+────────────────────────────────────────────────────────────
+[FAIL] : file not found ()
+[FAIL] : file not found ()
+[FAIL] : file not found ()
+
+────────────────────────────────────────────────────────────
+

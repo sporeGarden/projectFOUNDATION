@@ -1,0 +1,18 @@
+[11:03:04] ═══════════════════════════════════════════════════════════
+[11:03:04]   Foundation Validation Pipeline
+[11:03:04]   Thread: wcm
+[11:03:04]   Results: /home/irongate/Development/ecoPrimals/sporeGarden/foundation/validation/wcm-20260509
+[11:03:04]   Data: /home/irongate/Development/ecoPrimals/sporeGarden/foundation/.data
+[11:03:04] ═══════════════════════════════════════════════════════════
+[11:03:04] 
+[11:03:04] ── Phase 1: Health Checks ──
+[11:03:07]   [OK] BearDog (TCP 9100)
+[11:03:07]   [OK] Songbird (HTTP 9200)
+[11:03:07]   [OK] ToadStool (TCP 9400)
+[11:03:10]   [OK] NestGate (TCP 9500)
+[11:03:10]   [OK] rhizoCrypt (PID alive)
+[11:03:10]   [OK] loamSpine (TCP 9700)
+[11:03:13]   [OK] sweetGrass (TCP 9850)
+[11:03:13] 
+[11:03:13] ── Phase 2: Create Provenance Session ──
+[11:03:13]   [FAIL] Could not create DAG session: 

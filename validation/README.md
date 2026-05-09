@@ -31,7 +31,25 @@ validation run on May 10, 2026.
 
 ## Current State
 
-No validation runs have been executed yet. This directory will be
+### Handbacks (from projectNUCLEUS)
+
+The `handbacks/` directory contains gap reports and pattern handbacks
+produced during NUCLEUS deployment validation. These are geological
+records — evidence of what worked, what broke, and what upstream primals
+need to evolve:
+
+- `SECURITY_HANDBACK_MAY06_2026.md` — Five-layer security validation results
+- `UPSTREAM_GAPS_HANDBACK_MAY06_2026.md` — Gaps requiring upstream primal evolution
+- `JUPYTERHUB_PATTERNS_HANDBACK.md` — Multi-user patterns validated in production
+- `NESTGATE_CONTENT_GAPS_HANDBACK.md` — Content-addressed storage gaps
+- `PETALTONGUE_GAPS_HANDBACK.md` — Self-hosted rendering gaps
+- `PRIMAL_DEEP_DEBT_HANDBACK.md` — Technical debt across primal implementations
+- `ROOTPULSE_GAPS_HANDBACK.md` — Monitoring and metrics gaps
+- `COMPOSITION_GAPS.md` — Composition-level capability mismatches
+
+### Validation Runs
+
+No thread validation runs have been executed yet. This directory will be
 populated as spring experiments begin implementing thread expressions
 and running them through NUCLEUS compositions.
 
