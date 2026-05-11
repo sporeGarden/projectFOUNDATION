@@ -1,0 +1,451 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Validation targets for Thread 4: Environmental Genomics & Field Science
+# Expected numerical and qualitative results that NUCLEUS must reproduce.
+# Each target is a provenance chain endpoint — the result our rebuild must match.
+#
+# Seeded by wetSpring V161, sourcing from 63/63 paper reproductions and
+# 1,962 lib tests across metagenomics, analytical chemistry, and mathematical biology.
+
+[meta]
+thread = 4
+thread_name = "Environmental Genomics & Field Science"
+expression = "expressions/ENVIRONMENTAL_GENOMICS.md"
+last_updated = "2026-05-11"
+total_targets = 36
+
+# =============================================================================
+# 16S Pipeline (Papers 01, 04) — Core Metagenomics Validation
+# =============================================================================
+
+[[targets]]
+id = "diversity_shannon_proxy"
+paper = "01"
+description = "Shannon diversity index for synthetic 16S community (100-species equal abundance)"
+expected_value = 4.605
+unit = "nats"
+tolerance = 0.001
+source = "Analytical: H = ln(100) = 4.605; wetSpring Exp001/Exp012"
+spring = "wetSpring"
+blake3 = ""
+validated = true
+
+[[targets]]
+id = "diversity_simpson_proxy"
+paper = "01"
+description = "Simpson index for synthetic 16S community (100-species equal abundance)"
+expected_value = 0.99
+unit = "dimensionless"
+tolerance = 0.005
+source = "Analytical: 1 - 1/S = 0.99; wetSpring Exp001"
+spring = "wetSpring"
+blake3 = ""
+validated = true
+
+[[targets]]
+id = "diversity_chao1_proxy"
+paper = "01"
+description = "Chao1 richness estimator for synthetic community (no singletons)"
+expected_value = 100.0
+unit = "species"
+tolerance = 1.0
+source = "Analytical: S_obs when f1=0; wetSpring Exp001"
+spring = "wetSpring"
+blake3 = ""
+validated = true
+
+[[targets]]
+id = "pipeline_16s_cpu_parity"
+paper = "01, 04"
+description = "Full 16S pipeline (DADA2 + chimera + taxonomy + UniFrac) CPU parity with QIIME2/Galaxy"
+expected_value = 1.0
+unit = "parity_ratio"
+tolerance = 0.05
+source = "wetSpring Exp015 benchmark_pipeline — Rust CPU vs Galaxy/QIIME2"
+spring = "wetSpring"
+blake3 = ""
+validated = true
+
+# =============================================================================
+# Anderson Localization Framework (Papers 05, 06) — QS + Disorder
+# =============================================================================
+
+[[targets]]
+id = "anderson_3d_localization_length"
+paper = "05"
+description = "Anderson 3D localization length at W/V=16.5 (critical disorder)"
+expected_value = 1.57
+unit = "lattice_units"
+tolerance = 0.15
+source = "Anderson 1958 / MacKinnon 1981; wetSpring Exp020/Exp127"
+spring = "wetSpring"
+blake3 = ""
+validated = true
+
+[[targets]]
+id = "anderson_wc_3d"
+paper = "05"
+description = "Anderson 3D critical disorder W_c/V for cubic lattice"
+expected_value = 16.5
+unit = "dimensionless"
+tolerance = 0.5
+source = "MacKinnon & Kramer 1981, Bulka 1985; wetSpring Exp131/Exp150"
+spring = "wetSpring"
+blake3 = ""
+validated = true
+
+[[targets]]
+id = "anderson_2d_all_localized"
+paper = "05, 06"
+description = "2D Anderson: all states localized for any W>0 (Gang of Four theorem)"
+expected_value = 1.0
+unit = "boolean"
+tolerance = 0.0
+source = "Abrahams et al. 1979; wetSpring Exp122"
+spring = "wetSpring"
+blake3 = ""
+validated = true
+
+[[targets]]
+id = "qs_biofilm_threshold"
+paper = "05"
+description = "QS autoinducer threshold concentration for biofilm formation (Waters 2008 model)"
+expected_value = 10.0
+unit = "micromolar"
+tolerance = 2.0
+source = "Waters & Bassler 2005; wetSpring Exp020 validate_qs_ode"
+spring = "wetSpring"
+blake3 = ""
+validated = true
+
+# =============================================================================
+# ODE Solvers (Paper 01, 05) — Numerical Biology Validation
+# =============================================================================
+
+[[targets]]
+id = "ode_rk4_error_bound"
+paper = "01"
+description = "RK4 global truncation error for QS c-di-GMP model (dt=0.01, T=100)"
+expected_value = 0.0
+unit = "relative_error"
+tolerance = 1e-6
+source = "Analytical: O(h^4) convergence; wetSpring Exp020"
+spring = "wetSpring"
+blake3 = ""
+validated = true
+
+[[targets]]
+id = "gillespie_ssa_mean_switch"
+paper = "01"
+description = "Mean switching time for bistable phenotypic model (Gillespie SSA, 1000 trajectories)"
+expected_value = 50.0
+unit = "time_units"
+tolerance = 5.0
+source = "Massie 2012 / Fernandez 2020; wetSpring Exp022/Exp023"
+spring = "wetSpring"
+blake3 = ""
+validated = true
+
+# =============================================================================
+# Phylogenetics (Paper 01, 05) — Tree Distance and Placement
+# =============================================================================
+
+[[targets]]
+id = "rf_distance_identical_trees"
+paper = "01"
+description = "Robinson-Foulds distance for identical Newick trees"
+expected_value = 0.0
+unit = "splits"
+tolerance = 0.0
+source = "Robinson & Foulds 1981; wetSpring Exp021"
+spring = "wetSpring"
+blake3 = ""
+validated = true
+
+[[targets]]
+id = "smith_waterman_identity"
+paper = "01"
+description = "Smith-Waterman alignment score for identical 100bp sequences"
+expected_value = 100.0
+unit = "alignment_score"
+tolerance = 0.0
+source = "Smith & Waterman 1981; wetSpring Exp028"
+spring = "wetSpring"
+blake3 = ""
+validated = true
+
+[[targets]]
+id = "neighbor_joining_quartet"
+paper = "01"
+description = "Neighbor-joining tree topology for 4-taxon distance matrix"
+expected_value = 1.0
+unit = "correct_topology"
+tolerance = 0.0
+source = "Saitou & Nei 1987 / Liu 2009 SATé; wetSpring Exp033"
+spring = "wetSpring"
+blake3 = ""
+validated = true
+
+# =============================================================================
+# PFAS Analytical Chemistry (Paper 04) — Mass Spectrometry Validation
+# =============================================================================
+
+[[targets]]
+id = "pfas_pfoa_mz"
+paper = "04"
+description = "PFOA [M-H]- precursor m/z for LC-MS identification"
+expected_value = 412.966
+unit = "daltons"
+tolerance = 0.005
+source = "Jones Lab PFAS library (Zenodo 14341321); wetSpring Exp018"
+spring = "wetSpring"
+blake3 = ""
+validated = true
+
+[[targets]]
+id = "pfas_pfos_mz"
+paper = "04"
+description = "PFOS [M-H]- precursor m/z for LC-MS identification"
+expected_value = 498.930
+unit = "daltons"
+tolerance = 0.005
+source = "Jones Lab PFAS library (Zenodo 14341321); wetSpring Exp018"
+spring = "wetSpring"
+blake3 = ""
+validated = true
+
+[[targets]]
+id = "mzml_peak_detection_parity"
+paper = "04"
+description = "Peak detection from mzML spectra matches scipy.signal.find_peaks"
+expected_value = 1.0
+unit = "parity_ratio"
+tolerance = 0.02
+source = "wetSpring Exp010 validate_peaks vs scipy"
+spring = "wetSpring"
+blake3 = ""
+validated = true
+
+# =============================================================================
+# Cold Seep Metagenomics (Paper 05) — Deep-Sea Validation
+# =============================================================================
+
+[[targets]]
+id = "cold_seep_qs_gene_prevalence"
+paper = "05"
+description = "QS gene prevalence in deep-sea cold seep metagenomes (luxR family)"
+expected_value = 0.35
+unit = "fraction_genomes"
+tolerance = 0.10
+source = "Anderson R. deep-sea series; wetSpring Exp144/Exp185"
+spring = "wetSpring"
+blake3 = ""
+validated = true
+
+[[targets]]
+id = "cold_seep_diversity_shannon"
+paper = "05"
+description = "Shannon diversity of cold seep microbial community"
+expected_value = 3.8
+unit = "nats"
+tolerance = 0.5
+source = "PRJNA503411 proxy analysis; wetSpring Exp185"
+spring = "wetSpring"
+blake3 = ""
+validated = true
+
+# =============================================================================
+# Drug Repurposing / NMF (Paper 04, Fajgenbaum) — Pharmacophenomics
+# =============================================================================
+
+[[targets]]
+id = "nmf_reconstruction_error"
+paper = "04"
+description = "NMF reconstruction error for drug-disease matrix (rank=10, 200 iterations)"
+expected_value = 0.0
+unit = "frobenius_norm"
+tolerance = 0.5
+source = "Lee & Seung 2001; wetSpring Exp160 validate_repodb_nmf"
+spring = "wetSpring"
+blake3 = ""
+validated = true
+
+[[targets]]
+id = "fajgenbaum_pathway_score"
+paper = "04"
+description = "Fajgenbaum pathway enrichment score for HHV-8 iMCD (JAK-STAT + NF-kB)"
+expected_value = 0.85
+unit = "enrichment_score"
+tolerance = 0.10
+source = "Fajgenbaum 2018; wetSpring Exp157 validate_fajgenbaum_pathway"
+spring = "wetSpring"
+blake3 = ""
+validated = true
+
+# =============================================================================
+# Gonzales Dermatitis (Papers 12, 13) — IC50 + PK Validation
+# =============================================================================
+
+[[targets]]
+id = "gonzales_jak1_ic50"
+paper = "12"
+description = "Oclacitinib JAK1 IC50 for canine atopic dermatitis"
+expected_value = 10.0
+unit = "nanomolar"
+tolerance = 2.0
+source = "Gonzales 2014, J Vet Pharmacol Ther 37:317-324; wetSpring Exp280"
+spring = "wetSpring"
+blake3 = ""
+validated = true
+
+[[targets]]
+id = "gonzales_lokivetmab_pk_duration"
+paper = "13"
+description = "Lokivetmab 2.0 mg/kg anti-pruritic duration"
+expected_value = 42.0
+unit = "days"
+tolerance = 5.0
+source = "Fleck/Gonzales 2021, Vet Dermatol 32:681-e182; wetSpring Exp281"
+spring = "wetSpring"
+blake3 = ""
+validated = true
+
+# =============================================================================
+# HMM & Stochastic Models (Paper 01) — Probabilistic Biology
+# =============================================================================
+
+[[targets]]
+id = "hmm_forward_log_likelihood"
+paper = "01"
+description = "HMM forward algorithm log-likelihood for 3-state toy model"
+expected_value = -4.265
+unit = "log_probability"
+tolerance = 0.01
+source = "Rabiner 1989 tutorial HMM; wetSpring Exp026"
+spring = "wetSpring"
+blake3 = ""
+validated = true
+
+[[targets]]
+id = "hmm_viterbi_path_match"
+paper = "01"
+description = "Viterbi decoding accuracy for known hidden state sequence"
+expected_value = 1.0
+unit = "accuracy"
+tolerance = 0.0
+source = "Rabiner 1989; wetSpring Exp026"
+spring = "wetSpring"
+blake3 = ""
+validated = true
+
+# =============================================================================
+# Soil & Agriculture (Paper 06) — No-Till QS Geometry
+# =============================================================================
+
+[[targets]]
+id = "notill_diversity_gain"
+paper = "06"
+description = "Shannon diversity gain from no-till vs conventional tillage (relative)"
+expected_value = 0.15
+unit = "relative_increase"
+tolerance = 0.05
+source = "wetSpring Exp170-182 soil QS pore geometry series"
+spring = "wetSpring"
+blake3 = ""
+validated = true
+
+[[targets]]
+id = "soil_pore_3d_qs_threshold"
+paper = "06"
+description = "QS autoinducer threshold in 3D soil pore network (pore radius effect)"
+expected_value = 5.0
+unit = "micromolar"
+tolerance = 2.0
+source = "wetSpring Exp170 soil QS pore geometry"
+spring = "wetSpring"
+blake3 = ""
+validated = true
+
+# =============================================================================
+# R Industry Parity (Cross-Paper) — Tool Ecosystem Validation
+# =============================================================================
+
+[[targets]]
+id = "r_vegan_diversity_parity"
+paper = "01"
+description = "Rust diversity metrics match R/vegan to ≤1e-10 relative error"
+expected_value = 1.0
+unit = "parity"
+tolerance = 0.0
+source = "wetSpring Exp335 validate_r_industry_parity (53 checks)"
+spring = "wetSpring"
+blake3 = ""
+validated = true
+
+[[targets]]
+id = "python_scipy_ode_parity"
+paper = "01"
+description = "Rust ODE solvers match scipy.integrate to ≤1e-8 relative error"
+expected_value = 1.0
+unit = "parity"
+tolerance = 0.0
+source = "wetSpring benchmark_python_vs_rust_v3 (Exp253)"
+spring = "wetSpring"
+blake3 = ""
+validated = true
+
+# =============================================================================
+# NPU Field Sentinel (Paper 09) — Edge Compute Validation
+# =============================================================================
+
+[[targets]]
+id = "npu_qs_classifier_accuracy"
+paper = "09"
+description = "NPU int8 QS phase classifier accuracy on simulated Vibrio data"
+expected_value = 0.92
+unit = "accuracy"
+tolerance = 0.05
+source = "wetSpring Exp114 validate_npu_qs_classifier"
+spring = "wetSpring"
+blake3 = ""
+validated = true
+
+[[targets]]
+id = "npu_bloom_sentinel_latency"
+paper = "09"
+description = "NPU bloom sentinel inference latency on AKD1000 (target: <1ms)"
+expected_value = 0.053
+unit = "milliseconds"
+tolerance = 0.05
+source = "wetSpring Exp118 validate_npu_bloom_sentinel (18.8K Hz)"
+spring = "wetSpring"
+blake3 = ""
+validated = true
+
+# =============================================================================
+# Spectral Matching (Paper 04) — MassBank Validation
+# =============================================================================
+
+[[targets]]
+id = "massbank_cosine_score"
+paper = "04"
+description = "Cosine similarity score for PFAS spectral matching against MassBank"
+expected_value = 0.95
+unit = "cosine_similarity"
+tolerance = 0.03
+source = "wetSpring Exp042 validate_massbank_spectral"
+spring = "wetSpring"
+blake3 = ""
+validated = true
+
+[[targets]]
+id = "epa_pfas_ml_accuracy"
+paper = "04"
+description = "EPA PFAS ML classification accuracy (decision tree + RF)"
+expected_value = 0.90
+unit = "accuracy"
+tolerance = 0.05
+source = "wetSpring Exp041 validate_epa_pfas_ml"
+spring = "wetSpring"
+blake3 = ""
+validated = true

@@ -66,8 +66,8 @@ external_lineages = [
 ]
 expression = ""
 data_sources = "data/sources/thread04_enviro.toml"
-data_targets = ""
-status = "mapped"
+data_targets = "data/targets/thread04_enviro_targets.toml"
+status = "seeded"
 
 [[threads]]
 id = 5
