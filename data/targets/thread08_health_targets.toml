@@ -1,0 +1,182 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Validation targets for Thread 8: Human Health & Clinical Translation
+# Expected results from healthSpring V62 validated science.
+
+[meta]
+thread = 8
+thread_name = "Human Health & Clinical Translation"
+expression = "expressions/SOVEREIGN_HEALTH.md"
+last_updated = "2026-05-11"
+total_targets = 12
+
+# =============================================================================
+# PK/PD: Hill dose-response and compartmental pharmacokinetics
+# =============================================================================
+
+[[targets]]
+id = "hill_dose_response_4param"
+paper = "13"
+description = "4-parameter Hill dose-response matches analytical solution (IC50, Hill coefficient, Emax, E0)"
+expected_value = 1.0
+unit = "qualitative_match"
+tolerance = 1e-12
+source = "healthSpring Exp001 (18/18 checks)"
+spring = "healthSpring"
+blake3 = ""
+validated = true
+notes = "JAK inhibitors + canine reference. Pure Rust matches Python NumPy baseline."
+
+[[targets]]
+id = "one_compartment_pk"
+paper = "13"
+description = "One-compartment PK (IV + oral + multiple dosing + AUC) matches analytical solution"
+expected_value = 1.0
+unit = "qualitative_match"
+tolerance = 1e-10
+source = "healthSpring Exp002 (18/18 checks)"
+spring = "healthSpring"
+blake3 = ""
+validated = true
+notes = "Exponential decay, absorption phases, superposition principle."
+
+[[targets]]
+id = "population_pk_nlme"
+paper = "13"
+description = "Population PK via NLME (FOCE + SAEM) reproduces reference parameter estimates"
+expected_value = 1.0
+unit = "qualitative_match"
+tolerance = 0.05
+source = "healthSpring Exp075-076 (NLME validation)"
+spring = "healthSpring"
+blake3 = ""
+validated = true
+notes = "Sovereign NLME replaces NONMEM/Monolix. FOCE and SAEM convergence validated."
+
+# =============================================================================
+# Microbiome: diversity and gut modeling
+# =============================================================================
+
+[[targets]]
+id = "shannon_diversity_index"
+paper = "13"
+description = "Shannon diversity index matches analytical formula"
+expected_value = 1.0
+unit = "qualitative_match"
+tolerance = 1e-12
+source = "healthSpring Exp010 (Shannon/Simpson validation)"
+spring = "healthSpring"
+blake3 = ""
+validated = true
+notes = "Pure Rust. Also validates Simpson, Pielou evenness, Chao1."
+
+[[targets]]
+id = "anderson_gut_localization"
+paper = "12, 13"
+description = "Anderson gut lattice localization reproduces spectral gap and IPR scaling"
+expected_value = 1.0
+unit = "qualitative_match"
+tolerance = 1e-4
+source = "healthSpring Exp011 (Anderson gut lattice)"
+spring = "healthSpring"
+blake3 = ""
+validated = true
+notes = "Shared with wetSpring. Eigenvalue statistics match theoretical predictions."
+
+# =============================================================================
+# Biosignal: ECG processing and real-time monitoring
+# =============================================================================
+
+[[targets]]
+id = "pan_tompkins_qrs"
+paper = "13"
+description = "Pan-Tompkins QRS detection sensitivity > 99% on MIT-BIH reference"
+expected_value = 0.99
+unit = "sensitivity"
+tolerance = 0.01
+source = "healthSpring Exp020 (Pan-Tompkins validation)"
+spring = "healthSpring"
+blake3 = ""
+validated = true
+notes = "Pure Rust reimplementation. No DSP library dependencies."
+
+[[targets]]
+id = "arrhythmia_classification"
+paper = "13"
+description = "Beat classification (Normal, PVC, PAC, BBB, Fusion) matches reference labels"
+expected_value = 0.95
+unit = "accuracy"
+tolerance = 0.03
+source = "healthSpring Exp082 (arrhythmia classification)"
+spring = "healthSpring"
+blake3 = ""
+validated = true
+notes = "MIT-BIH test set. Rule-based + morphology features."
+
+# =============================================================================
+# Endocrine: testosterone PK and TRT outcomes
+# =============================================================================
+
+[[targets]]
+id = "testosterone_pk_trt"
+paper = "13"
+description = "Testosterone cypionate PK matches published half-life and Cmax/Cmin ratio"
+expected_value = 1.0
+unit = "qualitative_match"
+tolerance = 0.10
+source = "healthSpring Exp030 (endocrine PK)"
+spring = "healthSpring"
+blake3 = ""
+validated = true
+notes = "Population variability via NLME. Cardiac risk scoring included."
+
+# =============================================================================
+# GPU parity: Rust CPU vs barraCuda WGSL
+# =============================================================================
+
+[[targets]]
+id = "gpu_cpu_parity"
+paper = "13"
+description = "GPU (WGSL) results match CPU (Rust) for all 6 shader kernels"
+expected_value = 1.0
+unit = "qualitative_match"
+tolerance = 1e-4
+source = "healthSpring Exp053/060/067 (GPU parity, 42/42)"
+spring = "healthSpring"
+blake3 = ""
+validated = true
+notes = "Hill, PopPK, Diversity, MM, SCFA, Beat kernels. barraCuda v0.3.13."
+
+# =============================================================================
+# CPU parity: Rust vs Python NumPy
+# =============================================================================
+
+[[targets]]
+id = "cpu_python_parity"
+paper = "13"
+description = "Rust CPU 84x faster than Python NumPy with identical numerical results"
+expected_value = 84.0
+unit = "speedup_factor"
+tolerance = 10.0
+source = "healthSpring Exp084 (33+17 checks)"
+spring = "healthSpring"
+blake3 = ""
+validated = true
+notes = "bench_barracuda_cpu_vs_python.py + bench_v16_cpu_vs_python.py baselines."
+
+# =============================================================================
+# Comparative medicine: cross-species PK
+# =============================================================================
+
+[[targets]]
+id = "cross_species_pk_canine"
+paper = "22"
+description = "Canine-to-human PK transfer via allometric scaling matches published ratios"
+expected_value = 1.0
+unit = "qualitative_match"
+tolerance = 0.15
+source = "healthSpring Exp004/100-106 (comparative medicine)"
+spring = "healthSpring"
+blake3 = ""
+validated = true
+notes = "Canine AD (Gonzales), feline hyperthyroid, equine laminitis. Species-agnostic math."
