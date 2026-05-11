@@ -42,16 +42,16 @@ id = "02"
 title = "Extending the Frozen Fossil Record"
 domain = "Evolutionary Biology"
 status = "proposal"
-threads = [4]
-springs = ["wetSpring", "neuralSpring", "groundSpring"]
+threads = [5]
+springs = ["wetSpring", "neuralSpring", "groundSpring", "hotSpring"]
 checks = 0
 experiments = 0
 key_finding = "Constrained evolution predictions for LTEE, permafrost, vent archives"
-ncbi_anchors = []
-other_anchors = ["Lenski LTEE frozen fossil collection"]
-data_sources = "data/sources/thread04_enviro.toml"
+ncbi_anchors = ["PRJNA29543", "PRJNA380528", "PRJNA188627", "PRJNA294072"]
+other_anchors = ["Lenski LTEE frozen fossil collection", "Dryad doi:10.5061/dryad.0hc2m"]
+data_sources = "data/sources/thread05_ltee.toml"
 contacts = []
-notes = "Awaiting LTEE sequencing data."
+notes = "groundSpring B1 (8/8) + B2 (10/10) reproduced. lithoSpore integration ready for modules 1+2."
 
 # =============================================================================
 # Paper 03: Precision Microbiome for Tree Crops

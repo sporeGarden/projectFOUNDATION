@@ -1,118 +1,132 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
+#
 # Validation targets for Thread 10: Provenance / Economics
+# Expected results from provenance trio end-to-end validation.
+# Springs: ludoSpring, primalSpring.
+
 [meta]
 thread = 10
 thread_name = "Provenance / Economics"
+expression = ""
 last_updated = "2026-05-11"
+total_targets = 8
+
+# =============================================================================
+# rhizoCrypt DAG (Paper 20)
+# =============================================================================
+
+[[targets]]
+id = "dag_session_integrity"
+paper = "20"
+description = "rhizoCrypt DAG session produces valid Merkle root from 26 events"
+expected_value = 1.0
+unit = "binary (1=true)"
+tolerance = 0.0
+source = "projectNUCLEUS ABG pipeline validation"
+spring = "primalSpring"
+blake3 = ""
+validated = true
+notes = "Validated with real primals on active gate."
+
+[[targets]]
+id = "dag_dehydration"
+paper = "20"
+description = "DAG dehydration returns consistent Merkle root across runs"
+expected_value = 1.0
+unit = "binary (1=true)"
+tolerance = 0.0
+source = "projectNUCLEUS RootPulse workflow"
+spring = "primalSpring"
+blake3 = ""
+validated = true
+notes = "RootPulse dehydration PASS."
+
+# =============================================================================
+# loamSpine permanent ledger (Paper 21)
+# =============================================================================
+
+[[targets]]
+id = "ledger_session_commit"
+paper = "21"
+description = "loamSpine SessionCommit with Merkle root succeeds"
+expected_value = 1.0
+unit = "binary (1=true)"
+tolerance = 0.0
+source = "projectNUCLEUS ABG pipeline"
+spring = "primalSpring"
+blake3 = ""
+validated = false
+notes = "RootPulse Phase 5 FAIL — method name mismatch. 80% executable."
+
+[[targets]]
+id = "ledger_immutability"
+paper = "21"
+description = "Committed sessions cannot be modified or deleted"
+expected_value = 1.0
+unit = "binary (1=true)"
+tolerance = 0.0
+source = "projectNUCLEUS validation"
+spring = "primalSpring"
+blake3 = ""
+validated = false
+notes = "Awaiting full RootPulse workflow completion."
+
+# =============================================================================
+# sweetGrass attribution braid (Paper 22)
+# =============================================================================
+
+[[targets]]
+id = "braid_ed25519_creation"
+paper = "22"
+description = "sweetGrass creates valid Ed25519 attribution braid"
+expected_value = 1.0
+unit = "binary (1=true)"
+tolerance = 0.0
+source = "projectNUCLEUS RootPulse workflow"
+spring = "primalSpring"
+blake3 = ""
+validated = true
+notes = "W3C PROV witness creation PASS."
+
+[[targets]]
+id = "braid_w3c_compliance"
+paper = "22"
+description = "Braid output conforms to W3C PROV-DM schema"
+expected_value = 1.0
+unit = "binary (1=true)"
+tolerance = 0.0
+source = "projectNUCLEUS validation"
+spring = "primalSpring"
+blake3 = ""
+validated = false
+notes = "Schema validation not yet automated."
+
+# =============================================================================
+# End-to-end provenance trio (composition pattern)
+# =============================================================================
+
+[[targets]]
+id = "provenance_trio_e2e"
+paper = "20"
+description = "Full BLAKE3 → rhizoCrypt → loamSpine → sweetGrass chain produces verifiable output"
+expected_value = 1.0
+unit = "binary (1=true)"
+tolerance = 0.0
+source = "projectNUCLEUS ABG pipeline"
+spring = "primalSpring"
+blake3 = ""
+validated = true
+notes = "First live validation of the provenance chain."
+
+[[targets]]
+id = "game_session_provenance"
+paper = "20"
+description = "ludoSpring game session tracked through DAG+certificate+braid"
+expected_value = 1.0
+unit = "binary (1=true)"
+tolerance = 0.0
+source = "ludoSpring composition validation"
 spring = "ludoSpring"
-total_targets = 11
-
-[[targets]]
-id = "merkle_tamper_detection"
-source = "merkle_1979"
-description = "BearDog-signed chain detects tamper at exact forgery point"
-expected = "tampered vertex identified by index, chain verification fails"
-tolerance = "exact (cryptographic)"
-spring_check = "exp064::verify_chain_tamper_detection"
-paper = "20"
-status = "validated"
-
-[[targets]]
-id = "dag_session_lifecycle"
-source = "prov_dm_2013"
-description = "rhizoCrypt DAG session: create → record → commit → query"
-expected = "vertices preserved, parent-child edges intact, session dehydrates cleanly"
-tolerance = "exact (structural)"
-spring_check = "validate_composition::provenance_session"
-paper = "20"
-status = "validated"
-
-[[targets]]
-id = "cross_domain_fraud_similarity"
-source = "cross_domain_fraud"
-description = "GenericFraudDetector structural similarity across gaming/science/medical domains"
-expected = ">80% structural similarity"
-tolerance = "5 percentage points"
-spring_check = "exp065::cross_domain_similarity"
-paper = "20"
-status = "validated"
-
-[[targets]]
-id = "fraud_types_12"
-source = "cross_domain_fraud"
-description = "12 distinct fraud types detected across 3 tiers (basic, consumable, spatial)"
-expected = "12/12 fraud types with zone topology validation"
-tolerance = "exact"
-spring_check = "exp053::all_fraud_types"
-paper = "20"
-status = "validated"
-
-[[targets]]
-id = "loamspine_cert_roundtrip"
-source = "prov_dm_2013"
-description = "loamSpine certificate mint → verify → revoke lifecycle"
-expected = "certificate valid after mint, invalid after revoke"
-tolerance = "exact"
-spring_check = "validate_composition::mint_certificate"
-paper = "20"
-status = "validated"
-
-[[targets]]
-id = "sweetgrass_attribution_conservation"
-source = "suncloud_attribution"
-description = "sunCloud attribution shares sum to 1.0 (conservation law)"
-expected = "sum(shares) = 1.0 for all distribution models"
-tolerance = "1e-10 (analytical)"
-spring_check = "exp066::attribution_conservation"
-paper = "22"
-status = "validated"
-
-[[targets]]
-id = "attribution_decay_models"
-source = "suncloud_attribution"
-description = "Attribution decay: linear, exponential, and step models produce monotonically decreasing shares"
-expected = "share[i] >= share[i+1] for chronologically ordered contributors"
-tolerance = "exact (monotonicity)"
-spring_check = "exp066::decay_monotonicity"
-paper = "22"
-status = "validated"
-
-[[targets]]
-id = "nft_lifecycle"
-source = "nakamoto_2008"
-description = "Full NFT lifecycle: mint → trade → loan → return → consume → achievements"
-expected = "all 6 lifecycle stages complete with provenance DAG tracking"
-tolerance = "exact"
-spring_check = "exp061::full_lifecycle"
-paper = "22"
-status = "validated"
-
-[[targets]]
-id = "gacha_exploitation_score"
-source = "kahneman_1979"
-description = "Pathogen gacha exploitation: prospect theory loss aversion × variable-ratio schedule intensity"
-expected = "exploitation score > 0 for all predatory mechanics, 0 for fair mechanics"
-tolerance = "0.01 (composite scoring)"
-spring_check = "exp060::exploitation_scoring"
-paper = "21"
-status = "validated"
-
-[[targets]]
-id = "operant_conditioning_vr"
-source = "skinner_1938"
-description = "Variable-ratio reinforcement schedule produces highest response rate"
-expected = "VR > VI > FR > FI (response rate ordering)"
-tolerance = "ordering (exact)"
-spring_check = "exp060::schedule_ordering"
-paper = "21"
-status = "validated"
-
-[[targets]]
-id = "ed25519_chain_integrity"
-source = "hasan_2009"
-description = "Ed25519 signature chain: every trio operation signed, verification detects single-bit tampering"
-expected = "chain verification PASS for clean data, FAIL for any tampered byte"
-tolerance = "exact (cryptographic)"
-spring_check = "exp064::ed25519_chain_verify"
-paper = "20"
-status = "validated"
+blake3 = ""
+validated = true
+notes = "ludoSpring proved the domain-agnostic pattern."

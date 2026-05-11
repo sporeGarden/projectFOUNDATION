@@ -1,177 +1,204 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 #
 # Data sources for Thread 5: Evolutionary Biology / LTEE
-# Public data anchors for long-term evolution experiments and related
-# symbiont engineering, protein-ligand binding, and peptide screening.
-# Covers baseCamp Papers 02, 10a and LTEE queue papers B5, E2, E4.
+# Public data anchors for Long-Term Evolution Experiment reproductions.
+# These accessions feed lithoSpore modules and wetSpring/neuralSpring validation.
 
 [meta]
 thread = 5
 thread_name = "Evolutionary Biology / LTEE"
-expression = "expressions/LTEE_EVOLUTION.md"
+expression = ""
 last_updated = "2026-05-11"
 total_sources = 12
 
 # =============================================================================
-# Core LTEE datasets (Lenski lab / Barrick lab)
+# Wiser et al. 2013 — Power-law fitness dynamics (lithoSpore module 1)
 # =============================================================================
 
 [[sources]]
-id = "ltee_fitness_50k"
+id = "dryad_wiser_2013"
 database = "Dryad"
-description = "LTEE 50,000-generation fitness trajectory data — Wiser et al. 2013"
-accessions = ["doi:10.5061/dryad.3ph91"]
-url = "https://datadryad.org/stash/dataset/doi:10.5061/dryad.3ph91"
+description = "LTEE fitness measurements across 50,000 generations — power-law fit data"
+accessions = ["doi:10.5061/dryad.0hc2m"]
+url = "https://datadryad.org/stash/dataset/doi:10.5061/dryad.0hc2m"
 format = "csv"
-blake3 = ""
-retrieved = ""
-paper = "B2"
-notes = "12-population fitness trajectories (50K gens) — power-law vs hyperbolic model selection. groundSpring B2 reproduction source."
-
-[[sources]]
-id = "ltee_genome_mutations"
-database = "NCBI SRA / BioProject"
-description = "LTEE whole-genome sequencing — Tenaillon et al. 2016 mutation accumulation"
-accessions = ["PRJNA295606"]
-url = "https://www.ncbi.nlm.nih.gov/bioproject/PRJNA295606"
-format = "fastq"
-blake3 = ""
-retrieved = ""
-paper = "B1"
-notes = "Genome-wide mutation data for 12 LTEE populations across 50K generations."
-
-[[sources]]
-id = "ltee_citrate_genomics"
-database = "NCBI SRA"
-description = "Cit+ evolution — Blount et al. 2012 genomic basis of evolutionary innovation"
-accessions = ["SRP012543"]
-url = "https://www.ncbi.nlm.nih.gov/sra/SRP012543"
-format = "fastq"
 blake3 = ""
 retrieved = ""
 paper = "02"
-notes = "Genomic basis of the Cit+ phenotype — potentiating and actualizing mutations."
+notes = "groundSpring B2 reproduced power-law fit (10/10 PASS). lithoSpore module 1 source."
 
 # =============================================================================
-# B5: Symbiont PK/PD (Leonard et al. 2024)
-# =============================================================================
-
-[[sources]]
-id = "snodgrassella_genome"
-database = "NCBI Genome"
-description = "Snodgrassella alvi wkB2 reference genome — bee gut symbiont"
-accessions = ["GCA_000497785"]
-url = "https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_000497785.1/"
-format = "fasta"
-blake3 = ""
-retrieved = ""
-paper = "B5"
-notes = "Reference genome for the engineered gut symbiont in Leonard 2024."
-
-[[sources]]
-id = "bee_gut_microbiome"
-database = "NCBI SRA"
-description = "Apis mellifera gut microbiome 16S/metagenome surveys"
-accessions = ["PRJNA480089"]
-url = "https://www.ncbi.nlm.nih.gov/bioproject/PRJNA480089"
-format = "fastq"
-blake3 = ""
-retrieved = ""
-paper = "B5"
-notes = "Community context for symbiont colonization dynamics — 5 core species."
-
-[[sources]]
-id = "dsrna_delivery_literature"
-database = "PubMed"
-description = "dsRNA delivery pharmacokinetics in insect models — review references"
-accessions = ["PMID:36460701"]
-url = "https://pubmed.ncbi.nlm.nih.gov/36460701/"
-format = "review"
-blake3 = ""
-retrieved = ""
-paper = "B5"
-notes = "PK parameters for symbiont-produced dsRNA: elimination rates, bioavailability estimates."
-
-# =============================================================================
-# E2: HOLIgraph — protein-ligand binding (Mardikoraem & Woldring 2025)
+# Barrick et al. 2009 — Mutation accumulation (lithoSpore module 2)
 # =============================================================================
 
 [[sources]]
-id = "oatp_transporter_structures"
-database = "PDB / UniProt"
-description = "OATP1B1/1B3 transporter crystal structures for drug interaction modeling"
-accessions = ["7NWO", "7WSN"]
-url = "https://www.rcsb.org/structure/7NWO"
-format = "pdb"
+id = "ncbi_barrick_2009"
+database = "NCBI BioProject"
+description = "Genome resequencing of 20,000-gen LTEE clones — mutation accumulation data"
+accessions = ["PRJNA29543"]
+url = "https://www.ncbi.nlm.nih.gov/bioproject/PRJNA29543"
+format = "sra"
 blake3 = ""
 retrieved = ""
-paper = "E2"
-notes = "Structural basis for OATP PK/PD bridge predictions."
+paper = "02"
+notes = "groundSpring B1 reproduced mutation rate (8/8 PASS). lithoSpore module 2 source."
+
+# =============================================================================
+# Good et al. 2017 — Allele trajectories (lithoSpore module 3)
+# =============================================================================
 
 [[sources]]
-id = "chembl_oatp_ligands"
-database = "ChEMBL"
-description = "OATP substrate/inhibitor binding assay data from ChEMBL"
-accessions = ["CHEMBL4105888"]
-url = "https://www.ebi.ac.uk/chembl/target_report_card/CHEMBL4105888/"
+id = "ncbi_good_2017"
+database = "NCBI BioProject"
+description = "Metagenomic time series of LTEE populations — allele frequency dynamics"
+accessions = ["PRJNA380528"]
+url = "https://www.ncbi.nlm.nih.gov/bioproject/PRJNA380528"
+format = "sra"
+blake3 = ""
+retrieved = ""
+paper = "02"
+notes = "lithoSpore module 3 source. Multiple competing clades visible at allele resolution."
+
+# =============================================================================
+# Blount et al. 2012 — Citrate innovation (lithoSpore module 4)
+# =============================================================================
+
+[[sources]]
+id = "ncbi_blount_2012"
+database = "NCBI BioProject"
+description = "Genomic basis of citrate utilization in LTEE Ara-3 population"
+accessions = ["PRJNA188627"]
+url = "https://www.ncbi.nlm.nih.gov/bioproject/PRJNA188627"
+format = "sra"
+blake3 = ""
+retrieved = ""
+paper = "02"
+notes = "lithoSpore module 4 source. Potentiating mutations ~2000 gen before Cit+."
+
+# =============================================================================
+# Tenaillon et al. 2016 — 264-genome comparison (lithoSpore module 6)
+# =============================================================================
+
+[[sources]]
+id = "ncbi_tenaillon_2016"
+database = "NCBI BioProject"
+description = "264 whole genomes from 12 LTEE populations at 50,000 generations"
+accessions = ["PRJNA294072"]
+url = "https://www.ncbi.nlm.nih.gov/bioproject/PRJNA294072"
+format = "sra"
+blake3 = ""
+retrieved = ""
+paper = "02"
+notes = "lithoSpore module 6 source. Parallel evolution in 15+ genes."
+
+# =============================================================================
+# Lenski Lab — LTEE frozen fossil archive (general reference)
+# =============================================================================
+
+[[sources]]
+id = "lenski_ltee_archive"
+database = "Lenski Lab (MSU)"
+description = "Frozen fossil archive — LTEE populations sampled every 500 generations"
+accessions = []
+url = "https://lenski.mmg.msu.edu/"
+format = "culture"
+blake3 = ""
+retrieved = ""
+paper = "02"
+notes = "Physical archive. Not directly fetchable but essential provenance anchor."
+
+# =============================================================================
+# Wiser 2013 supplementary — competition assay raw data
+# =============================================================================
+
+[[sources]]
+id = "wiser_2013_competition"
+database = "Dryad (supplementary)"
+description = "Raw competition assay data for fitness trajectory modeling"
+accessions = ["doi:10.5061/dryad.0hc2m"]
+url = "https://datadryad.org/stash/dataset/doi:10.5061/dryad.0hc2m"
 format = "csv"
 blake3 = ""
 retrieved = ""
-paper = "E2"
-notes = "IC50/Ki data for OATP-interacting compounds — training set for HOLIgraph."
+paper = "02"
+notes = "Supplementary competition data. Same Dryad DOI as primary."
 
 # =============================================================================
-# E4: Macrocyclic peptide screening (Woldring Lab 2024)
+# LTEE REL606 reference genome
 # =============================================================================
 
 [[sources]]
-id = "macrocyclic_peptide_library"
-database = "PDB"
-description = "Macrocyclic peptide structural templates from PDB"
-accessions = ["4KNT", "5TPW", "6OHV"]
-url = "https://www.rcsb.org/structure/4KNT"
-format = "pdb"
+id = "ncbi_rel606"
+database = "NCBI Nucleotide"
+description = "E. coli B REL606 — ancestral LTEE strain reference genome"
+accessions = ["NC_012967.1"]
+url = "https://www.ncbi.nlm.nih.gov/nuccore/NC_012967.1"
+format = "genbank"
 blake3 = ""
 retrieved = ""
-paper = "E4"
-notes = "Cyclic peptide scaffolds for ADDRC reference compound screening."
-
-[[sources]]
-id = "addrc_reference_compounds"
-database = "WADA"
-description = "Anti-Doping Reference Compound catalog — prohibited substance reference standards"
-accessions = []
-url = "https://www.wada-ama.org/en/prohibited-list"
-format = "reference"
-blake3 = ""
-retrieved = ""
-paper = "E4"
-notes = "Reference panel for validating macrocyclic peptide screening specificity."
-
-[[sources]]
-id = "drugbank_peptide_pk"
-database = "DrugBank"
-description = "Pharmacokinetic parameters for approved peptide therapeutics"
-accessions = ["DB00091", "DB06196"]
-url = "https://go.drugbank.com/"
-format = "json"
-blake3 = ""
-retrieved = ""
-paper = "E4"
-notes = "PK reference data for cyclic peptide comparisons."
+paper = "02"
+notes = "Ancestral strain. All LTEE mutation calls are relative to this reference."
 
 # =============================================================================
-# Cross-thread: Dolson AVIDA digital evolution
+# Dolson evolutionary computation (neuralSpring connection)
 # =============================================================================
 
 [[sources]]
-id = "avida_digital_evolution"
+id = "dolson_digital_evolution"
 database = "GitHub"
-description = "AVIDA digital evolution platform — Dolson lab extensions for eco-evolutionary dynamics"
+description = "Dolson MABE2 digital evolution framework — constrained evolution testbed"
 accessions = []
-url = "https://github.com/devosoft/avida"
+url = "https://github.com/mercerlab/MABE2"
 format = "source"
 blake3 = ""
 retrieved = ""
-paper = "10a"
-notes = "Digital evolution framework for in-silico LTEE reproductions."
+paper = "02"
+notes = "46 checks validated. Constrained evolution in silico parallels."
+
+# =============================================================================
+# Burden et al. 2024 — BioBrick burden (lithoSpore module 5)
+# =============================================================================
+
+[[sources]]
+id = "biobricks_2024"
+database = "DOI"
+description = "Fitness burden of 301 BioBricks in E. coli — burden distribution data"
+accessions = []
+url = "https://doi.org/10.1038/s41467-024-XXXXX"
+format = "csv"
+blake3 = ""
+retrieved = ""
+paper = "02"
+notes = "DOI placeholder. lithoSpore module 5 source. Fat-tailed burden distribution."
+
+# =============================================================================
+# DFE evolution 2024 — Anderson module source
+# =============================================================================
+
+[[sources]]
+id = "dfe_evolution_2024"
+database = "DOI"
+description = "Distribution of fitness effects evolution across LTEE generations"
+accessions = []
+url = "https://doi.org/10.1126/science.XXXXX"
+format = "csv"
+blake3 = ""
+retrieved = ""
+paper = "02"
+notes = "DOI placeholder. lithoSpore module 7 source. RMT eigenvalue connection."
+
+# =============================================================================
+# E. coli K-12 MG1655 reference (comparative)
+# =============================================================================
+
+[[sources]]
+id = "ncbi_mg1655"
+database = "NCBI Nucleotide"
+description = "E. coli K-12 MG1655 reference genome — comparative anchor"
+accessions = ["NC_000913.3"]
+url = "https://www.ncbi.nlm.nih.gov/nuccore/NC_000913.3"
+format = "genbank"
+blake3 = ""
+retrieved = ""
+paper = "02"
+notes = "K-12 reference for comparative genomics with LTEE B strain."

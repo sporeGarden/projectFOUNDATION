@@ -1,107 +1,108 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
+#
 # Data sources for Thread 10: Provenance / Economics
+# Provenance infrastructure validation data.
+# Springs: ludoSpring, primalSpring.
+
 [meta]
 thread = 10
 thread_name = "Provenance / Economics"
+expression = ""
 last_updated = "2026-05-11"
-total_sources = 10
+total_sources = 6
+
+# =============================================================================
+# rhizoCrypt DAG validation (Paper 20)
+# =============================================================================
 
 [[sources]]
-id = "merkle_1979"
-database = "Literature"
-description = "Merkle RC (1979) Secrecy, authentication, and public key systems — Merkle trees for tamper-evident data structures"
-accessions = ["10.5555/910275"]
-url = "https://doi.org/10.5555/910275"
-format = "pdf"
+id = "rhizocrypt_test_vectors"
+database = "internal"
+description = "rhizoCrypt DAG session vectors — 26 events, Merkle root validation"
+accessions = []
+url = ""
+format = "json"
+blake3 = ""
+retrieved = ""
 paper = "20"
-notes = "ludoSpring: BearDog-signed provenance chain (exp064). Merkle integrity for DAG vertices."
+notes = "projectNUCLEUS validated end-to-end. Internal test vectors."
+
+# =============================================================================
+# loamSpine ledger validation (Paper 21)
+# =============================================================================
 
 [[sources]]
-id = "prov_dm_2013"
+id = "loamspine_session_commits"
+database = "internal"
+description = "loamSpine SessionCommit with Merkle root — permanent ledger validation"
+accessions = []
+url = ""
+format = "json"
+blake3 = ""
+retrieved = ""
+paper = "21"
+notes = "projectNUCLEUS validated SessionCommit flow."
+
+# =============================================================================
+# sweetGrass attribution braid (Paper 22)
+# =============================================================================
+
+[[sources]]
+id = "sweetgrass_braid_vectors"
+database = "internal"
+description = "sweetGrass Ed25519 attribution braid — W3C PROV witness creation"
+accessions = []
+url = ""
+format = "json"
+blake3 = ""
+retrieved = ""
+paper = "22"
+notes = "projectNUCLEUS validated braid creation with real primals."
+
+# =============================================================================
+# W3C PROV standard reference
+# =============================================================================
+
+[[sources]]
+id = "w3c_prov_standard"
 database = "W3C"
-description = "PROV-DM: The PROV Data Model (2013) — W3C standard for provenance interchange"
-accessions = ["W3C-REC-prov-dm-20130430"]
+description = "W3C PROV-DM and PROV-O specification — provenance data model"
+accessions = []
 url = "https://www.w3.org/TR/prov-dm/"
 format = "html"
-paper = "20"
-notes = "ludoSpring: rhizoCrypt DAG implements PROV-DM entity/activity/agent with game-domain semantics."
-
-[[sources]]
-id = "hasan_2009"
-database = "Literature"
-description = "Hasan R et al. (2009) Preventing history forgery with secure provenance — tamper-evident provenance logs"
-accessions = ["10.1145/1655008.1655016"]
-url = "https://doi.org/10.1145/1655008.1655016"
-format = "pdf"
-paper = "20"
-notes = "ludoSpring: exp064 BearDog-signed chain validates tamper detection at exact point of forgery."
-
-[[sources]]
-id = "simmhan_2005"
-database = "Literature"
-description = "Simmhan YL et al. (2005) A survey of data provenance in e-science"
-accessions = ["10.1145/1084805.1084812"]
-url = "https://doi.org/10.1145/1084805.1084812"
-format = "pdf"
-paper = "20"
-notes = "Survey context for cross-domain provenance. ludoSpring demonstrates gaming/science/medical isomorphism."
-
-[[sources]]
-id = "kahneman_1979"
-database = "Literature"
-description = "Kahneman D & Tversky A (1979) Prospect Theory — decision-making under risk"
-accessions = ["10.2307/1914185"]
-url = "https://doi.org/10.2307/1914185"
-format = "pdf"
-paper = "21"
-notes = "ludoSpring: exp060 Pathogen (gacha anti-pattern) quantifies exploitation via prospect theory loss aversion."
-
-[[sources]]
-id = "skinner_1938"
-database = "Literature"
-description = "Skinner BF (1938) The Behavior of Organisms — operant conditioning schedules"
-accessions = []
-url = ""
-format = "book"
-paper = "21"
-notes = "ludoSpring: exp060 Pathogen models variable-ratio reinforcement schedules in gacha mechanics."
-
-[[sources]]
-id = "king_2018"
-database = "Literature"
-description = "King DL & Delfabbro PH (2018) Predatory monetization schemes in video games — loot box analysis"
-accessions = ["10.1111/add.14286"]
-url = "https://doi.org/10.1111/add.14286"
-format = "pdf"
-paper = "21"
-notes = "ludoSpring: exp060 Pathogen quantifies exploitation score for loot box mechanics."
-
-[[sources]]
-id = "nakamoto_2008"
-database = "Literature"
-description = "Nakamoto S (2008) Bitcoin: A Peer-to-Peer Electronic Cash System — distributed ledger"
-accessions = []
-url = "https://bitcoin.org/bitcoin.pdf"
-format = "pdf"
+blake3 = ""
+retrieved = ""
 paper = "22"
-notes = "ludoSpring: exp061 Fermenting System implements NFT lifecycle (mint/trade/loan) without blockchain dependency — provenance trio replaces distributed consensus."
+notes = "Standard that sweetGrass braids implement."
+
+# =============================================================================
+# ludoSpring game session provenance (Paper 20)
+# =============================================================================
 
 [[sources]]
-id = "suncloud_attribution"
-database = "Internal"
-description = "sunCloud attribution model — radiating value distribution with decay, role weighting, and conservation"
+id = "ludospring_session_provenance"
+database = "internal"
+description = "ludoSpring game session provenance — DAG+certificate+braid pattern"
 accessions = []
 url = ""
-format = "rust"
-paper = "22"
-notes = "ludoSpring: exp066 validates attribution conservation (shares sum to 1.0), decay models, and role weighting."
-
-[[sources]]
-id = "cross_domain_fraud"
-database = "Internal"
-description = "Cross-domain fraud unification — GenericFraudDetector with >80% structural similarity across gaming/science/medical"
-accessions = []
-url = ""
-format = "rust"
+format = "json"
+blake3 = ""
+retrieved = ""
 paper = "20"
-notes = "ludoSpring: exp065 demonstrates same fraud detector across 3 domains. 12 fraud types validated (exp053)."
+notes = "ludoSpring proved the composition pattern for game sessions."
+
+# =============================================================================
+# BLAKE3 reference implementation
+# =============================================================================
+
+[[sources]]
+id = "blake3_reference"
+database = "GitHub"
+description = "BLAKE3 reference implementation — content addressing hash function"
+accessions = []
+url = "https://github.com/BLAKE3-team/BLAKE3"
+format = "source"
+blake3 = ""
+retrieved = ""
+paper = "20"
+notes = "Foundation-wide content addressing anchor."
