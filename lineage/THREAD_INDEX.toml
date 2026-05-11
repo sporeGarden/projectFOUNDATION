@@ -142,11 +142,11 @@ short = "provenance"
 basecamp_papers = ["20", "21", "22"]
 springs = ["ludoSpring", "primalSpring"]
 contacts = []
-external_lineages = []
+external_lineages = ["Merkle (1979)", "W3C PROV-DM (2013)", "Kahneman-Tversky (1979)", "Hasan (2009)"]
 expression = ""
-data_sources = ""
-data_targets = ""
-status = "mapped"
+data_sources = "data/sources/thread10_provenance.toml"
+data_targets = "data/targets/thread10_provenance_targets.toml"
+status = "active"
 
 # --- Product Focus Mapping ---
 
