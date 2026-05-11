@@ -1,421 +1,514 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 #
-# Validation targets for Thread 6: Agricultural Science + Thread 7: Anderson Mathematics
-# Expected results from groundSpring experiments — the first spring to complete
-# all 29 baselines as publication-grade notebooks with 395/395 checks passing.
+# Validation targets for Thread 6: Agricultural Science
+# Expected numerical and qualitative results airSpring must reproduce.
 
 [meta]
 thread = 6
-thread_name = "Agricultural Science + Anderson Mathematics"
+thread_name = "Agricultural Science"
 expression = "expressions/MEASUREMENT_SCIENCE.md"
-last_updated = "2026-05-07"
-total_targets = 29
+last_updated = "2026-05-11"
+total_targets = 36
 
 # =============================================================================
-# Measurement Domain: Signal vs Noise (Pillar 1)
-# =============================================================================
-
-[[targets]]
-id = "exp001_sensor_noise"
-paper = "01"
-description = "Sensor noise decomposition: bias fraction > 0.5 for EC5, mixed for CS616"
-expected_value = 36.0
-unit = "checks_passing"
-tolerance = 0.0
-source = "groundSpring Exp 001 — Dong et al. (2020)"
-spring = "groundSpring"
-blake3 = ""
-validated = true
-notes = "11.6× faster than Python. Decomposes factory calibration error into bias + noise."
-
-[[targets]]
-id = "exp002_observation_gap"
-paper = "01"
-description = "Observation gap analysis — ERA5 vs GHCN-Daily weather station comparison"
-expected_value = 13.0
-unit = "checks_passing"
-tolerance = 0.0
-source = "groundSpring Exp 002 — NOAA/ERA5"
-spring = "groundSpring"
-blake3 = ""
-validated = true
-notes = "8.2× faster than Python. Quantifies gap fill accuracy."
-
-[[targets]]
-id = "exp003_error_propagation"
-paper = "03"
-description = "FAO-56 Penman-Monteith error propagation through ET0 equations"
-expected_value = 15.0
-unit = "checks_passing"
-tolerance = 0.0
-source = "groundSpring Exp 003 — Allen et al. (1998) FAO-56"
-spring = "groundSpring"
-blake3 = ""
-validated = true
-notes = "9.4× faster. Validates error propagation through multi-parameter ET0."
-
-[[targets]]
-id = "exp024_aggregate_stability"
-paper = "06"
-description = "Aggregate stability noise analysis for soil structure assessment"
-expected_value = 8.0
-unit = "checks_passing"
-tolerance = 0.0
-source = "groundSpring Exp 024 — Cross-spring airSpring"
-spring = "groundSpring"
-blake3 = ""
-validated = true
-notes = "9.3× faster. Noise propagation through soil aggregate measurements."
-
-# =============================================================================
-# Biological Domain: QS, Drift, Rare Biosphere (Pillar 2)
+# Allen et al. 1998 — FAO-56 Penman-Monteith
 # =============================================================================
 
 [[targets]]
-id = "exp004_sequencing_noise"
-paper = "06"
-description = "Sequencing noise rarefaction for 16S amplicon data"
-expected_value = 15.0
-unit = "checks_passing"
-tolerance = 0.0
-source = "groundSpring Exp 004 — Synthetic community"
-spring = "groundSpring"
+id = "fao56_ex17_bangkok_et0"
+paper = "FAO56_PM"
+description = "Reference ET₀ for FAO-56 Example 17 (Bangkok)"
+expected_value = 5.72
+unit = "mm_per_day"
+tolerance = 0.15
+source = "Allen et al. 1998 FAO-56 Example 17"
+spring = "airSpring"
 blake3 = ""
 validated = true
-notes = "7.1× faster. Rarefaction curve convergence validation."
 
 [[targets]]
-id = "exp006_signal_specificity"
-paper = "04"
-description = "Gillespie SSA for QS signal specificity — Massie et al. (2012)"
-expected_value = 12.0
-unit = "checks_passing"
-tolerance = 0.0
-source = "groundSpring Exp 006 — Waters Lab (MSU)"
-spring = "groundSpring"
+id = "fao56_ex18_uccle_et0"
+paper = "FAO56_PM"
+description = "Reference ET₀ for FAO-56 Example 18 (Uccle)"
+expected_value = 3.88
+unit = "mm_per_day"
+tolerance = 0.10
+source = "Allen et al. 1998 FAO-56 Example 18"
+spring = "airSpring"
 blake3 = ""
 validated = true
-notes = "30.5× faster. Stochastic simulation of QS signaling specificity."
 
 [[targets]]
-id = "exp010_bistable_switching"
-paper = "04"
-description = "Bistable phenotypic switching ODE — two attractors verified"
-expected_value = 10.0
-unit = "checks_passing"
-tolerance = 0.0
-source = "groundSpring Exp 010 — Fernandez, Waters et al. (2020)"
-spring = "groundSpring"
+id = "fao56_ex20_lyon_et0"
+paper = "FAO56_PM"
+description = "Reference ET₀ for FAO-56 Example 20 (Lyon)"
+expected_value = 4.56
+unit = "mm_per_day"
+tolerance = 0.15
+source = "Allen et al. 1998 FAO-56 Example 20"
+spring = "airSpring"
 blake3 = ""
 validated = true
-notes = "18.5× faster. 5-variable c-di-GMP ODE with RK4 + Euler-Maruyama."
 
 [[targets]]
-id = "exp011_multisignal_qs"
-paper = "04"
-description = "Multi-signal QS integration — dual-pathway parallel ODE"
-expected_value = 9.0
-unit = "checks_passing"
-tolerance = 0.0
-source = "groundSpring Exp 011 — Hammer & Bassler (2007)"
-spring = "groundSpring"
-blake3 = ""
-validated = true
-notes = "46.2× faster. Vectorized multi-signal ODE integration."
-
-[[targets]]
-id = "exp014_drift_selection"
-paper = "05"
-description = "Drift vs selection in microbial populations — Wright-Fisher + Moran"
-expected_value = 7.0
-unit = "checks_passing"
-tolerance = 0.0
-source = "groundSpring Exp 014 — R. Anderson (Carleton)"
-spring = "groundSpring"
-blake3 = ""
-validated = true
-notes = "6.9× faster. Neutral drift separability from selection."
-
-[[targets]]
-id = "exp016_rare_biosphere"
-paper = "05"
-description = "Rare biosphere signal detection above noise floor"
-expected_value = 12.0
-unit = "checks_passing"
-tolerance = 0.0
-source = "groundSpring Exp 016 — R. Anderson (Carleton)"
-spring = "groundSpring"
-blake3 = ""
-validated = true
-notes = "8.7× faster. Noise floor for rare taxa detection."
-
-[[targets]]
-id = "exp017_quasispecies"
-paper = "10a"
-description = "Quasispecies error threshold — Eigen 1971 error catastrophe"
-expected_value = 6.0
-unit = "checks_passing"
-tolerance = 0.0
-source = "groundSpring Exp 017 — Dolson (MSU)"
-spring = "groundSpring"
-blake3 = ""
-validated = true
-notes = "11.2× faster. Mutation rate threshold for replication fidelity."
-
-# =============================================================================
-# Anderson Mathematics Domain (Thread 7, cross-cutting)
-# =============================================================================
-
-[[targets]]
-id = "exp008_anderson_localization"
-paper = "01"
-description = "1D Anderson localization — Lyapunov exponent, Thouless scaling"
-expected_value = 8.0
-unit = "checks_passing"
-tolerance = 0.0
-source = "groundSpring Exp 008 — Anderson (1958), Kachkovskiy (MSU)"
-spring = "groundSpring"
-blake3 = ""
-validated = true
-notes = "29.9× faster. Transfer matrix method. Thouless C = xi * W^2 ≈ 105."
-
-[[targets]]
-id = "exp009_quasiperiodic"
-paper = "05"
-description = "Almost-Mathieu quasiperiodic localization — Aubry-André transition"
-expected_value = 8.0
-unit = "checks_passing"
-tolerance = 0.0
-source = "groundSpring Exp 009 — Bourgain & Kachkovskiy (2018)"
-spring = "groundSpring"
-blake3 = ""
-validated = true
-notes = "49.5× faster (peak Rust vs Python). Sturm tridiagonal eigenvalue."
-
-[[targets]]
-id = "exp012_spin_transport"
-paper = "05"
-description = "Spin chain wavepacket transport — localization MSD"
-expected_value = 18.0
-unit = "checks_passing"
-tolerance = 0.0
-source = "groundSpring Exp 012 — Kachkovskiy / Gonzales (Paper 12)"
-spring = "groundSpring"
-blake3 = ""
-validated = true
-notes = "12.3× faster. MSD saturation proves Anderson localization."
-
-[[targets]]
-id = "exp018_band_edge"
-paper = "05"
-description = "Band edge spectral gap detection in Anderson Hamiltonian"
-expected_value = 10.0
-unit = "checks_passing"
-tolerance = 0.0
-source = "groundSpring Exp 018 — Kachkovskiy (MSU)"
-spring = "groundSpring"
-blake3 = ""
-validated = true
-notes = "22.4× faster. Spectral gap detection for localization diagnostics."
-
-[[targets]]
-id = "exp015_uncertainty_bridge"
-paper = "01"
-description = "Uncertainty bridge: sensor noise → localization length propagation"
-expected_value = 8.0
-unit = "checks_passing"
-tolerance = 0.0
-source = "groundSpring Exp 015 — Cross-domain bridge"
-spring = "groundSpring"
-blake3 = ""
-validated = true
-notes = "14.1× faster. Maps measurement noise to Anderson localization."
-
-# =============================================================================
-# Inverse Problems (Bazavov — Thread 2 × Thread 7)
-# =============================================================================
-
-[[targets]]
-id = "exp019_jackknife"
-paper = "07"
-description = "Jackknife error estimation for systematic uncertainty"
-expected_value = 9.0
-unit = "checks_passing"
-tolerance = 0.0
-source = "groundSpring Exp 019 — Bazavov (MSU)"
-spring = "groundSpring"
-blake3 = ""
-validated = true
-notes = "3.8× faster. QCD-grade delete-one + block jackknife."
-
-[[targets]]
-id = "exp020_freeze_out"
-paper = "07"
-description = "Freeze-out temperature inverse problem"
-expected_value = 8.0
-unit = "checks_passing"
-tolerance = 0.0
-source = "groundSpring Exp 020 — Bazavov (MSU)"
-spring = "groundSpring"
-blake3 = ""
-validated = true
-notes = "7.6× faster. Lattice QCD inverse problem."
-
-[[targets]]
-id = "exp021_spectral_recon"
-paper = "07"
-description = "Tikhonov spectral reconstruction from noisy correlators"
-expected_value = 8.0
-unit = "checks_passing"
-tolerance = 0.0
-source = "groundSpring Exp 021 — Bazavov (MSU)"
-spring = "groundSpring"
-blake3 = ""
-validated = true
-notes = "5.4× faster. Regularized inverse problem."
-
-# =============================================================================
-# Statistics Domain
-# =============================================================================
-
-[[targets]]
-id = "exp007_rawr"
-paper = "03"
-description = "RAWR weighted bootstrap resampling"
+id = "fao56_svp_table"
+paper = "FAO56_PM"
+description = "Saturated vapor pressure table entries match FAO-56 Table 2.3 within tolerance"
 expected_value = 11.0
-unit = "checks_passing"
+unit = "table_entries_within_tol"
 tolerance = 0.0
-source = "groundSpring Exp 007 — Liu (MSU)"
-spring = "groundSpring"
+source = "Allen et al. 1998 FAO-56 Table 2.3"
+spring = "airSpring"
 blake3 = ""
 validated = true
-notes = "7.3× faster. Weighted bootstrap for heterogeneous data."
-
-[[targets]]
-id = "exp013_resampling_conv"
-paper = "03"
-description = "Resampling convergence analysis — CLT verification"
-expected_value = 8.0
-unit = "checks_passing"
-tolerance = 0.0
-source = "groundSpring Exp 013"
-spring = "groundSpring"
-blake3 = ""
-validated = true
-notes = "5.8× faster. Bootstrap CLT convergence rate."
 
 # =============================================================================
-# Geophysics Domain
+# Priestley-Taylor (1972)
 # =============================================================================
 
 [[targets]]
-id = "exp005_seismic"
-paper = "08"
-description = "Seismic wave propagation — New Madrid Seismic Zone"
-expected_value = 9.0
-unit = "checks_passing"
-tolerance = 0.0
-source = "groundSpring Exp 005 — NMSZ synthetic"
-spring = "groundSpring"
+id = "pt_summer_sea_level"
+paper = "PT1972"
+description = "Priestley-Taylor ET₀ reference case — summer sea level"
+expected_value = 5.682422
+unit = "mm_per_day"
+tolerance = 0.001
+source = "Priestley & Taylor 1972"
+spring = "airSpring"
 blake3 = ""
 validated = true
-notes = "4.2× faster. 1D/2D wave equation with absorbing boundaries."
-
-# =============================================================================
-# Cross-Spring + Hydrology
-# =============================================================================
 
 [[targets]]
-id = "exp022_et0_anderson"
-paper = "03"
-description = "ET0-Anderson error propagation: FAO-56 → localization length"
-expected_value = 7.0
-unit = "checks_passing"
+id = "pt_pm_ratio_uccle"
+paper = "PT1972"
+description = "Priestley-Taylor ET₀ versus Penman-Monteith ratio at Uccle conditions"
+expected_value = 1.0
+unit = "qualitative_match"
 tolerance = 0.0
-source = "groundSpring Exp 022 — Cross-spring airSpring"
-spring = "groundSpring"
+source = "Priestley & Taylor 1972; FAO-56 cross-check"
+spring = "airSpring"
 blake3 = ""
 validated = true
-notes = "8.9× faster. Maps ET0 error to Anderson localization."
+notes = "Qualitative target: PT/PM ratio in [0.85, 1.25]."
 
 [[targets]]
-id = "exp023_notill"
-paper = "06"
-description = "No-till vs tilled 16S sampling noise"
-expected_value = 7.0
-unit = "checks_passing"
+id = "pt_climate_gradient_monotonic"
+paper = "PT1972"
+description = "Priestley-Taylor versus PM along humid-to-arid climate gradient"
+expected_value = 1.0
+unit = "qualitative_match"
 tolerance = 0.0
-source = "groundSpring Exp 023 — Cross-spring wetSpring"
-spring = "groundSpring"
+source = "Priestley & Taylor 1972"
+spring = "airSpring"
 blake3 = ""
 validated = true
-notes = "6.1× faster. Sampling noise for soil management comparison."
+notes = "Qualitative target: PT/PM decreases from humid to arid."
 
 # =============================================================================
-# WDM / Hardware Validation
+# Thornthwaite (1948)
 # =============================================================================
 
 [[targets]]
-id = "exp025_precision_drift"
-paper = "07"
-description = "f32 vs f64 precision drift in WDM simulation"
-expected_value = 7.0
-unit = "checks_passing"
-tolerance = 0.0
-source = "groundSpring Exp 025 — WDM"
-spring = "groundSpring"
+id = "thornthwaite_east_lansing_annual"
+paper = "TH1948"
+description = "Thornthwaite annual PET — East Lansing representative"
+expected_value = 687.81
+unit = "mm"
+tolerance = 0.5
+source = "Thornthwaite 1948"
+spring = "airSpring"
 blake3 = ""
 validated = true
-notes = "4.5× faster. Float precision analysis."
 
 [[targets]]
-id = "exp026_size_convergence"
-paper = "07"
-description = "System-size convergence for WDM simulation"
-expected_value = 7.0
-unit = "checks_passing"
-tolerance = 0.0
-source = "groundSpring Exp 026 — WDM"
-spring = "groundSpring"
+id = "thornthwaite_wooster_annual"
+paper = "TH1948"
+description = "Thornthwaite annual PET — Wooster representative"
+expected_value = 719.66
+unit = "mm"
+tolerance = 0.5
+source = "Thornthwaite 1948"
+spring = "airSpring"
 blake3 = ""
 validated = true
-notes = "3.9× faster. O(1/N) convergence rate."
+
+# =============================================================================
+# Hargreaves-Samani (1985)
+# =============================================================================
 
 [[targets]]
-id = "exp027_vendor_parity"
-paper = "07"
-description = "GPU vendor parity — cross-vendor WDM agreement"
-expected_value = 7.0
-unit = "checks_passing"
-tolerance = 0.0
-source = "groundSpring Exp 027 — WDM"
-spring = "groundSpring"
+id = "hargreaves_analytical"
+paper = "HS1985"
+description = "Hargreaves-Samani analytical reference ET₀ case"
+expected_value = 4.6694
+unit = "mm_per_day"
+tolerance = 0.01
+source = "Hargreaves & Samani 1985"
+spring = "airSpring"
 blake3 = ""
 validated = true
-notes = "2.1× faster. NVIDIA vs AMD vs Intel agreement."
 
 [[targets]]
-id = "exp028_npu"
-paper = "08"
-description = "NPU Anderson regime classification — BrainChip AKD1000"
-expected_value = 9.0
-unit = "checks_passing"
-tolerance = 0.0
-source = "groundSpring Exp 028 — metalForge NPU"
-spring = "groundSpring"
+id = "hargreaves_ra_lat42_doy172"
+paper = "HS1985"
+description = "Extraterrestrial radiation driver at latitude 42°, DOY 172 — mm/day equivalent"
+expected_value = 17.106
+unit = "mm_per_day_equivalent"
+tolerance = 0.01
+source = "Hargreaves & Samani 1985"
+spring = "airSpring"
 blake3 = ""
 validated = true
-notes = "Neuromorphic hardware classification of Anderson localization regimes."
+
+# =============================================================================
+# Makkink (1957)
+# =============================================================================
 
 [[targets]]
-id = "exp029_et0_methods"
-paper = "03"
-description = "Multi-method ET0: PM, Hargreaves, Makkink, Turc, Hamon"
-expected_value = 19.0
-unit = "checks_passing"
-tolerance = 0.0
-source = "groundSpring Exp 035 — 5 ET0 methods compared"
-spring = "groundSpring"
+id = "makkink_analytical"
+paper = "MK1957"
+description = "Makkink analytical reference ET₀ case"
+expected_value = 2.438
+unit = "mm_per_day"
+tolerance = 0.01
+source = "Makkink 1957"
+spring = "airSpring"
 blake3 = ""
 validated = true
-notes = "All 5 methods validated against published values. Delegated to barraCuda."
+
+# =============================================================================
+# Turc (1961)
+# =============================================================================
+
+[[targets]]
+id = "turc_humid_rh70"
+paper = "TC1961"
+description = "Turc ET₀ humid climate (RH ~70%)"
+expected_value = 3.033
+unit = "mm_per_day"
+tolerance = 0.01
+source = "Turc 1961"
+spring = "airSpring"
+blake3 = ""
+validated = true
+
+[[targets]]
+id = "turc_arid_rh40"
+paper = "TC1961"
+description = "Turc ET₀ arid climate (RH ~40%)"
+expected_value = 6.410
+unit = "mm_per_day"
+tolerance = 0.01
+source = "Turc 1961"
+spring = "airSpring"
+blake3 = ""
+validated = true
+
+# =============================================================================
+# Hamon (1961)
+# =============================================================================
+
+[[targets]]
+id = "hamon_20c_14h"
+paper = "HM1961"
+description = "Hamon ET₀ at 20°C, 14 h photoperiod"
+expected_value = 3.993
+unit = "mm_per_day"
+tolerance = 0.01
+source = "Hamon 1961"
+spring = "airSpring"
+blake3 = ""
+validated = true
+
+[[targets]]
+id = "hamon_35c_15h"
+paper = "HM1961"
+description = "Hamon ET₀ at 35°C, 15 h photoperiod"
+expected_value = 9.787
+unit = "mm_per_day"
+tolerance = 0.01
+source = "Hamon 1961"
+spring = "airSpring"
+blake3 = ""
+validated = true
+
+# =============================================================================
+# Blaney-Criddle (1950)
+# =============================================================================
+
+[[targets]]
+id = "blaney_criddle_equator_25c"
+paper = "BC1950"
+description = "Blaney-Criddle crop ET at equator, 25°C seasonal mean temperature"
+expected_value = 5.38
+unit = "mm_per_day"
+tolerance = 0.02
+source = "Blaney & Criddle 1950"
+spring = "airSpring"
+blake3 = ""
+validated = true
+
+[[targets]]
+id = "blaney_criddle_lat40_summer"
+paper = "BC1950"
+description = "Blaney-Criddle crop ET at latitude 40°, summer temperatures"
+expected_value = 7.30
+unit = "mm_per_day"
+tolerance = 0.02
+source = "Blaney & Criddle 1950"
+spring = "airSpring"
+blake3 = ""
+validated = true
+
+# =============================================================================
+# Allen et al. 1998 — FAO-56 dual Kc (Chapter 7)
+# =============================================================================
+
+[[targets]]
+id = "dual_kc_corn_kcb_mid"
+paper = "FAO56_Kc"
+description = "Basal crop coefficient Kcb mid-season — corn grain"
+expected_value = 1.15
+unit = "dimensionless"
+tolerance = 0.000001
+source = "FAO-56 Table 17"
+spring = "airSpring"
+blake3 = ""
+validated = true
+
+[[targets]]
+id = "dual_kc_soybean_kcb_mid"
+paper = "FAO56_Kc"
+description = "Basal crop coefficient Kcb mid-season — soybean"
+expected_value = 1.10
+unit = "dimensionless"
+tolerance = 0.000001
+source = "Allen et al. 1998 FAO-56 Chapter 7, Table 17"
+spring = "airSpring"
+blake3 = ""
+validated = true
+
+[[targets]]
+id = "dual_kc_full_cover_etc"
+paper = "FAO56_Kc"
+description = "Crop ETc at full canopy cover under reference conditions"
+expected_value = 5.75
+unit = "mm_per_day"
+tolerance = 0.000001
+source = "Allen et al. 1998 FAO-56 Chapter 7"
+spring = "airSpring"
+blake3 = ""
+validated = true
+
+# =============================================================================
+# Stewart yield response (1977)
+# =============================================================================
+
+[[targets]]
+id = "stewart_corn_ky"
+paper = "SW1977"
+description = "Yield response factor Ky — corn grain"
+expected_value = 1.25
+unit = "dimensionless"
+tolerance = 0.01
+source = "FAO-56 Table 24"
+spring = "airSpring"
+blake3 = ""
+validated = true
+
+[[targets]]
+id = "stewart_mild_stress_yield"
+paper = "SW1977"
+description = "Relative yield under mild water stress (Stewart response)"
+expected_value = 0.875
+unit = "ratio"
+tolerance = 0.001
+source = "Stewart et al. 1977; FAO-56 yield response"
+spring = "airSpring"
+blake3 = ""
+validated = true
+
+# =============================================================================
+# Michigan Crop Water Atlas
+# =============================================================================
+
+[[targets]]
+id = "atlas_annual_et0_representative"
+paper = "MI_ATLAS"
+description = "Representative annual reference ET from atlas pipeline"
+expected_value = 702.0
+unit = "mm"
+tolerance = 5.0
+source = "Open-Meteo ERA5 reanalysis"
+spring = "airSpring"
+blake3 = ""
+validated = true
+
+[[targets]]
+id = "atlas_corn_yield_ratio"
+paper = "MI_ATLAS"
+description = "Atlas corn yield ratio (modeled or stress-adjusted benchmark)"
+expected_value = 0.9949
+unit = "ratio"
+tolerance = 0.01
+source = "Michigan Crop Water Atlas"
+spring = "airSpring"
+blake3 = ""
+validated = true
+
+# =============================================================================
+# Saxton & Rawls pedotransfer (2006)
+# =============================================================================
+
+[[targets]]
+id = "pedotransfer_loam_theta_wp"
+paper = "SR2006"
+description = "Volumetric water content at wilting point — loam texture"
+expected_value = 0.137024
+unit = "m3_per_m3"
+tolerance = 0.0001
+source = "Saxton & Rawls 2006"
+spring = "airSpring"
+blake3 = ""
+validated = true
+
+[[targets]]
+id = "pedotransfer_loam_theta_fc"
+paper = "SR2006"
+description = "Volumetric water content at field capacity — loam texture"
+expected_value = 0.27961
+unit = "m3_per_m3"
+tolerance = 0.0001
+source = "Saxton & Rawls 2006"
+spring = "airSpring"
+blake3 = ""
+validated = true
+
+[[targets]]
+id = "pedotransfer_loam_theta_s"
+paper = "SR2006"
+description = "Saturated volumetric water content — loam texture"
+expected_value = 0.459478
+unit = "m3_per_m3"
+tolerance = 0.0001
+source = "Saxton & Rawls 2006"
+spring = "airSpring"
+blake3 = ""
+validated = true
+
+[[targets]]
+id = "pedotransfer_loam_ksat"
+paper = "SR2006"
+description = "Saturated hydraulic conductivity — loam texture"
+expected_value = 15.475656
+unit = "mm_per_hr"
+tolerance = 0.5
+source = "Saxton & Rawls 2006"
+spring = "airSpring"
+blake3 = ""
+validated = true
+
+# =============================================================================
+# Richards equation — van Genuchten–Mualem (1980)
+# =============================================================================
+
+[[targets]]
+id = "richards_sand_theta_10cm"
+paper = "VG1980"
+description = "Volumetric water content at 10 cm depth — sand column"
+expected_value = 0.2143
+unit = "m3_per_m3"
+tolerance = 0.001
+source = "van Genuchten 1980; Richards unsaturated flow"
+spring = "airSpring"
+blake3 = ""
+validated = true
+
+[[targets]]
+id = "richards_sand_theta_100cm"
+paper = "VG1980"
+description = "Volumetric water content at 100 cm depth — sand column"
+expected_value = 0.0493
+unit = "m3_per_m3"
+tolerance = 0.001
+source = "van Genuchten 1980; Richards unsaturated flow"
+spring = "airSpring"
+blake3 = ""
+validated = true
+
+# =============================================================================
+# Biochar adsorption — Kumari et al. (2025)
+# =============================================================================
+
+[[targets]]
+id = "biochar_langmuir_r2"
+paper = "KM2025"
+description = "Langmuir isotherm fit quality for biochar adsorption benchmark"
+expected_value = 0.95
+unit = "minimum_r_squared"
+tolerance = 0.0
+source = "Kumari et al. 2025"
+spring = "airSpring"
+blake3 = ""
+validated = true
+notes = "Qualitative target: R² >= 0.95."
+
+# =============================================================================
+# SCS curve number (USDA 1972)
+# =============================================================================
+
+[[targets]]
+id = "scs_cn75_50mm_runoff"
+paper = "SCS1972"
+description = "Direct runoff for CN=75, 50 mm storm"
+expected_value = 9.27
+unit = "mm"
+tolerance = 0.1
+source = "USDA SCS 1972; NRCS curve number method"
+spring = "airSpring"
+blake3 = ""
+validated = true
+
+[[targets]]
+id = "scs_cn98_50mm_runoff"
+paper = "SCS1972"
+description = "Direct runoff for CN=98, 50 mm storm"
+expected_value = 44.28
+unit = "mm"
+tolerance = 0.1
+source = "USDA SCS 1972; NRCS curve number method"
+spring = "airSpring"
+blake3 = ""
+validated = true
+
+# =============================================================================
+# Green-Ampt (1911)
+# =============================================================================
+
+[[targets]]
+id = "green_ampt_sandy_loam_1hr"
+paper = "GA1911"
+description = "Cumulative infiltration after 1 h — sandy loam Green-Ampt column"
+expected_value = 3.51
+unit = "cm"
+tolerance = 0.15
+source = "Green & Ampt 1911"
+spring = "airSpring"
+blake3 = ""
+validated = true
+
+# =============================================================================
+# SPI drought index — McKee et al. (1993)
+# =============================================================================
+
+[[targets]]
+id = "spi_gamma_alpha"
+paper = "SPI1993"
+description = "Gamma distribution shape parameter (α) for SPI precipitation fit"
+expected_value = 4.27321994
+unit = "dimensionless"
+tolerance = 0.01
+source = "McKee et al. 1993"
+spring = "airSpring"
+blake3 = ""
+validated = true
