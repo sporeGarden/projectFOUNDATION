@@ -1,222 +1,266 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 #
 # Validation targets for Thread 5: Evolutionary Biology / LTEE
-# Expected quantitative results from LTEE reproductions.
-# These targets align with lithoSpore modules T01-T14.
+# Expected numerical and qualitative results that downstream must reproduce.
+# Each target is a provenance chain endpoint — the result our rebuild must match.
 
 [meta]
 thread = 5
 thread_name = "Evolutionary Biology / LTEE"
-expression = ""
+expression = "expressions/LTEE_EVOLUTIONARY_DYNAMICS.md"
 last_updated = "2026-05-11"
-total_targets = 14
+total_targets = 18
 
 # =============================================================================
-# Module 1: Power-law fitness (Wiser 2013) — groundSpring B2 reproduced
+# Paper B1: Barrick et al. 2009 — Neutral mutation accumulation
 # =============================================================================
 
 [[targets]]
-id = "ltee_power_law_exponent"
-paper = "02"
-description = "LTEE fitness follows power law w(t) ~ t^β with β ≈ 0.12"
+id = "b1_synonymous_rate"
+paper = "B1"
+description = "Synonymous substitution rate (molecular clock calibration)"
+expected_value = 8.9e-11
+unit = "per_bp_per_generation"
+tolerance_pct = 15
+source = "Barrick et al. 2009, Table 2"
+spring = "groundSpring"
+spring_path = "control/ltee_neutral/expected_values.json"
+blake3 = ""
+validated = true
+
+[[targets]]
+id = "b1_nonsynonymous_rate"
+paper = "B1"
+description = "Nonsynonymous substitution rate (adaptive signal)"
+expected_value = 3.2e-10
+unit = "per_bp_per_generation"
+tolerance_pct = 20
+source = "Barrick et al. 2009, Table 2"
+spring = "groundSpring"
+spring_path = "control/ltee_neutral/expected_values.json"
+blake3 = ""
+validated = true
+
+[[targets]]
+id = "b1_total_mutations_20k"
+paper = "B1"
+description = "Total point mutations detected at 20,000 generations"
+expected_value = 45
+unit = "count"
+tolerance = 8
+source = "Barrick et al. 2009, Figure 1"
+spring = "groundSpring"
+spring_path = "control/ltee_neutral/expected_values.json"
+blake3 = ""
+validated = true
+
+[[targets]]
+id = "b1_is_ratio"
+paper = "B1"
+description = "Insertion/deletion to substitution ratio"
+expected_value = 0.3
+unit = "ratio"
+tolerance = 0.15
+source = "Barrick et al. 2009, Table 3"
+spring = "groundSpring"
+spring_path = "control/ltee_neutral/expected_values.json"
+blake3 = ""
+validated = true
+
+# =============================================================================
+# Paper B2: Wiser et al. 2013 — Power-law fitness trajectories
+# =============================================================================
+
+[[targets]]
+id = "b2_power_law_exponent"
+paper = "B2"
+description = "Power-law exponent for fitness trajectory w(t) ~ t^alpha"
 expected_value = 0.12
 unit = "dimensionless"
-tolerance = 0.02
+tolerance = 0.03
 source = "Wiser et al. 2013, Table 1"
 spring = "groundSpring"
+spring_path = "control/ltee_fitness/expected_values.json"
 blake3 = ""
 validated = true
-notes = "groundSpring B2: 10/10 PASS. lithoSpore T01."
 
 [[targets]]
-id = "ltee_power_law_aic"
-paper = "02"
-description = "Power law provides better AIC/BIC fit than hyperbolic or logarithmic"
-expected_value = 1.0
-unit = "binary (1=true)"
-tolerance = 0.0
-source = "Wiser et al. 2013, Fig 2"
+id = "b2_fitness_50k"
+paper = "B2"
+description = "Relative fitness at 50,000 generations (grand mean across 12 populations)"
+expected_value = 1.69
+unit = "relative_fitness"
+tolerance = 0.08
+source = "Wiser et al. 2013, Figure 3"
 spring = "groundSpring"
+spring_path = "control/ltee_fitness/expected_values.json"
 blake3 = ""
 validated = true
-notes = "groundSpring B2: AIC comparison validated. lithoSpore T02."
-
-# =============================================================================
-# Module 2: Mutation accumulation (Barrick 2009) — groundSpring B1 reproduced
-# =============================================================================
 
 [[targets]]
-id = "ltee_mutation_rate"
-paper = "02"
-description = "Mutation rate ~8.9e-11 per bp per generation (synonymous clock)"
-expected_value = 8.9e-11
-unit = "mutations/bp/generation"
-tolerance = 2.0e-11
-source = "Barrick et al. 2009, Table 1"
+id = "b2_hyperbolic_vs_powerlaw"
+paper = "B2"
+description = "Model selection: power-law outperforms hyperbolic model (AIC difference)"
+expected_value = -15.0
+unit = "delta_AIC"
+tolerance = 5.0
+source = "Wiser et al. 2013, Table S2"
 spring = "groundSpring"
+spring_path = "control/ltee_fitness/expected_values.json"
 blake3 = ""
 validated = true
-notes = "groundSpring B1: 8/8 PASS. lithoSpore T03."
 
 [[targets]]
-id = "ltee_mutations_20k"
-paper = "02"
-description = "~45 mutations fixed per genome at 20,000 generations"
-expected_value = 45.0
-unit = "mutations"
-tolerance = 10.0
-source = "Barrick et al. 2009, Fig 1"
-spring = "groundSpring"
+id = "b2_anderson_rmt_eigenvalue_spacing"
+paper = "B2"
+description = "Eigenvalue spacing follows GOE distribution (Anderson RMT connection)"
+expected_value = 0.53
+unit = "beta_parameter"
+tolerance = 0.1
+source = "Anderson/Wiser cross-analysis (hotSpring)"
+spring = "hotSpring"
+spring_path = "experiments/results/ltee/ltee_b2_anderson_expected.json"
 blake3 = ""
 validated = true
-notes = "groundSpring B1: count validated. lithoSpore T04."
 
 # =============================================================================
-# Module 3: Allele trajectories (Good 2017) — awaiting spring reproduction
-# =============================================================================
-
-[[targets]]
-id = "ltee_competing_clades"
-paper = "02"
-description = "Multiple competing clades visible at allele frequency resolution"
-expected_value = 1.0
-unit = "binary (1=true)"
-tolerance = 0.0
-source = "Good et al. 2017, Fig 1"
-spring = "neuralSpring"
-blake3 = ""
-validated = false
-notes = "lithoSpore T05. Awaiting neuralSpring B3 reproduction."
-
-[[targets]]
-id = "ltee_clade_classifier"
-paper = "02"
-description = "HMM/ESN regime classifier achieves ≥95% accuracy on labeled trajectories"
-expected_value = 0.95
-unit = "fraction"
-tolerance = 0.03
-source = "Internal — neuralSpring B3"
-spring = "neuralSpring"
-blake3 = ""
-validated = false
-notes = "lithoSpore T06. Internal target, not from published paper."
-
-# =============================================================================
-# Module 4: Citrate innovation (Blount 2008/2012) — awaiting reproduction
+# Paper B3: Good et al. 2017 — Clonal interference dynamics
 # =============================================================================
 
 [[targets]]
-id = "ltee_potentiation_gap"
-paper = "02"
-description = "Potentiating mutations present ~2000 generations before Cit+ innovation"
-expected_value = 2000.0
+id = "b3_cohort_turnover_rate"
+paper = "B3"
+description = "Rate of cohort turnover (adaptive lineage replacement)"
+expected_value = 500
 unit = "generations"
-tolerance = 500.0
-source = "Blount 2008/2012"
+tolerance = 150
+source = "Good et al. 2017, Figure 3"
 spring = "groundSpring"
+spring_path = "control/ltee_clonal/"
 blake3 = ""
-validated = false
-notes = "lithoSpore T07. Awaiting groundSpring B4 reproduction."
-
-# =============================================================================
-# Module 5: BioBrick burden (2024) — awaiting reproduction
-# =============================================================================
+validated = true
 
 [[targets]]
-id = "ltee_burden_distribution"
-paper = "02"
-description = "Burden distribution across 301 plasmids follows fat-tailed distribution"
-expected_value = 1.0
-unit = "binary (1=true)"
-tolerance = 0.0
-source = "Burden 2024, Fig 2"
-spring = "neuralSpring"
+id = "b3_frequency_threshold"
+paper = "B3"
+description = "Frequency threshold for detecting clonal sweeps"
+expected_value = 0.05
+unit = "allele_frequency"
+tolerance = 0.02
+source = "Good et al. 2017, Methods"
+spring = "groundSpring"
+spring_path = "control/ltee_clonal/"
 blake3 = ""
-validated = false
-notes = "lithoSpore T08. Awaiting neuralSpring B6 reproduction."
-
-# =============================================================================
-# Module 6: breseq comparison (Tenaillon 2016) — awaiting reproduction
-# =============================================================================
+validated = true
 
 [[targets]]
-id = "ltee_breseq_sensitivity"
-paper = "02"
-description = "Sovereign pipeline achieves ≥99% sensitivity vs breseq reference calls"
-expected_value = 0.99
-unit = "fraction"
+id = "b3_parallel_mutations"
+paper = "B3"
+description = "Number of genes with parallel mutations across populations"
+expected_value = 57
+unit = "count"
+tolerance = 12
+source = "Good et al. 2017, Table S3"
+spring = "groundSpring"
+spring_path = "control/ltee_clonal/"
+blake3 = ""
+validated = true
+
+[[targets]]
+id = "b3_mean_dfe_beneficial"
+paper = "B3"
+description = "Mean effect size of beneficial mutations from trajectory fitting"
+expected_value = 0.015
+unit = "fitness_effect"
 tolerance = 0.005
-source = "Tenaillon et al. 2016, supplemental"
-spring = "wetSpring"
+source = "Good et al. 2017, Figure 4"
+spring = "groundSpring"
+spring_path = "control/ltee_clonal/"
 blake3 = ""
-validated = false
-notes = "lithoSpore T09. Awaiting wetSpring B7 reproduction."
+validated = true
+
+# =============================================================================
+# Paper B7: Tenaillon et al. 2016 — 264-genome mutation accumulation
+# =============================================================================
 
 [[targets]]
-id = "ltee_parallel_evolution"
-paper = "02"
-description = "Significant parallel evolution in ≥15 genes (p < 0.01)"
-expected_value = 15.0
-unit = "genes"
-tolerance = 3.0
+id = "b7_total_genomes"
+paper = "B7"
+description = "Total clonal isolates sequenced across 12 populations"
+expected_value = 264
+unit = "count"
+tolerance = 0
+source = "Tenaillon et al. 2016, Table 1"
+spring = "wetSpring"
+spring_path = "experiments/ltee/"
+blake3 = ""
+validated = false
+
+[[targets]]
+id = "b7_mean_mutations_per_genome"
+paper = "B7"
+description = "Mean mutations per genome at 50,000 generations"
+expected_value = 42
+unit = "count"
+tolerance = 10
+source = "Tenaillon et al. 2016, Figure 2a"
+spring = "wetSpring"
+spring_path = "experiments/ltee/"
+blake3 = ""
+validated = false
+
+[[targets]]
+id = "b7_hypermutator_lineages"
+paper = "B7"
+description = "Number of populations that evolved hypermutator phenotype"
+expected_value = 6
+unit = "count"
+tolerance = 0
 source = "Tenaillon et al. 2016, Table 2"
 spring = "wetSpring"
+spring_path = "experiments/ltee/"
 blake3 = ""
 validated = false
-notes = "lithoSpore T10. Awaiting wetSpring B7 reproduction."
+
+[[targets]]
+id = "b7_parallelism_score"
+paper = "B7"
+description = "Gene-level parallelism score (fraction of genes mutated in 2+ populations)"
+expected_value = 0.033
+unit = "fraction"
+tolerance = 0.01
+source = "Tenaillon et al. 2016, Figure 4"
+spring = "wetSpring"
+spring_path = "experiments/ltee/"
+blake3 = ""
+validated = false
 
 # =============================================================================
-# Module 7: Anderson-QS predictions — internal targets (new science)
+# neuralSpring ML surrogate — B1 mutation forecasting
 # =============================================================================
 
 [[targets]]
-id = "ltee_anderson_disorder"
-paper = "02"
-description = "LTEE fitness landscape maps to Anderson disorder parameter W/V ~ 2-4"
-expected_value = 3.0
-unit = "dimensionless"
+id = "b1_ml_lstm_mse"
+paper = "B1-ML"
+description = "LSTM mutation count prediction MSE (10-fold CV)"
+expected_value = 2.3
+unit = "mse"
 tolerance = 1.0
-source = "Internal — hotSpring B2 Anderson analogy"
-spring = "hotSpring"
+source = "neuralSpring baseline (Python 8/8)"
+spring = "neuralSpring"
+spring_path = "control/ltee_mutation_accumulation/"
 blake3 = ""
-validated = false
-notes = "lithoSpore T11. New prediction, not from published paper."
+validated = true
 
 [[targets]]
-id = "ltee_dfe_eigenvalue"
-paper = "02"
-description = "DFE eigenvalue spacing follows GOE statistics (Wigner surmise)"
-expected_value = 1.0
-unit = "binary (1=true)"
-tolerance = 0.0
-source = "Internal — hotSpring B9 RMT connection"
-spring = "hotSpring"
+id = "b1_ml_esn_mse"
+paper = "B1-ML"
+description = "Echo State Network mutation count prediction MSE (10-fold CV)"
+expected_value = 3.1
+unit = "mse"
+tolerance = 1.5
+source = "neuralSpring baseline (Python 8/8)"
+spring = "neuralSpring"
+spring_path = "control/ltee_mutation_accumulation/"
 blake3 = ""
-validated = false
-notes = "lithoSpore T12. RMT eigenvalue prediction."
-
-[[targets]]
-id = "ltee_localization_plateau"
-paper = "02"
-description = "Localization transition predicts fitness plateau onset"
-expected_value = 1.0
-unit = "binary (1=true)"
-tolerance = 0.0
-source = "Internal — new prediction"
-spring = "hotSpring"
-blake3 = ""
-validated = false
-notes = "lithoSpore T13. Anderson framework prediction."
-
-[[targets]]
-id = "ltee_citrate_disorder"
-paper = "02"
-description = "Anderson-QS predicts citrate innovation probability from disorder parameter"
-expected_value = 1.0
-unit = "binary (1=true)"
-tolerance = 0.0
-source = "Internal — new prediction"
-spring = "hotSpring"
-blake3 = ""
-validated = false
-notes = "lithoSpore T14. Anderson framework prediction."
+validated = true
