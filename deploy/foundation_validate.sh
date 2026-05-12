@@ -28,9 +28,9 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 FOUNDATION_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-NUCLEUS_ROOT="${NUCLEUS_ROOT:-$(cd "$FOUNDATION_ROOT/../projectNUCLEUS" 2>/dev/null && pwd)}"
+NUCLEUS_ROOT="${NUCLEUS_ROOT:-$(cd "$FOUNDATION_ROOT/../projectNUCLEUS" 2>/dev/null && pwd || echo "$FOUNDATION_ROOT/../projectNUCLEUS")}"
 
-ECOPRIMALS_ROOT="${ECOPRIMALS_ROOT:-$(cd "$FOUNDATION_ROOT/../../.." 2>/dev/null && pwd)}"
+ECOPRIMALS_ROOT="${ECOPRIMALS_ROOT:-$(cd "$FOUNDATION_ROOT/../.." 2>/dev/null && pwd || echo "$FOUNDATION_ROOT/../..")}"
 PLASMIDBIN_DIR="${PLASMIDBIN_DIR:-$ECOPRIMALS_ROOT/infra/plasmidBin}"
 TOADSTOOL="${TOADSTOOL:-$PLASMIDBIN_DIR/primals/toadstool}"
 
@@ -47,7 +47,7 @@ while [[ $# -gt 0 ]]; do
         --results-dir) RESULTS_DIR="$2"; shift 2 ;;
         -h|--help)
             echo "Usage: $0 [--thread THREAD] [--skip-fetch] [--data-dir DIR]"
-            echo "Threads: wcm, plasma, immuno, enviro, health, all"
+            echo "Threads: wcm, plasma, immuno, enviro, ltee, ag, anderson, health, gaming, provenance, all"
             exit 0 ;;
         *)             echo "Unknown option: $1"; exit 1 ;;
     esac
@@ -89,7 +89,7 @@ while True:
         try:
             json.loads(data)
             break
-        except: pass
+        except Exception: pass
     except socket.timeout: break
 s.close()
 print(data.decode().strip())
@@ -360,10 +360,87 @@ for dir in "${SCAN_DIRS[@]}"; do
 done
 
 # ══════════════════════════════════════════════════════════════
-# PHASE 6: Commit provenance
+# PHASE 6: Compare results against validation targets
 # ══════════════════════════════════════════════════════════════
 log ""
-log "── Phase 6: Commit Provenance ──"
+log "── Phase 6: Compare Against Targets ──"
+
+TARGET_DIR="$FOUNDATION_ROOT/data/targets"
+TARGET_HITS=0
+TARGET_MISS=0
+
+compare_targets() {
+    local thread_short="$1"
+    local target_file="$TARGET_DIR/thread*_${thread_short}_targets.toml"
+
+    # shellcheck disable=SC2086
+    local match
+    match=$(ls $target_file 2>/dev/null | head -1) || true
+    if [[ -z "$match" || ! -f "$match" ]]; then
+        log "  [INFO] No target file for thread: $thread_short"
+        return 0
+    fi
+
+    local targets
+    targets=$(python3 -c "
+try:
+    import tomllib
+except ImportError:
+    import tomli as tomllib
+import sys
+with open('$match', 'rb') as f:
+    data = tomllib.load(f)
+for t in data.get('targets', []):
+    tid = t.get('id', '')
+    metric = t.get('metric', '')
+    expected = t.get('expected', '')
+    tolerance = t.get('tolerance', '')
+    print(f'{tid}|{metric}|{expected}|{tolerance}')
+" 2>/dev/null) || true
+
+    if [[ -z "$targets" ]]; then
+        return 0
+    fi
+
+    while IFS='|' read -r tid metric expected tolerance; do
+        [[ -z "$tid" ]] && continue
+
+        local found=false
+        for result_file in "$RESULTS_DIR"/*.stdout; do
+            [[ -f "$result_file" ]] || continue
+            if grep -q "$metric" "$result_file" 2>/dev/null; then
+                found=true
+                break
+            fi
+        done
+
+        if $found; then
+            log "  [HIT]  $tid — $metric (expected: $expected)"
+            TARGET_HITS=$((TARGET_HITS + 1))
+        else
+            log "  [MISS] $tid — $metric not found in workload output"
+            TARGET_MISS=$((TARGET_MISS + 1))
+        fi
+    done <<< "$targets"
+}
+
+if [[ "$THREAD_FILTER" == "all" ]]; then
+    for target_toml in "$TARGET_DIR"/thread*_targets.toml; do
+        [[ -f "$target_toml" ]] || continue
+        short=$(basename "$target_toml" | sed 's/thread[0-9]*_//;s/_targets.toml//')
+        compare_targets "$short"
+    done
+else
+    compare_targets "$THREAD_FILTER"
+fi
+
+log "  Targets: $TARGET_HITS hit, $TARGET_MISS miss"
+
+# ══════════════════════════════════════════════════════════════
+# PHASE 7: Commit provenance
+# ══════════════════════════════════════════════════════════════
+log ""
+log "── Phase 7: Commit Provenance ──"
 
 COMPLETE_RESP=$(rpc_rhizocrypt "{\"jsonrpc\":\"2.0\",\"method\":\"dag.session.complete\",\"params\":{\"session_id\":\"$SESSION_ID\"},\"id\":800}")
 MERKLE_ROOT=$(echo "$COMPLETE_RESP" | python3 -c "
@@ -388,10 +465,10 @@ log "  [OK] sweetGrass braid: $BRAID_URN"
 echo "$BRAID_RESP" > "$RESULTS_DIR/braid.json"
 
 # ══════════════════════════════════════════════════════════════
-# PHASE 7: Write validation report
+# PHASE 8: Write validation report
 # ══════════════════════════════════════════════════════════════
 log ""
-log "── Phase 7: Write Report ──"
+log "── Phase 8: Write Report ──"
 
 cat > "$RESULTS_DIR/VALIDATION_REPORT.md" << REPORT
 # Foundation Validation Report

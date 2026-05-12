@@ -15,7 +15,7 @@ spring = "groundSpring"
 type = "native"
 command = "cargo"
 args = ["run", "--release", "--bin", "validate_all", "--", "--workspace"]
-working_dir = "${GROUNDSPRING_ROOT:-/home/eastgate/Development/ecoPrimals/springs/groundSpring}"
+working_dir = "${GROUNDSPRING_ROOT:-${SPRINGS_ROOT}/groundSpring}"
 
 [resources]
 max_memory_bytes = 2147483648

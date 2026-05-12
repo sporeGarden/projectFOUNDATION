@@ -16,7 +16,7 @@ spring = "groundSpring"
 type = "native"
 command = "cargo"
 args = ["run", "--release", "--bin", "bench_gpu_vs_kokkos", "--features", "barracuda-gpu"]
-working_dir = "${GROUNDSPRING_ROOT:-/home/eastgate/Development/ecoPrimals/springs/groundSpring}"
+working_dir = "${GROUNDSPRING_ROOT:-${SPRINGS_ROOT}/groundSpring}"
 
 [resources]
 max_memory_bytes = 4294967296

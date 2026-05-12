@@ -16,7 +16,7 @@ spring = "groundSpring"
 type = "native"
 command = "python3"
 args = ["control/baseline_runner.py", "--all"]
-working_dir = "${GROUNDSPRING_ROOT:-/home/eastgate/Development/ecoPrimals/springs/groundSpring}"
+working_dir = "${GROUNDSPRING_ROOT:-${SPRINGS_ROOT}/groundSpring}"
 
 [resources]
 max_memory_bytes = 2147483648

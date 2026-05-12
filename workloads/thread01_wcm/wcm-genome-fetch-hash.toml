@@ -19,7 +19,7 @@ thread_name = "Whole-Cell Modeling"
 type = "native"
 command = "/usr/bin/bash"
 args = ["-c", "cd ${FOUNDATION_ROOT:-$(dirname $(dirname $(dirname $0)))} && bash deploy/fetch_sources.sh --thread wcm --data-dir .data && echo '[OK] WCM genome anchors established' && for f in .data/ncbi/nucleotide/*.gb; do echo \"[OK] $(basename $f): $(b3sum $f | cut -c1-16)…\"; done && for f in .data/uniprot/*.fasta.gz; do echo \"[OK] $(basename $f): $(b3sum $f | cut -c1-16)…\"; done"]
-working_dir = "/home/irongate/Development/ecoPrimals/sporeGarden/foundation"
+working_dir = "${FOUNDATION_ROOT}"
 
 [resources]
 max_memory_bytes = 1073741824

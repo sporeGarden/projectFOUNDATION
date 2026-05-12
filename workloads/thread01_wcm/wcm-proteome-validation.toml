@@ -41,7 +41,7 @@ validate_proteome "$DATA_DIR/uniprot/UP000000807.fasta.gz" "M. genitalium (Paper
 validate_proteome "$DATA_DIR/uniprot/UP000000625.fasta.gz" "E. coli K-12 (Paper D)" 4000 5000
 validate_proteome "$DATA_DIR/uniprot/UP000018174.fasta.gz" "M. mycoides (Papers E-G)" 800 1200
 """]
-working_dir = "/home/irongate/Development/ecoPrimals/sporeGarden/foundation"
+working_dir = "${FOUNDATION_ROOT}"
 
 [resources]
 max_memory_bytes = 536870912

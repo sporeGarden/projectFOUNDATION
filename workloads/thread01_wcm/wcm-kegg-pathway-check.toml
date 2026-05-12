@@ -40,7 +40,7 @@ check_kegg "$DATA_DIR/kegg/mge_pathways.json" "M. genitalium (mge)" 20
 check_kegg "$DATA_DIR/kegg/eco_pathways.json" "E. coli K-12 (eco)" 100
 check_kegg "$DATA_DIR/kegg/mmc_pathways.json" "M. mycoides (mmc)" 20
 """]
-working_dir = "/home/irongate/Development/ecoPrimals/sporeGarden/foundation"
+working_dir = "${FOUNDATION_ROOT}"
 
 [resources]
 max_memory_bytes = 268435456
