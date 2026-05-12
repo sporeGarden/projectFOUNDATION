@@ -13,8 +13,8 @@ can focus on what matters to their audiences.
 
 foundation is the scientific knowledge layer of the ecoPrimals ecosystem.
 It maps the complete validated lineage — 28 baseCamp companion papers,
-8 springs with 12,510+ quantitative checks, 70+ reproduced papers, and
-12+ faculty and community contacts — as one unified whole, organized into
+8 springs with 13,100+ quantitative checks, 70+ reproduced papers, and
+16 faculty and community contacts — as one unified whole, organized into
 10 interconnected domain threads.
 
 ```
@@ -106,12 +106,12 @@ See `deploy/README.md` for full options and the sediment layer model.
 lineage/            The unified lineage — master map and thread index
   THE_UNIFIED_LINEAGE.md    Master document: 10 threads, all papers/springs/contacts
   THREAD_INDEX.toml         Machine-readable inventory for tooling
-  BASECAMP_PAPER_MAP.toml   All 26 baseCamp papers → threads, springs, data anchors
+  BASECAMP_PAPER_MAP.toml   baseCamp papers → threads, springs, data anchors
 expressions/        Domain thread expression documents
   ABG_WHOLE_CELL_REBUILD.md Thread 1: whole-cell modeling (first expression)
 data/               Data source manifests and validation targets
-  sources/          Per-thread data source TOMLs (100 sources across 5 threads)
-  targets/          Per-thread validation target TOMLs (36 targets)
+  sources/          Per-thread data source TOMLs (10 threads, 150+ sources)
+  targets/          Per-thread validation target TOMLs (10 threads, 165+ targets)
 graphs/             Foundation-specific deploy graphs (references projectNUCLEUS)
 deploy/             Operational scripts
   fetch_sources.sh  Fetch NCBI/UniProt/KEGG data, compute BLAKE3 hashes
