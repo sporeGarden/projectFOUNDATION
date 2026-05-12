@@ -4,8 +4,8 @@
 # Used by tooling for thread enumeration, spring lookups, and workload generation.
 
 [meta]
-version = "1.3.0"
-generated = "2026-05-11"
+version = "1.1.0"
+generated = "2026-05-07"
 total_threads = 10
 total_basecamp_papers = 28
 total_springs = 8
@@ -34,23 +34,23 @@ basecamp_papers = ["07", "10b", "11", "14", "15", "24b", "25"]
 springs = ["hotSpring"]
 contacts = ["Murillo", "Chuna", "Bazavov"]
 external_lineages = ["Murillo/Chuna Plasma Chain (Stanton & Murillo - Chuna 2024)"]
-expression = ""
+expression = "expressions/PLASMA_QCD_SOVEREIGN_GPU.md"
 data_sources = "data/sources/thread02_plasma.toml"
 data_targets = "data/targets/thread02_plasma_targets.toml"
-status = "mapped"
+status = "active"
 
 [[threads]]
 id = 3
 name = "Immunology / Drug Discovery"
 short = "immuno"
-basecamp_papers = ["12", "13", "22"]
+basecamp_papers = ["12", "13"]
 springs = ["wetSpring", "airSpring", "healthSpring"]
 contacts = ["Gonzales", "Lisabeth", "Neubig"]
 external_lineages = ["Gonzales JAK/mAb Series (G1-G6)"]
-expression = "expressions/IMMUNO_DRUG_DISCOVERY.md"
-data_sources = "data/sources/thread03_immuno.toml"
-data_targets = "data/targets/thread03_immuno_targets.toml"
-status = "active"
+expression = ""
+data_sources = ""
+data_targets = ""
+status = "mapped"
 
 [[threads]]
 id = 4
@@ -64,7 +64,7 @@ external_lineages = [
     "Waters QS Series (7 papers)",
     "Liu Phylogenetics Series (6 papers)",
 ]
-expression = ""
+expression = "expressions/ENVIRONMENTAL_GENOMICS.md"
 data_sources = "data/sources/thread04_enviro.toml"
 data_targets = "data/targets/thread04_enviro_targets.toml"
 status = "active"
@@ -74,12 +74,12 @@ id = 5
 name = "Evolutionary Biology / LTEE"
 short = "ltee"
 basecamp_papers = ["02", "10a"]
-springs = ["wetSpring", "neuralSpring", "groundSpring", "hotSpring"]
-contacts = ["Dolson", "Waters"]
-external_lineages = ["Lenski LTEE frozen fossil collection", "Barrick Lab UT Austin"]
-expression = ""
-data_sources = "data/sources/thread05_ltee.toml"
-data_targets = "data/targets/thread05_ltee_targets.toml"
+springs = ["neuralSpring", "groundSpring", "wetSpring"]
+contacts = ["Dolson", "Waters", "Barrick"]
+external_lineages = ["Barrick 2009 LTEE Mutation Accumulation"]
+expression = "expressions/ML_SURROGATES.md"
+data_sources = "data/sources/thread05_ml_surrogates.toml"
+data_targets = "data/targets/thread05_ml_surrogates_targets.toml"
 status = "active"
 
 [[threads]]
@@ -120,7 +120,7 @@ external_lineages = ["Mok Clinical Series (9 experiments)"]
 expression = "expressions/SOVEREIGN_HEALTH.md"
 data_sources = "data/sources/thread08_health.toml"
 data_targets = "data/targets/thread08_health_targets.toml"
-status = "active"
+status = "seeded"
 
 [[threads]]
 id = 9
@@ -129,8 +129,8 @@ short = "gaming"
 basecamp_papers = ["17", "18", "19", "24a"]
 springs = ["ludoSpring"]
 contacts = []
-external_lineages = []
-expression = "expressions/GAMING_CREATIVE_SCIENCE.md"
+external_lineages = ["Fitts (1954)", "Hick (1952)", "Accot-Zhai (1997)", "Perlin (1985)", "Lindenmayer (1968)", "Lazzaro (2004)"]
+expression = ""
 data_sources = "data/sources/thread09_gaming.toml"
 data_targets = "data/targets/thread09_gaming_targets.toml"
 status = "active"
@@ -142,11 +142,11 @@ short = "provenance"
 basecamp_papers = ["20", "21", "22"]
 springs = ["ludoSpring", "primalSpring"]
 contacts = []
-external_lineages = ["W3C PROV-DM Standard"]
-expression = "expressions/PROVENANCE_ECONOMICS.md"
-data_sources = "data/sources/thread10_provenance.toml"
-data_targets = "data/targets/thread10_provenance_targets.toml"
-status = "active"
+external_lineages = []
+expression = ""
+data_sources = ""
+data_targets = ""
+status = "mapped"
 
 # --- Product Focus Mapping ---
 
