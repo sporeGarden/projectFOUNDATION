@@ -10,7 +10,7 @@
 
 ## 1. The Argument
 
-gen3 asked "does it work?" and proved yes — 12,510+ quantitative checks
+gen3 asked "does it work?" and proved yes — 13,100+ quantitative checks
 across 70+ reproduced papers in 8 scientific domains, produced in ~69
 days by 8 springs, 14 primals, and a constrained evolution methodology
 formalized in a PhD thesis.

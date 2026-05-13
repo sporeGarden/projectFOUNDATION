@@ -7,8 +7,8 @@
 ## The Short Version
 
 foundation is the validated scientific lineage that makes sporeGarden
-products useful. It maps 28 companion papers, 8 springs with 12,510+
-quantitative checks, and 12+ faculty and community contacts into one
+products useful. It maps 28 companion papers, 8 springs with 13,100+
+quantitative checks, and 16 faculty and community contacts into one
 unified knowledge graph organized by 10 domain threads. Products like
 helixVision and blueFish pull specific threads from this foundation to
 serve their audiences.
