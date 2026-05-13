@@ -9,11 +9,11 @@ without waiting on upstream unless noted.
 **Rust validator**: 175 PASS, 0 FAIL, 6 DARK_FOREST (`validation/darkforest/` v0.2.0 — 939KB, authoritative)
 **Multi-tier tests**: observer + reviewer + compute + hub + pappusCast health (`deploy/tier_test_all.sh`)
 
-Related specs:
-- [TUNNEL_EVOLUTION.md](TUNNEL_EVOLUTION.md) — sovereignty replacement roadmap
-- [SECURITY_VALIDATION.md](SECURITY_VALIDATION.md) — five-layer validation model
-- [SOVEREIGNTY_VALIDATION_PROTOCOL.md](SOVEREIGNTY_VALIDATION_PROTOCOL.md) — replacement methodology
-- [COMPLETE_DEPENDENCY_INVENTORY.md](COMPLETE_DEPENDENCY_INVENTORY.md) — full dependency map
+Related specs (in projectNUCLEUS, not this repo):
+- `TUNNEL_EVOLUTION.md` — sovereignty replacement roadmap
+- `SECURITY_VALIDATION.md` — five-layer validation model
+- `SOVEREIGNTY_VALIDATION_PROTOCOL.md` — replacement methodology
+- `COMPLETE_DEPENDENCY_INVENTORY.md` — full dependency map
 
 **Rust evolution**: `validation/darkforest/` v0.2.0 — modular auditable security framework (939KB,
 zero runtime deps). 7 source modules: `check.rs` (structured types), `net.rs` (TCP/HTTP helpers),

@@ -7,10 +7,12 @@ toadStool-executable workload definitions for foundation validation.
 ```
 workloads/
   thread01_wcm/       Whole-Cell Modeling validation workloads
-  groundspring/       Agricultural Science + Anderson Mathematics (first spring complete)
-  thread04_enviro/    Environmental Genomics (future)
-  thread03_immuno/    Immunology & Drug Discovery (future)
-  thread08_health/    Human Health (future)
+  thread02_plasma/    Plasma Physics (hotSpring Sarkas MD)
+  thread04_enviro/    Environmental Genomics (QS + lithoSpore Module 6)
+  thread06_ag/        Agricultural Science (airSpring full suite)
+  thread07_anderson/  Anderson Mathematics (22 targets + lithoSpore Module 7)
+  groundspring/       groundSpring cross-cutting (29 validators, GPU bench)
+  hotspring/          hotSpring validations (Chuna, Sarkas MD)
 ```
 
 ## Workload Format
@@ -57,12 +59,26 @@ isolation_level = "None"
 | `gs-bench-gpu` | Three-mode GPU benchmark (110 delegations) |
 | `gs-python-baselines` | All 29 Python baselines for provenance |
 
+### Thread 4: Environmental Genomics
+
+| Workload | Validates |
+|----------|-----------|
+| `enviro-qs-validation` | QS framework targets (7 checks) from wetSpring + airSpring |
+| `litho-breseq-integration` | lithoSpore Module 6 → Thread 4 anchoring (8/8 PASS) |
+
+### Thread 7: Anderson Mathematics
+
+| Workload | Validates |
+|----------|-----------|
+| `anderson-math-validation` | 22 Anderson math targets across groundSpring + neuralSpring |
+| `litho-anderson-integration` | lithoSpore Module 7 → Thread 7 anchoring (5/5 PASS) |
+
 ## Execution
 
-Workloads are executed via toadStool dispatch:
+Workloads are executed via `toadstool.validate` (preferred) or direct dispatch:
 
 ```bash
-toadstool execute workloads/thread01_wcm/wcm-genome-fetch-hash.toml
+toadstool validate workloads/thread01_wcm/wcm-genome-fetch-hash.toml
 ```
 
 Or through the full pipeline:
