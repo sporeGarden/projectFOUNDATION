@@ -131,6 +131,7 @@ docs/               External-facing primers and guides
 
 | Repo | Org | Relationship |
 |------|-----|-------------|
+| **lithoSpore** | sporeGarden | First Targeted GuideStone — USB-deployable LTEE validation artifact built from foundation threads 1, 2, 4, 7 |
 | **projectNUCLEUS** | sporeGarden | The spore — deploys primals, produces gap handbacks that settle here as geological record |
 | **plasmidBin** | ecoPrimals/infra | Binary depot — foundation validation runs use primals from here |
 | **primalSpring** | syntheticChemistry | Composition validation — foundation references validated graphs |

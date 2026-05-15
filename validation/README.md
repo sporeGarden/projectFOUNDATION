@@ -45,6 +45,7 @@ need to evolve:
 - `PETALTONGUE_GAPS_HANDBACK.md` — Self-hosted rendering gaps
 - `PRIMAL_DEEP_DEBT_HANDBACK.md` — Technical debt across primal implementations
 - `ROOTPULSE_GAPS_HANDBACK.md` — Monitoring and metrics gaps
+- `UPSTREAM_AUDIT_PREP_MAY15_2026.md` — Pre-push audit prep (lithoSpore + petalTongue refactor summary)
 - `../COMPOSITION_GAPS.md` — Composition-level capability mismatches (at `validation/COMPOSITION_GAPS.md`)
 
 ### Validation Runs
