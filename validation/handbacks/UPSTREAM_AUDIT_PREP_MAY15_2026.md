@@ -22,25 +22,26 @@ upstream primal teams.
 | sporePrint pipeline wiring | sporePrint/Zola team | Not started |
 | genomeBin Tier 3 USB packaging | genomeBin team | Not started |
 
-### petalTongue (owned, completed)
+### lithoSpore Deep Evolution (completed)
 
-Interactive SceneGraph pipeline fully operational:
-- Semantic data_id flow from DataBinding through SceneGraph
-- Click-to-select with visual highlights and detail strip
-- Pan/zoom ViewCamera with cursor-centered scroll
-- IPC bridge fires InteractionApplyRequest on selections
-- Data-driven animation on stream updates (350ms crossfade)
-- Local parameter controls (geometry, scale, coordinates)
+- `viz.rs` (1248 lines) refactored into `viz/mod.rs`, `viz/modules.rs`, `viz/baselines.rs`
+- `ltee-cli/main.rs` (994 lines) refactored into subcommand modules: `validate.rs`, `visualize.rs`, `verify.rs`, `ops.rs`
+- UDS RPC transport **implemented** (was stub returning `None`) — `rpc_uds()` via `UnixStream`
+- Hardcoded IPs/env keys/socket paths evolved to capability-based discovery
+- 13 unit + 8 integration tests added to `ltee-cli`
 
-6 `#[allow(dead_code)]` markers in `domain_charts/mod.rs` and
-`scene_paint.rs` are retained as reference implementations during
-SceneGraph convergence. Will be removed when chart renderer is fully
-deprecated in favor of SceneGraph paint path.
+### petalTongue Deep Evolution (completed)
+
+- `web_mode.rs` (1167 lines) refactored into `web_mode/mod.rs` + `web_mode/nestgate.rs`
+- `scene_viewer.rs` (864 lines) refactored into `scene_viewer/mod.rs`, `scene_viewer/interaction.rs`, `scene_viewer/parameters.rs`
+- 6 `#[allow(dead_code)]` evolved to `#[expect(dead_code, reason = "...")]` — SceneGraph supersession documented per-function
+- Interactive SceneGraph pipeline fully operational (semantic data_id, click-to-select, pan/zoom, IPC bridge, animation, parameter controls)
 
 ### Discovery Chain
 
-UDS RPC transport and TURN-relayed RPC are documented stubs. All callers
-degrade gracefully. Needs Songbird client library for actual relay IPC.
+UDS RPC transport is **implemented**. TURN-relayed RPC remains a documented
+stub. All callers degrade gracefully. Needs Songbird client library for
+actual TURN relay IPC.
 
 ## foundation — Open Items for Upstream Teams
 

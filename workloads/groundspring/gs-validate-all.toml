@@ -25,6 +25,11 @@ max_cpu_percent = 80.0
 [security]
 isolation_level = "None"
 
+[skip]
+when = "dir_missing"
+directory = "${GROUNDSPRING_ROOT:-${SPRINGS_ROOT}/groundSpring}"
+reason = "groundSpring workspace must be available (GROUNDSPRING_ROOT or SPRINGS_ROOT/groundSpring)"
+
 [provenance]
 chain = "rhizoCrypt"
 attestation = "sweetGrass"

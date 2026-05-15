@@ -86,11 +86,11 @@ and presents them for a particular audience.
 
 ```bash
 # 1. Deploy NUCLEUS composition (via projectNUCLEUS)
-cd ../../projectNUCLEUS/deploy
+cd "${NUCLEUS_ROOT:-${ECOPRIMALS_ROOT}/projectNUCLEUS}/deploy"
 bash deploy.sh --composition nest --gate <active-gate>
 
 # 2. Fetch public data sources and run validation with full provenance
-cd ../../foundation/deploy
+cd "${FOUNDATION_ROOT:-$(git rev-parse --show-toplevel)}/deploy"
 bash foundation_validate.sh --thread wcm
 ```
 

@@ -26,6 +26,11 @@ max_cpu_percent = 90.0
 [security]
 isolation_level = "None"
 
+[skip]
+when = "binary_missing"
+binary = "${SPRINGS_ROOT:-${ECOPRIMALS_ROOT}/springs}/hotSpring/barracuda/target/release/validate_chuna"
+reason = "validate_chuna binary only exists after hotSpring build (cargo build --release in hotSpring/barracuda)"
+
 [provenance]
 chain = "rhizoCrypt"
 attestation = "sweetGrass"

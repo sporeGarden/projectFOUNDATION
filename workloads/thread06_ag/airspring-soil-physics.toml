@@ -16,6 +16,11 @@ max_cpu_percent = 80.0
 [security]
 isolation_level = "None"
 
+[skip]
+when = "binary_missing"
+binary = "${AIRSPRING_ROOT}/target/release/airspring"
+reason = "airspring binary only exists after spring build (cargo build --release in airSpring)"
+
 [provenance]
 chain = "rhizoCrypt"
 attestation = "sweetGrass"

@@ -26,6 +26,11 @@ max_cpu_percent = 100.0
 [security]
 isolation_level = "None"
 
+[skip]
+when = "dir_missing"
+directory = "${GROUNDSPRING_ROOT:-${SPRINGS_ROOT}/groundSpring}"
+reason = "groundSpring workspace must be available and barracuda-gpu feature requires GPU adapter"
+
 [provenance]
 chain = "rhizoCrypt"
 attestation = "sweetGrass"

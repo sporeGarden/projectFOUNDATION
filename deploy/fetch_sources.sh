@@ -374,6 +374,20 @@ fetch_thread06_ag() {
 }
 
 # ==========================================================================
+# Thread 5-ML: ML Surrogates & Evolutionary Dynamics
+# ==========================================================================
+
+fetch_thread05_ml() {
+    log ""
+    log "── Thread 5-ML: ML Surrogates & Evolutionary Dynamics ──"
+    log "  [INFO] Thread 5-ML sources are literature references, public APIs (Open-Meteo),"
+    log "  [INFO] and standard ML datasets (MNIST via torchvision)."
+    log "  [INFO] Paper DOIs and dataset URLs are catalogued in thread05_ml_surrogates.toml."
+    log "  [INFO] No bulk NCBI/UniProt data to fetch. ERA5 and MNIST fetched at train time."
+    SKIP_COUNT=$((SKIP_COUNT + 1))
+}
+
+# ==========================================================================
 # Thread 7: Anderson Mathematics
 # ==========================================================================
 
@@ -419,6 +433,7 @@ ALL_THREADS=(
     "immuno|thread03|fetch_thread03_immuno"
     "enviro|thread04|fetch_thread04_enviro"
     "ltee|thread05|fetch_thread05_ltee"
+    "ml|thread05_ml|fetch_thread05_ml"
     "ag|thread06|fetch_thread06_ag"
     "anderson|thread07|fetch_thread07_anderson"
     "health|thread08|fetch_thread08_health"

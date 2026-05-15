@@ -25,7 +25,7 @@ DATA_DIR="${FOUNDATION_ROOT:-.}/.data"
 validate_proteome() {
     local file="$1" expected_name="$2" min_seqs="$3" max_seqs="$4"
     if [ ! -f "$file" ]; then
-        echo "[FAIL] $expected_name: file not found ($file)"
+        echo "[SKIP] $expected_name: file not found — run fetch_sources.sh --thread wcm first"
         return
     fi
     local count

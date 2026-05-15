@@ -24,7 +24,7 @@ DATA_DIR="${FOUNDATION_ROOT:-.}/.data"
 check_kegg() {
     local file="$1" org="$2" min_pathways="$3"
     if [ ! -f "$file" ]; then
-        echo "[FAIL] KEGG $org: file not found"
+        echo "[SKIP] KEGG $org: file not found — run fetch_sources.sh --thread wcm first"
         return
     fi
     local count

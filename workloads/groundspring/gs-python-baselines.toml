@@ -26,6 +26,11 @@ max_cpu_percent = 80.0
 [security]
 isolation_level = "None"
 
+[skip]
+when = "command_missing"
+command = "python3"
+reason = "Python 3 required for baseline validation scripts"
+
 [provenance]
 chain = "rhizoCrypt"
 attestation = "sweetGrass"
