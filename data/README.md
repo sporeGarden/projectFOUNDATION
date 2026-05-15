@@ -19,15 +19,17 @@ data/
     thread09_gaming.toml            Gaming / Creative (ludoSpring)
     thread10_provenance.toml        Provenance / Economics
   targets/
-    thread01_wcm_targets.toml       Whole-Cell Modeling (24 targets across Papers A-G)
-    thread03_immuno_targets.toml    Immunology & Drug Discovery (12 targets)
-    thread05_ltee_targets.toml      LTEE evolutionary dynamics (10 targets)
-    thread05_ml_targets.toml        ML surrogate targets
-    thread06_ag_targets.toml        Agricultural science targets
-    thread07_anderson_targets.toml  Anderson mathematics targets
-    thread08_health_targets.toml    Human health targets
-    thread09_gaming_targets.toml    Gaming / creative targets (13 targets)
-    thread10_provenance_targets.toml  Provenance / economics targets
+    thread01_wcm_targets.toml            Whole-Cell Modeling (24 targets across Papers A-G)
+    thread02_plasma_targets.toml         Plasma Physics & Lattice QCD targets
+    thread03_immuno_targets.toml         Immunology & Drug Discovery (12 targets)
+    thread04_enviro_targets.toml         Environmental Genomics targets
+    thread05_ltee_targets.toml           LTEE evolutionary dynamics (10 targets)
+    thread05_ml_surrogates_targets.toml  ML surrogate targets (neuralSpring)
+    thread06_ag_targets.toml             Agricultural science targets
+    thread07_anderson_targets.toml       Anderson mathematics targets
+    thread08_health_targets.toml         Human health targets
+    thread09_gaming_targets.toml         Gaming / creative targets (13 targets)
+    thread10_provenance_targets.toml     Provenance / economics targets
 ```
 
 ## Public Data Repository Anchors
