@@ -78,4 +78,5 @@ upstream_module = "lithoSpore/ltee-breseq"
 upstream_spring = "wetSpring"
 
 [security]
-isolation_level = "None"
+isolation_level = "Standard"
+trusted_directories = ["${SPRINGS_ROOT}", "${ECOPRIMALS_ROOT}"]

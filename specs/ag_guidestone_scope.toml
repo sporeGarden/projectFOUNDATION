@@ -1,0 +1,109 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Scope Graph — birth certificate for the Agricultural Science Targeted GuideStone.
+# Declares which ecosystem components contribute to this artifact.
+# Follows TARGETED_GUIDESTONE_STANDARD v1.0.
+
+[guidestone]
+name = "ag-guidestone"
+version = "0.1.0"
+target = "Agricultural Science — Measurement, Hydrology, and Crop Modeling"
+created = "2026-05-16"
+standard = "TARGETED_GUIDESTONE_STANDARD v1.0"
+
+# --- Contributing Springs ---
+
+[[spring]]
+name = "airSpring"
+contributes = [
+    "FAO-56 Penman-Monteith reference evapotranspiration",
+    "7 alternative ET₀ methods (PT, TH, HS, MK, TC, HM, BC)",
+    "dual Kc crop water demand",
+    "Stewart yield response model",
+    "Saxton-Rawls pedotransfer functions",
+    "Richards equation (van Genuchten-Mualem)",
+    "SCS curve number runoff",
+    "Green-Ampt infiltration",
+    "SPI drought index (gamma distribution)",
+    "Michigan Crop Water Atlas pipeline",
+    "biochar adsorption (Langmuir isotherm)",
+]
+modules = ["ag-et0", "ag-hydro", "ag-atlas"]
+papers = ["FAO56_PM", "PT1972", "TH1948", "HS1985", "MK1957", "TC1961", "HM1961", "BC1950", "FAO56_Kc", "SW1977", "SR2006", "VG1980", "SCS1972", "GA1911", "SPI1993", "KM2025", "MI_ATLAS"]
+
+[[spring]]
+name = "groundSpring"
+contributes = [
+    "measurement noise characterization (sensor calibration)",
+    "observation gap analysis",
+    "error propagation framework",
+    "seismic wave propagation validation",
+    "Anderson coupling statistics",
+]
+modules = ["ag-et0", "ag-hydro"]
+papers = ["01", "03", "08"]
+
+[[spring]]
+name = "wetSpring"
+contributes = [
+    "16S rRNA amplicon pipeline (no-till soil microbiome)",
+    "rarefaction / diversity metrics for soil health",
+]
+modules = []
+papers = ["06"]
+
+# --- Primals (Tier 3 only, optional) ---
+
+[[primal]]
+name = "rhizoCrypt"
+tier = 3
+required = false
+purpose = "DAG provenance chain (when NUCLEUS available)"
+
+[[primal]]
+name = "loamSpine"
+tier = 3
+required = false
+purpose = "Certificate chain for immutable provenance"
+
+[[primal]]
+name = "sweetGrass"
+tier = 3
+required = false
+purpose = "Attribution braid integrity"
+
+[[primal]]
+name = "toadStool"
+tier = 3
+required = false
+purpose = "Hardware-aware compute dispatch for accelerated validation"
+
+# --- Foundation Thread ---
+
+[[foundation_thread]]
+id = "06"
+name = "Agricultural Science"
+datasets = [
+    "dong_2020_agriculture",
+    "noaa_ghcnd_michigan",
+    "fao56_paper",
+    "era5_reanalysis",
+    "ncbi_notill_16s",
+    "ncbi_rhizosphere",
+    "iris_seismic_events",
+    "iris_station_metadata",
+    "ncbi_16s_silva",
+    "hargreaves_samani_1985",
+    "makkink_1957",
+    "turc_1961",
+    "hamon_1963",
+    "stanton_murillo_2016",
+    "akd1000_datasheet",
+    "anderson_1958_original",
+]
+
+[[foundation_thread]]
+id = "07"
+name = "Anderson Framework"
+datasets = []
+notes = "Anderson coupling statistics cross-validated in ag soil physics"

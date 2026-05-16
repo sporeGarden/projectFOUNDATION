@@ -1,9 +1,9 @@
 # Upstream Gaps — NestGate Content-Addressed Publishing
 
 **Date**: 2026-05-07
-**From**: projectNUCLEUS (ironGate)
+**From**: projectNUCLEUS (irongate)
 **For**: NestGate team, primalSpring
-**Context**: Attempted to use NestGate (running on ironGate:9500) for
+**Context**: Attempted to use NestGate (running on irongate:9500) for
 content-addressed static site publishing as the first step in replacing
 GitHub Pages (TUNNEL_EVOLUTION.md Step 3a).
 

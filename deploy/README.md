@@ -10,7 +10,7 @@ cd ../../projectNUCLEUS/deploy
 bash deploy.sh --composition nest --gate irongate
 
 # 2. Fetch public data sources (NCBI, UniProt, KEGG)
-cd ../../foundation/deploy
+cd ../../projectFOUNDATION/deploy
 bash fetch_sources.sh --thread all
 
 # 3. Run full validation with provenance
@@ -54,8 +54,9 @@ bash foundation_validate.sh --skip-fetch          # Skip fetch, use cached data
 3. Fetch data sources (delegates to `fetch_sources.sh`)
 4. Register artifacts in NestGate with BLAKE3 anchors
 5. Execute workloads through toadStool
-6. Commit provenance (Merkle root + loamSpine + sweetGrass braid)
-7. Write validation report to `validation/run-<timestamp>/`
+6. Compare results against validation targets (`data/targets/*.toml`)
+7. Commit provenance (Merkle root + loamSpine + sweetGrass braid)
+8. Write validation report to `validation/run-<timestamp>/`
 
 ## Data Flow
 

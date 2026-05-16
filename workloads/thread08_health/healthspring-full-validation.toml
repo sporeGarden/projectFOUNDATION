@@ -1,0 +1,38 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# Thread 8: Sovereign Health — Full Validation Suite
+#
+# Runs healthSpring UniBin validation covering PK/PD models, biosignal
+# processing, and microbiome health indicators.
+
+[metadata]
+name = "healthspring-full-validation"
+description = "Full healthSpring validation suite — PK/PD, biosignal, microbiome health"
+version = "0.1.0"
+thread = "08"
+thread_name = "Sovereign Health"
+spring = "healthSpring"
+
+[execution]
+type = "native"
+command = "${HEALTHSPRING_ROOT:-${SPRINGS_ROOT:-${ECOPRIMALS_ROOT}/springs}/healthSpring}/ecoPrimal/target/release/healthspring_unibin"
+args = ["validate"]
+working_dir = "${HEALTHSPRING_ROOT:-${SPRINGS_ROOT:-${ECOPRIMALS_ROOT}/springs}/healthSpring}"
+
+[resources]
+max_memory_bytes = 8589934592
+max_cpu_percent = 80.0
+
+[security]
+isolation_level = "Standard"
+trusted_directories = ["${HEALTHSPRING_ROOT}", "${ECOPRIMALS_ROOT}"]
+
+[skip]
+when = "binary_missing"
+binary = "${HEALTHSPRING_ROOT:-${SPRINGS_ROOT:-${ECOPRIMALS_ROOT}/springs}/healthSpring}/ecoPrimal/target/release/healthspring_unibin"
+reason = "healthSpring binary requires: cargo build --release in healthSpring/ecoPrimal"
+
+[provenance]
+chain = "rhizoCrypt"
+attestation = "sweetGrass"
+spine = "loamSpine"
+requires_trio = true

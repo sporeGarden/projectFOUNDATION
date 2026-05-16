@@ -102,10 +102,33 @@ def run_benchmark():
     return results, passed == total
 
 
+def provenance_header():
+    import platform, datetime, subprocess
+    commit = "unknown"
+    try:
+        commit = subprocess.check_output(
+            ["git", "rev-parse", "--short", "HEAD"],
+            stderr=subprocess.DEVNULL,
+        ).decode().strip()
+    except Exception:
+        pass
+    return {
+        "provenance": {
+            "generated": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+            "python": platform.python_version(),
+            "numpy": np.__version__,
+            "platform": platform.platform(),
+            "git_commit": commit,
+            "command": f"python3 {__file__}",
+        }
+    }
+
+
 if __name__ == "__main__":
     print("barraCuda CPU parity: Statistical Variance")
     print("=" * 50)
     results, all_pass = run_benchmark()
+    results.update(provenance_header())
 
     out_path = "benchmarks/barracuda_cpu_parity/stats_variance_results.json"
     try:

@@ -115,7 +115,7 @@ pool of interchangeable compute nodes.
 
 ## What's Running Today
 
-On **ironGate** (i9-14900K + 96 GB DDR5 + RTX 4070 / RTX 3090), Phase 59 absorbed:
+On **irongate** (i9-14900K + 96 GB DDR5 + RTX 4070 / RTX 3090), Phase 59 absorbed:
 
 - Full NUCLEUS (13 primals running): BearDog, Songbird, ToadStool,
   barraCuda, coralReef, NestGate, rhizoCrypt, loamSpine, sweetGrass,

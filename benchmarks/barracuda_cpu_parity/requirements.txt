@@ -1,0 +1,4 @@
+# Python dependencies for barraCuda CPU parity baselines
+# Pin versions for reproducibility
+numpy>=1.24,<2.0
+scipy>=1.11,<2.0

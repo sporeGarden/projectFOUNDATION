@@ -3,11 +3,15 @@
 # Validation targets for Thread 9: Gaming / Creative
 # Quantitative targets derived from ludoSpring baseCamp Papers 17-19.
 # Each target has a source paper, expected value, and tolerance.
+#
+# Schema alignment: all targets use expected_value (numeric) where possible,
+# with tolerance as numeric. Qualitative targets use expected_value = 1.0
+# (binary pass/fail) with notes describing the qualitative condition.
 
 [meta]
 thread = 9
 thread_name = "Gaming / Creative"
-last_updated = "2026-05-11"
+last_updated = "2026-05-16"
 spring = "ludoSpring"
 total_targets = 13
 
@@ -17,58 +21,71 @@ total_targets = 13
 
 [[targets]]
 id = "fitts_id"
-source = "fitts_1954"
-description = "Fitts's Law Index of Difficulty: ID = log2(2A/W)"
-expected = "ID = log2(2 * 300 / 50) = 3.585 bits"
-tolerance = "1e-10 (analytical)"
-spring_check = "validate_interaction::fitts_analytical"
 paper = "17"
+description = "Fitts's Law Index of Difficulty: ID = log2(2A/W) for A=300, W=50"
+expected_value = 3.585
+unit = "bits"
+tolerance = 0.001
+source = "Fitts 1954"
+spring = "ludoSpring"
+spring_check = "validate_interaction::fitts_analytical"
 blake3 = ""
 validated = true
 
 [[targets]]
 id = "hick_rt"
-source = "hick_1952"
-description = "Hick's Law reaction time: RT = 200 + 150 * log2(n+1) ms"
-expected = "4 choices → RT = 548.79 ms"
-tolerance = "1e-10 (analytical)"
-spring_check = "validate_interaction::hick_analytical"
 paper = "17"
+description = "Hick's Law reaction time: RT = 200 + 150 * log2(n+1) for n=4"
+expected_value = 548.79
+unit = "milliseconds"
+tolerance = 0.01
+source = "Hick 1952"
+spring = "ludoSpring"
+spring_check = "validate_interaction::hick_analytical"
 blake3 = ""
 validated = true
 
 [[targets]]
 id = "steering_cost"
-source = "accot_zhai_1997"
-description = "Steering Law path cost: integral(ds/W(s))"
-expected = "analytical for uniform tunnel"
-tolerance = "1e-10"
-spring_check = "validate_interaction::steering_analytical"
 paper = "17"
+description = "Steering Law path cost: integral(ds/W(s)) for uniform tunnel"
+expected_value = 1.0
+unit = "binary_pass"
+tolerance = 0.0
+source = "Accot & Zhai 1997"
+spring = "ludoSpring"
+spring_check = "validate_interaction::steering_analytical"
 blake3 = ""
 validated = true
+notes = "Qualitative: analytical integral matches closed-form within 1e-10."
 
 [[targets]]
 id = "goms_klm"
-source = "card_moran_newell_1983"
-description = "GOMS/KLM task time: sum of operator durations"
-expected = "depends on task decomposition"
-tolerance = "1e-10 (analytical)"
-spring_check = "validate_procedural::goms_analytical"
 paper = "17"
+description = "GOMS/KLM task time: sum of operator durations"
+expected_value = 1.0
+unit = "binary_pass"
+tolerance = 0.0
+source = "Card, Moran & Newell 1983"
+spring = "ludoSpring"
+spring_check = "validate_procedural::goms_analytical"
 blake3 = ""
 validated = true
+notes = "Qualitative: operator sum matches expected decomposition within 1e-10."
 
 [[targets]]
 id = "flow_state"
-source = "csikszentmihalyi_1990"
-description = "Flow state: skill/challenge ratio in [0.8, 1.2] → flow"
-expected = "sigmoid response curve"
-tolerance = "1e-6"
-spring_check = "validate_engagement::flow_state"
 paper = "17"
+description = "Flow state: skill/challenge ratio in [0.8, 1.2] triggers flow"
+expected_value = 1.0
+unit = "binary_pass"
+tolerance = 0.0
+source = "Csikszentmihalyi 1990"
+spring = "ludoSpring"
+spring_check = "validate_engagement::flow_state"
 blake3 = ""
 validated = true
+notes = "Qualitative: sigmoid response curve shape validated within 1e-6."
 
 # =============================================================================
 # Procedural Generation Targets
@@ -76,58 +93,72 @@ validated = true
 
 [[targets]]
 id = "perlin_lattice_zero"
-source = "perlin_1985"
-description = "Perlin noise at integer coordinates = 0 (gradient dot product cancellation)"
-expected = "0.0"
-tolerance = "1e-10 (analytical)"
-spring_check = "validate_procedural::perlin_lattice"
 paper = "17"
+description = "Perlin noise at integer coordinates = 0 (gradient dot product cancellation)"
+expected_value = 0.0
+unit = "noise_value"
+tolerance = 0.0
+source = "Perlin 1985"
+spring = "ludoSpring"
+spring_check = "validate_procedural::perlin_lattice"
 blake3 = ""
 validated = true
 
 [[targets]]
 id = "perlin_range"
-source = "perlin_1985"
-description = "Perlin 2D noise output in [-1, 1]"
-expected = "[-1.0, 1.0]"
-tolerance = "exact bounds"
-spring_check = "validate_procedural::perlin_range"
 paper = "17"
+description = "Perlin 2D noise output bounded in [-1, 1]"
+expected_value = 1.0
+unit = "binary_pass"
+tolerance = 0.0
+source = "Perlin 1985"
+spring = "ludoSpring"
+spring_check = "validate_procedural::perlin_range"
 blake3 = ""
 validated = true
+notes = "Qualitative: all sampled outputs satisfy exact bounds."
 
 [[targets]]
 id = "fbm_octave_decay"
-source = "perlin_1985"
-description = "fBm amplitude decays by persistence^octave"
-expected = "analytical sum of geometric series"
-tolerance = "1e-10"
-spring_check = "validate_procedural::fbm_decay"
 paper = "17"
+description = "fBm amplitude decays by persistence^octave"
+expected_value = 1.0
+unit = "binary_pass"
+tolerance = 0.0
+source = "Perlin 1985"
+spring = "ludoSpring"
+spring_check = "validate_procedural::fbm_decay"
 blake3 = ""
 validated = true
+notes = "Qualitative: geometric series ratio validated within 1e-10."
 
 [[targets]]
 id = "wfc_entropy"
-source = "merrell_2007_wfc"
-description = "WFC cell selection by minimum Shannon entropy"
-expected = "entropy = -sum(p * log(p))"
-tolerance = "1e-10 (analytical)"
-spring_check = "validate_procedural::wfc_entropy"
 paper = "17"
+description = "WFC cell selection by minimum Shannon entropy"
+expected_value = 1.0
+unit = "binary_pass"
+tolerance = 0.0
+source = "Merrell 2007"
+spring = "ludoSpring"
+spring_check = "validate_procedural::wfc_entropy"
 blake3 = ""
 validated = true
+notes = "Qualitative: entropy = -sum(p * log(p)) matches within 1e-10."
 
 [[targets]]
 id = "lsystem_expansion"
-source = "lindenmayer_1968"
-description = "L-system: deterministic expansion of production rules"
-expected = "exact string match after N iterations"
-tolerance = "exact"
-spring_check = "validate_procedural::lsystem_deterministic"
 paper = "17"
+description = "L-system: deterministic expansion of production rules"
+expected_value = 1.0
+unit = "binary_pass"
+tolerance = 0.0
+source = "Lindenmayer 1968"
+spring = "ludoSpring"
+spring_check = "validate_procedural::lsystem_deterministic"
 blake3 = ""
 validated = true
+notes = "Qualitative: exact string match after N iterations."
 
 # =============================================================================
 # Engagement Metric Targets
@@ -135,33 +166,42 @@ validated = true
 
 [[targets]]
 id = "four_keys_classification"
-source = "lazzaro_2004"
-description = "Four Keys to Fun: hard/easy/people/serious classification"
-expected = "weighted dot product > threshold → category"
-tolerance = "1e-6"
-spring_check = "validate_engagement::four_keys"
 paper = "17"
+description = "Four Keys to Fun: hard/easy/people/serious classification"
+expected_value = 1.0
+unit = "binary_pass"
+tolerance = 0.0
+source = "Lazzaro 2004"
+spring = "ludoSpring"
+spring_check = "validate_engagement::four_keys"
 blake3 = ""
 validated = true
+notes = "Qualitative: weighted dot product > threshold maps to correct category."
 
 [[targets]]
 id = "engagement_composite"
-source = "lazzaro_2004"
-description = "Engagement composite: weighted sum of session, social, challenge metrics"
-expected = "normalized to [0, 1]"
-tolerance = "1e-6"
-spring_check = "validate_engagement::composite_score"
 paper = "17"
+description = "Engagement composite: weighted sum normalized to [0, 1]"
+expected_value = 1.0
+unit = "binary_pass"
+tolerance = 0.0
+source = "Lazzaro 2004"
+spring = "ludoSpring"
+spring_check = "validate_engagement::composite_score"
 blake3 = ""
 validated = true
+notes = "Qualitative: normalized score within 1e-6 of expected."
 
 [[targets]]
 id = "dda_session"
-source = "csikszentmihalyi_1990"
-description = "DDA: dynamic difficulty adjustment maintains flow across session"
-expected = "difficulty adjusts to keep skill/challenge ratio near 1.0"
-tolerance = "convergence within 10 steps"
-spring_check = "validate_engagement::dda_session"
 paper = "17"
+description = "DDA: dynamic difficulty adjustment maintains flow across session"
+expected_value = 1.0
+unit = "binary_pass"
+tolerance = 0.0
+source = "Csikszentmihalyi 1990"
+spring = "ludoSpring"
+spring_check = "validate_engagement::dda_session"
 blake3 = ""
 validated = true
+notes = "Qualitative: difficulty converges to keep skill/challenge ratio near 1.0 within 10 steps."

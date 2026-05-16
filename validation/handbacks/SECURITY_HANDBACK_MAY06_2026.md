@@ -1,7 +1,7 @@
 # Security Handback — Penetration Testing Results
 
 **Date**: 2026-05-06
-**From**: projectNUCLEUS (ironGate)
+**From**: projectNUCLEUS (irongate)
 **For**: Primal teams, primalSpring, wateringHole
 **Context**: Three-layer pen test on live 13-primal full NUCLEUS composition
 
@@ -57,8 +57,8 @@ All 6 upstream gaps resolved. Every primal now defaults to `127.0.0.1`:
 
 1. **Bind policy**: Deploy scripts can drop explicit `--bind 0.0.0.0` overrides. Use `bind_policy = "localhost"` in graph metadata; guidestone validates it. Pass `--bind 0.0.0.0` only for intentional cross-host access.
 2. **`PrimalDeployProfile.bind_flag`**: All 13 primals return `Some(flag)` — deploy tooling can use `profile.bind_flag` programmatically.
-3. **Foundation validation graph**: `graphs/compositions/foundation_validation.toml` — 12-node NUCLEUS for scientific sediment pipeline.
-4. **Checksums**: primalSpring CHECKSUMS generated via `tools/regenerate_checksums.sh`. Verify `validation/CHECKSUMS` matches after pull.
+3. **Foundation validation graph**: `graphs/foundation_validation.toml` — 12-node NUCLEUS for scientific sediment pipeline.
+4. **Checksums**: primalSpring CHECKSUMS generated via `tools/regenerate_checksums.sh` (in primalSpring repo). Verify primalSpring `validation/CHECKSUMS` matches after pull.
 5. **NestGate TCP fallback note**: PG-56 BTSP gating applies to UDS/isomorphic paths only. TCP fallback (Tier 5, localhost) still dispatches all methods ungated — acceptable for localhost, but be aware if TCP is exposed externally.
 
 ---
@@ -94,7 +94,7 @@ This is a **one-line change** in each primal's CLI parser and a
 | Finding | Severity | Owner | Status |
 |---------|----------|-------|--------|
 | `jupyterhub.sqlite` mode 644 | MEDIUM | projectNUCLEUS | FIXED (now 600) |
-| UFW inactive | MEDIUM | ironGate admin | Documented (needs sudo) |
+| UFW inactive | MEDIUM | irongate admin | Documented (needs sudo) |
 | TornadoServer version in headers | LOW | JupyterHub config | Documented |
 | Missing X-Frame-Options header | LOW | JupyterHub config | Documented |
 | Missing X-Content-Type-Options | LOW | JupyterHub config | Documented |
@@ -142,10 +142,10 @@ during this test, and alert when similar patterns appear in production.
 | Add `--bind` to 6 primals (P1-P6) | Each primal team | HIGH | **DONE** — PG-55/58/59 |
 | NestGate BTSP scoping for storage.list | NestGate team | MEDIUM | **DONE** — PG-56 |
 | skunkBat baseline learning from pen test data | skunkBat team | MEDIUM | **DONE** — PG-57 |
-| Activate UFW on ironGate | ironGate admin | MEDIUM | **DONE** — deny-by-default |
+| Activate UFW on irongate | irongate admin | MEDIUM | **DONE** — deny-by-default |
 | JupyterHub security headers | projectNUCLEUS | LOW | **DONE** — X-Frame-Options, nosniff, Server suppressed |
-| Process isolation (hidepid=2) | ironGate admin | MEDIUM | **DONE** — fstab persistent |
-| Outbound network restriction | ironGate admin | HIGH | **DONE** — iptables/ip6tables owner match UID 1001-1099 |
+| Process isolation (hidepid=2) | irongate admin | MEDIUM | **DONE** — fstab persistent |
+| Outbound network restriction | irongate admin | HIGH | **DONE** — iptables/ip6tables owner match UID 1001-1099 |
 | Reviewer/observer read-only | projectNUCLEUS | CRITICAL | **DONE** — filesystem + JupyterLab server flags |
 | Shared notebook write protection | projectNUCLEUS | MEDIUM | **DONE** — 444 perms, compute users run but can't save |
 | RPC dispatcher capability check | All primal teams | CRITICAL | **ENFORCED** — MethodGate on 13/13 primals, `NUCLEUS_AUTH_MODE=enforced` default, 265 PASS 0 FAIL |

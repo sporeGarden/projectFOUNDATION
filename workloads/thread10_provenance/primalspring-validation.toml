@@ -1,0 +1,40 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# Thread 10: Provenance Economics — primalSpring Validation
+#
+# Runs primalSpring UniBin validation covering composition health,
+# provenance trio integration, and deployment validation scenarios.
+# Some targets (ledger immutability, W3C braid compliance) are
+# explicitly marked unvalidated — this workload covers what is ready.
+
+[metadata]
+name = "primalspring-validation"
+description = "Validate composition health and provenance scenarios via primalSpring"
+version = "0.1.0"
+thread = "10"
+thread_name = "Provenance Economics"
+spring = "primalSpring"
+
+[execution]
+type = "native"
+command = "${PRIMALSPRING_ROOT:-${SPRINGS_ROOT:-${ECOPRIMALS_ROOT}/springs}/primalSpring}/ecoPrimal/target/release/primalspring_unibin"
+args = ["validate"]
+working_dir = "${PRIMALSPRING_ROOT:-${SPRINGS_ROOT:-${ECOPRIMALS_ROOT}/springs}/primalSpring}"
+
+[resources]
+max_memory_bytes = 4294967296
+max_cpu_percent = 80.0
+
+[security]
+isolation_level = "Standard"
+trusted_directories = ["${PRIMALSPRING_ROOT}", "${ECOPRIMALS_ROOT}"]
+
+[skip]
+when = "binary_missing"
+binary = "${PRIMALSPRING_ROOT:-${SPRINGS_ROOT:-${ECOPRIMALS_ROOT}/springs}/primalSpring}/ecoPrimal/target/release/primalspring_unibin"
+reason = "primalSpring binary requires: cargo build --release in primalSpring/ecoPrimal"
+
+[provenance]
+chain = "rhizoCrypt"
+attestation = "sweetGrass"
+spine = "loamSpine"
+requires_trio = true

@@ -50,7 +50,7 @@ actual TURN relay IPC.
 | Item | Action | Owner |
 |------|--------|-------|
 | `data/sources/*.toml` — all `blake3 = ""` | Run `deploy/backfill_hashes.sh` after fetching | CATHEDRAL (needs fetch infrastructure) |
-| Thread 1 WCM — 0/24 targets validated | Review `validation/wcm-20260509/`, flip where justified | CATHEDRAL |
+| Thread 1 WCM — 0/27 targets validated | Review `validation/wcm-20260509/`, flip where justified | CATHEDRAL |
 | Thread 5 ML — `accessions = []` | Document as `source_type = "internal"` (neuralSpring models) | neuralSpring team |
 
 ### Validation State
@@ -61,6 +61,35 @@ actual TURN relay IPC.
 | 2 — Plasma Physics | 2026-05-11 | 12/12 PASS |
 | 6 — Agricultural Science | 2026-05-11 | 36/36 PASS |
 | 7 — Anderson Mathematics | 2026-05-11 | 18/18 PASS |
+
+### Upstream Primal Gaps (for primalSpring audit)
+
+| Primal | Gap | Impact |
+|--------|-----|--------|
+| rhizoCrypt | `dag.session.create` response schema undocumented — we infer `result.session_id` | Pipeline guesses at response structure |
+| loamSpine | `entry.append` with `SessionCommit` — response format undocumented | Cannot distinguish partial vs full commit |
+| sweetGrass | `braid.create` returns `result.urn` or `result.id` — format inconsistent | Pipeline handles both, but no canonical schema |
+| toadStool | `trusted_directories` interaction with `working_dir` precedence undocumented | All 29 workloads set both; may not be necessary |
+| Discovery | `capability.resolve` response schema and error cases undocumented | Pipeline falls back to env/defaults |
+| NestGate | `storage.store` value is ad-hoc string `"blake3:$hash size:$size"` | Needs structured value schema or metadata fields |
+
+### Deep Debt Evolution (completed May 16, 2026)
+
+- Self-validating mocks eliminated (enviro-qs, anderson-math → real spring delegation)
+- All 15 workloads upgraded from `isolation_level = "None"` to `"Standard"`
+- Pipeline Phase 7 now validates all provenance RPC responses
+- Pipeline Phase 4 now manifest-driven (reads source TOMLs before glob fallback)
+- `[SKIP]` counting added throughout pipeline and report
+- Script modularized (535 + 92 + 92 lines across 3 files)
+- 33 `ironGate` → `irongate` naming fixes across 11 files
+- CI expanded with target schema validation, workload integrity, gate naming enforcement
+- Thread 9 gaming targets migrated to numeric schema
+- Benchmark provenance headers added to all 3 Python baselines
+- 6 thread06_ag workloads missing thread metadata fixed
+- Stale paths and counts corrected in docs
+
+See `wateringHole/handoffs/PROJECTFOUNDATION_DEEP_DEBT_EVOLUTION_HANDOFF_MAY16_2026.md`
+for the full handoff.
 
 ### Handback Archive (geological record)
 
@@ -76,6 +105,6 @@ acting on the findings.
 
 ## Repos Ready for Push
 
-Both repos pass local `cargo check` / `cargo test` / `cargo clippy`.
-projectFOUNDATION CI jobs (shellcheck, TOML syntax, thread index, hash coverage)
-expected to pass on clean state.
+projectFOUNDATION CI jobs (shellcheck, TOML syntax, target schema, workload integrity,
+thread index, hash coverage, gate naming) expected to pass on clean state.
+All 184 targets validated against schema, 29 workloads pass integrity check.

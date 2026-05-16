@@ -1,9 +1,9 @@
 # Upstream Gaps — JupyterHub Deployment Patterns and Sovereignty Wiring
 
 **Date**: 2026-05-07
-**From**: projectNUCLEUS (ironGate)
+**From**: projectNUCLEUS (irongate)
 **For**: BearDog, biomeOS, NestGate, skunkBat teams, primalSpring
-**Context**: The JupyterHub deployment on ironGate is the first real multi-user
+**Context**: The JupyterHub deployment on irongate is the first real multi-user
 service running through the full primal stack. Every friction point encountered
 during deployment, user onboarding, and live testing reveals what the primals
 must internalize as they replace external dependencies.

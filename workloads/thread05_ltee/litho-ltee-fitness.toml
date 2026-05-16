@@ -1,0 +1,37 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# Thread 5: LTEE — Fitness Trajectory Validation
+#
+# Runs lithoSpore ltee-fitness module against Wiser (2013) fitness
+# trajectories. Validates drift vs selection statistics via groundSpring.
+
+[metadata]
+name = "litho-ltee-fitness"
+description = "LTEE fitness trajectory validation (Wiser 2013, drift/selection statistics)"
+version = "0.1.0"
+thread = "05"
+thread_name = "Evolutionary Biology / LTEE"
+spring = "groundSpring"
+
+[execution]
+type = "native"
+command = "${GARDENS_ROOT:-${ECOPRIMALS_ROOT}/gardens}/lithoSpore/target/release/ltee-fitness"
+working_dir = "${GARDENS_ROOT:-${ECOPRIMALS_ROOT}/gardens}/lithoSpore"
+
+[resources]
+max_memory_bytes = 4294967296
+max_cpu_percent = 80.0
+
+[security]
+isolation_level = "Standard"
+trusted_directories = ["${GARDENS_ROOT}", "${ECOPRIMALS_ROOT}"]
+
+[skip]
+when = "binary_missing"
+binary = "${GARDENS_ROOT:-${ECOPRIMALS_ROOT}/gardens}/lithoSpore/target/release/ltee-fitness"
+reason = "lithoSpore binary requires: cargo build --release in lithoSpore"
+
+[provenance]
+chain = "rhizoCrypt"
+attestation = "sweetGrass"
+spine = "loamSpine"
+requires_trio = true

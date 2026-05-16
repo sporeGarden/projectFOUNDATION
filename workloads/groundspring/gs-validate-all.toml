@@ -23,7 +23,8 @@ max_memory_bytes = 2147483648
 max_cpu_percent = 80.0
 
 [security]
-isolation_level = "None"
+isolation_level = "Standard"
+trusted_directories = ["${SPRINGS_ROOT}", "${ECOPRIMALS_ROOT}"]
 
 [skip]
 when = "dir_missing"

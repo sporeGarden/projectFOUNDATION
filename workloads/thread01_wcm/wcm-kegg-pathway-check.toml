@@ -48,7 +48,8 @@ max_memory_bytes = 268435456
 max_cpu_percent = 20.0
 
 [security]
-isolation_level = "None"
+isolation_level = "Standard"
+trusted_directories = ["${FOUNDATION_ROOT}", "${ECOPRIMALS_ROOT}"]
 
 [provenance]
 chain = "rhizoCrypt"

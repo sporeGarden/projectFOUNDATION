@@ -1,0 +1,37 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# Thread 3: Immunology / Drug Discovery — PK/PD Model Validation
+#
+# Runs healthSpring PK model validators (one-compartment, two-compartment,
+# Michaelis-Menten elimination) against published pharmacokinetic parameters.
+
+[metadata]
+name = "healthspring-pk-validation"
+description = "Validate PK/PD models against published pharmacokinetic parameters"
+version = "0.1.0"
+thread = "03"
+thread_name = "Immunology / Drug Discovery"
+spring = "healthSpring"
+
+[execution]
+type = "native"
+command = "${HEALTHSPRING_ROOT:-${SPRINGS_ROOT:-${ECOPRIMALS_ROOT}/springs}/healthSpring}/ecoPrimal/target/release/validate_pk_models"
+working_dir = "${HEALTHSPRING_ROOT:-${SPRINGS_ROOT:-${ECOPRIMALS_ROOT}/springs}/healthSpring}"
+
+[resources]
+max_memory_bytes = 4294967296
+max_cpu_percent = 80.0
+
+[security]
+isolation_level = "Standard"
+trusted_directories = ["${HEALTHSPRING_ROOT}", "${ECOPRIMALS_ROOT}"]
+
+[skip]
+when = "binary_missing"
+binary = "${HEALTHSPRING_ROOT:-${SPRINGS_ROOT:-${ECOPRIMALS_ROOT}/springs}/healthSpring}/ecoPrimal/target/release/validate_pk_models"
+reason = "healthSpring binary requires: cargo build --release in healthSpring/ecoPrimal"
+
+[provenance]
+chain = "rhizoCrypt"
+attestation = "sweetGrass"
+spine = "loamSpine"
+requires_trio = true

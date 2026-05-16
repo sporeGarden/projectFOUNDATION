@@ -112,12 +112,15 @@ expressions/        Domain thread expression documents
   ABG_WHOLE_CELL_REBUILD.md Thread 1: whole-cell modeling (first expression)
 data/               Data source manifests and validation targets
   sources/          Per-thread data source TOMLs (10 threads, 150+ sources)
-  targets/          Per-thread validation target TOMLs (10 threads, 165+ targets)
+  targets/          Per-thread validation target TOMLs (11 files, 184 targets)
 graphs/             Foundation-specific deploy graphs (references projectNUCLEUS)
 deploy/             Operational scripts
+  lib/              Sourced shell libraries (primal_ipc.sh, target_compare.sh)
   fetch_sources.sh  Fetch NCBI/UniProt/KEGG data, compute BLAKE3 hashes
+  backfill_hashes.sh  Compute BLAKE3 hashes and update source TOMLs
   foundation_validate.sh  Full validation pipeline with provenance wrapping
-workloads/          toadStool-executable workload definitions per thread
+workloads/          toadStool-executable workload definitions (29 workloads, 10 threads)
+benchmarks/         barraCuda CPU parity baselines (Python ground truth)
 specs/              Contracts and authoring guides
 validation/         Validation results, provenance manifests, gap reports
   handbacks/        Geological record from projectNUCLEUS deployment validation

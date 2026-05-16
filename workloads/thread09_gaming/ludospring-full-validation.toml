@@ -1,0 +1,37 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# Thread 9: Gaming / Creative Science — Full Validation
+#
+# Runs ludoSpring validate_all covering interaction, procedural generation,
+# engagement metrics, and composition validation.
+
+[metadata]
+name = "ludospring-full-validation"
+description = "Full ludoSpring validation suite — interaction, procedural, engagement"
+version = "0.1.0"
+thread = "09"
+thread_name = "Gaming / Creative Science"
+spring = "ludoSpring"
+
+[execution]
+type = "native"
+command = "${LUDOSPRING_ROOT:-${SPRINGS_ROOT:-${ECOPRIMALS_ROOT}/springs}/ludoSpring}/barracuda/target/release/validate_all"
+working_dir = "${LUDOSPRING_ROOT:-${SPRINGS_ROOT:-${ECOPRIMALS_ROOT}/springs}/ludoSpring}"
+
+[resources]
+max_memory_bytes = 8589934592
+max_cpu_percent = 80.0
+
+[security]
+isolation_level = "Standard"
+trusted_directories = ["${LUDOSPRING_ROOT}", "${ECOPRIMALS_ROOT}"]
+
+[skip]
+when = "binary_missing"
+binary = "${LUDOSPRING_ROOT:-${SPRINGS_ROOT:-${ECOPRIMALS_ROOT}/springs}/ludoSpring}/barracuda/target/release/validate_all"
+reason = "ludoSpring binary requires: cargo build --release in ludoSpring/barracuda"
+
+[provenance]
+chain = "rhizoCrypt"
+attestation = "sweetGrass"
+spine = "loamSpine"
+requires_trio = true

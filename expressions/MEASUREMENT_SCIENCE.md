@@ -205,7 +205,7 @@ farmer-owned from sensor to valve.
 - **Thread 7 Anderson sources**: Literature references already mapped;
   numerical targets are all validated
 - **Sediment Layer 2**: Execute `foundation_validate.sh --thread ag` once
-  NUCLEUS composition is deployed on ironGate
+  NUCLEUS composition is deployed on irongate
 - **Cross-thread metamorphism**: Anderson results overlap Threads 2, 3, 4,
   5 — meta-validation when those springs complete their baselines
 - **airSpring guideStone L1**: Scaffold binary reading downstream_manifest.toml

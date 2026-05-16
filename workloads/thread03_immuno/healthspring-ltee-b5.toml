@@ -1,0 +1,38 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# Thread 3: Immunology / Drug Discovery — LTEE Paper B5 Cross-Validation
+#
+# Paper B5 connects LTEE evolutionary dynamics to immune/symbiont modeling.
+# healthSpring validates the PK/PD bridge between evolutionary fitness
+# and pharmacological response curves.
+
+[metadata]
+name = "healthspring-ltee-b5"
+description = "Validate LTEE B5 immune/symbiont modeling bridge via healthSpring"
+version = "0.1.0"
+thread = "03"
+thread_name = "Immunology / Drug Discovery"
+spring = "healthSpring"
+
+[execution]
+type = "native"
+command = "${HEALTHSPRING_ROOT:-${SPRINGS_ROOT:-${ECOPRIMALS_ROOT}/springs}/healthSpring}/ecoPrimal/target/release/validate_ltee_b5"
+working_dir = "${HEALTHSPRING_ROOT:-${SPRINGS_ROOT:-${ECOPRIMALS_ROOT}/springs}/healthSpring}"
+
+[resources]
+max_memory_bytes = 4294967296
+max_cpu_percent = 80.0
+
+[security]
+isolation_level = "Standard"
+trusted_directories = ["${HEALTHSPRING_ROOT}", "${ECOPRIMALS_ROOT}"]
+
+[skip]
+when = "binary_missing"
+binary = "${HEALTHSPRING_ROOT:-${SPRINGS_ROOT:-${ECOPRIMALS_ROOT}/springs}/healthSpring}/ecoPrimal/target/release/validate_ltee_b5"
+reason = "healthSpring binary requires: cargo build --release in healthSpring/ecoPrimal"
+
+[provenance]
+chain = "rhizoCrypt"
+attestation = "sweetGrass"
+spine = "loamSpine"
+requires_trio = true

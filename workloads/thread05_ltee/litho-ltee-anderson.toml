@@ -1,0 +1,38 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# Thread 5: LTEE — Anderson Disorder Analogy Validation
+#
+# Runs lithoSpore ltee-anderson module validating the Anderson localization
+# analogy applied to LTEE fitness landscapes (DFE ↔ RMT connection).
+# Cross-thread with Thread 7 (Anderson Framework).
+
+[metadata]
+name = "litho-ltee-anderson"
+description = "LTEE Anderson disorder analogy validation (DFE ↔ RMT eigenvalue statistics)"
+version = "0.1.0"
+thread = "05"
+thread_name = "Evolutionary Biology / LTEE"
+spring = "hotSpring"
+
+[execution]
+type = "native"
+command = "${GARDENS_ROOT:-${ECOPRIMALS_ROOT}/gardens}/lithoSpore/target/release/ltee-anderson"
+working_dir = "${GARDENS_ROOT:-${ECOPRIMALS_ROOT}/gardens}/lithoSpore"
+
+[resources]
+max_memory_bytes = 8589934592
+max_cpu_percent = 80.0
+
+[security]
+isolation_level = "Standard"
+trusted_directories = ["${GARDENS_ROOT}", "${ECOPRIMALS_ROOT}"]
+
+[skip]
+when = "binary_missing"
+binary = "${GARDENS_ROOT:-${ECOPRIMALS_ROOT}/gardens}/lithoSpore/target/release/ltee-anderson"
+reason = "lithoSpore binary requires: cargo build --release in lithoSpore"
+
+[provenance]
+chain = "rhizoCrypt"
+attestation = "sweetGrass"
+spine = "loamSpine"
+requires_trio = true

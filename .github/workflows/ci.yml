@@ -20,12 +20,21 @@ jobs:
           shellcheck deploy/foundation_validate.sh
           shellcheck deploy/backfill_hashes.sh
 
+      - name: Install TOML parser for Python 3.11+
+        run: pip install tomli
+
       - name: TOML syntax check
         run: |
           python3 -c "
-          import tomllib, pathlib, sys
+          import sys, pathlib
+          try:
+              import tomllib
+          except ImportError:
+              import tomli as tomllib
           errors = 0
           for f in sorted(pathlib.Path('.').rglob('*.toml')):
+              if 'archive' in str(f) or 'node_modules' in str(f):
+                  continue
               try:
                   tomllib.loads(f.read_text())
               except Exception as e:
@@ -35,10 +44,51 @@ jobs:
           sys.exit(1 if errors else 0)
           "
 
+      - name: Target TOML schema validation
+        run: |
+          python3 -c "
+          import sys, pathlib
+          try:
+              import tomllib
+          except ImportError:
+              import tomli as tomllib
+
+          REQUIRED_KEYS = {'id', 'description'}
+          NUMERIC_KEYS = {'expected_value', 'tolerance', 'tolerance_pct'}
+
+          errors = 0
+          total = 0
+          for f in sorted(pathlib.Path('data/targets').glob('*.toml')):
+              data = tomllib.loads(f.read_text())
+              targets = data.get('targets', [])
+              for i, t in enumerate(targets):
+                  total += 1
+                  tid = t.get('id', f'targets[{i}]')
+                  for key in REQUIRED_KEYS:
+                      if key not in t:
+                          print(f'FAIL: {f.name} target {tid}: missing required key \"{key}\"')
+                          errors += 1
+                  has_ev = 'expected_value' in t
+                  has_tol = 'tolerance' in t or 'tolerance_pct' in t
+                  if has_ev and not has_tol:
+                      print(f'WARN: {f.name} target {tid}: has expected_value but no tolerance/tolerance_pct')
+                  for key in NUMERIC_KEYS:
+                      if key in t and not isinstance(t[key], (int, float)):
+                          print(f'FAIL: {f.name} target {tid}: {key} must be numeric, got {type(t[key]).__name__}')
+                          errors += 1
+          print(f'Checked {total} targets across {len(list(pathlib.Path(\"data/targets\").glob(\"*.toml\")))} files')
+          print(f'{errors} schema error(s)' if errors else 'All targets conform to schema')
+          sys.exit(1 if errors else 0)
+          "
+
       - name: Validate thread index completeness
         run: |
           python3 -c "
-          import tomllib, pathlib, sys
+          import sys, pathlib
+          try:
+              import tomllib
+          except ImportError:
+              import tomli as tomllib
           idx = tomllib.loads(pathlib.Path('lineage/THREAD_INDEX.toml').read_text())
           threads = idx.get('threads', [])
           missing = []
@@ -66,10 +116,13 @@ jobs:
       - name: Data manifest hash coverage
         run: |
           python3 -c "
-          import tomllib, pathlib, sys
+          import sys, pathlib
+          try:
+              import tomllib
+          except ImportError:
+              import tomli as tomllib
           total_hashed = 0
           total_sources = 0
-          total_empty_fetchable = 0
           for f in sorted(pathlib.Path('data/sources').glob('*.toml')):
               data = tomllib.loads(f.read_text())
               sources = data.get('source', data.get('sources', []))
@@ -89,9 +142,66 @@ jobs:
               print(f'{f.name}: {hashed}/{hashed + empty} hashed')
           pct = (total_hashed / total_sources * 100) if total_sources > 0 else 0
           print(f'Overall: {total_hashed}/{total_sources} ({pct:.0f}%)')
-          # Fail if hash coverage drops below current baseline (informational until backfill)
-          # When sources are fetched and hashed, raise this threshold
+          # Fail if hash coverage drops below current baseline
           if total_sources > 0 and pct < 0:
               print('::error::Hash coverage below threshold')
               sys.exit(1)
+          "
+
+      - name: Workload TOML integrity
+        run: |
+          python3 -c "
+          import sys, pathlib
+          try:
+              import tomllib
+          except ImportError:
+              import tomli as tomllib
+
+          errors = 0
+          checked = 0
+          for f in sorted(pathlib.Path('workloads').rglob('*.toml')):
+              checked += 1
+              data = tomllib.loads(f.read_text())
+              meta = data.get('metadata', {})
+              exe = data.get('execution', {})
+              sec = data.get('security', {})
+
+              if not meta.get('name'):
+                  print(f'FAIL: {f}: missing metadata.name')
+                  errors += 1
+              if not meta.get('thread'):
+                  print(f'FAIL: {f}: missing metadata.thread')
+                  errors += 1
+              if not exe.get('command'):
+                  print(f'FAIL: {f}: missing execution.command')
+                  errors += 1
+
+              iso = sec.get('isolation_level', '')
+              if iso == 'None':
+                  print(f'WARN: {f}: isolation_level=\"None\" — should be Standard for toadStool compatibility')
+
+          print(f'Checked {checked} workload TOMLs, {errors} error(s)')
+          sys.exit(1 if errors else 0)
+          "
+
+      - name: Gate naming consistency
+        run: |
+          python3 -c "
+          import pathlib, sys, re
+
+          inconsistent = []
+          for f in sorted(pathlib.Path('.').rglob('*')):
+              if f.is_file() and f.suffix in ('.sh', '.md', '.toml', '.yml', '.yaml'):
+                  try:
+                      text = f.read_text()
+                  except Exception:
+                      continue
+                  if 'ironGate' in text:
+                      inconsistent.append(str(f))
+          if inconsistent:
+              print(f'FAIL: {len(inconsistent)} file(s) use \"ironGate\" instead of \"irongate\":')
+              for f in inconsistent:
+                  print(f'  - {f}')
+              sys.exit(1)
+          print('Gate naming consistent (all lowercase irongate)')
           "

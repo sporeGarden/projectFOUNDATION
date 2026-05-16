@@ -78,4 +78,5 @@ upstream_module = "lithoSpore/ltee-anderson"
 upstream_spring = "hotSpring"
 
 [security]
-isolation_level = "None"
+isolation_level = "Standard"
+trusted_directories = ["${SPRINGS_ROOT}", "${ECOPRIMALS_ROOT}"]

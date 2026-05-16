@@ -3,6 +3,8 @@
 name = "airspring-et0-methods"
 description = "8 ET₀ methods: PM, PT, Thornthwaite, Hargreaves, Makkink, Turc, Hamon, Blaney-Criddle"
 version = "0.1.0"
+thread = "06"
+thread_name = "Agricultural Science"
 
 [execution]
 type = "native"
@@ -14,7 +16,8 @@ max_memory_bytes = 4294967296
 max_cpu_percent = 80.0
 
 [security]
-isolation_level = "None"
+isolation_level = "Standard"
+trusted_directories = ["${SPRINGS_ROOT}", "${ECOPRIMALS_ROOT}"]
 
 [skip]
 when = "binary_missing"

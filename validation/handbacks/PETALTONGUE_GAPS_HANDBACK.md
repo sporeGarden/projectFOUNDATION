@@ -1,7 +1,7 @@
 # Upstream Gaps — petalTongue Web Mode for Static Site Serving
 
 **Date**: 2026-05-07
-**From**: projectNUCLEUS (ironGate)
+**From**: projectNUCLEUS (irongate)
 **For**: petalTongue team, primalSpring
 **Context**: Attempted to use petalTongue `web` mode (v1.6.6) to serve
 sporePrint static site content as the first step in replacing GitHub Pages

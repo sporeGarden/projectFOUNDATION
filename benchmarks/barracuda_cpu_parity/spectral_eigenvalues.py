@@ -142,15 +142,40 @@ def run_benchmark():
     return results, passed == total
 
 
+def provenance_header():
+    import platform, datetime, subprocess
+    commit = "unknown"
+    try:
+        commit = subprocess.check_output(
+            ["git", "rev-parse", "--short", "HEAD"],
+            stderr=subprocess.DEVNULL,
+        ).decode().strip()
+    except Exception:
+        pass
+    return {
+        "provenance": {
+            "generated": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+            "python": platform.python_version(),
+            "numpy": np.__version__,
+            "scipy": scipy.__version__,
+            "platform": platform.platform(),
+            "git_commit": commit,
+            "command": f"python3 {__file__}",
+        }
+    }
+
+
 if __name__ == "__main__":
     print("barraCuda CPU parity: Spectral Eigenvalues (Anderson Localization)")
     print("=" * 65)
     results, all_pass = run_benchmark()
+    output = {"results": results}
+    output.update(provenance_header())
 
     out_path = "benchmarks/barracuda_cpu_parity/spectral_eigenvalues_results.json"
     try:
         with open(out_path, "w") as f:
-            json.dump(results, f, indent=2)
+            json.dump(output, f, indent=2)
         print(f"\nResults written to {out_path}")
     except OSError:
         pass

@@ -9,7 +9,7 @@ thread = 1
 thread_name = "Whole-Cell Modeling"
 expression = "expressions/ABG_WHOLE_CELL_REBUILD.md"
 last_updated = "2026-05-06"
-total_targets = 24
+total_targets = 27
 
 # =============================================================================
 # Paper A: Karr et al. 2012 — M. genitalium whole-cell model

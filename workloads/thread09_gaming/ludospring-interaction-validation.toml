@@ -1,0 +1,37 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# Thread 9: Gaming / Creative Science — Interaction Validation
+#
+# Runs ludoSpring validate_interaction covering Fitts' law, engagement
+# metrics, and procedural generation correctness checks.
+
+[metadata]
+name = "ludospring-interaction-validation"
+description = "Validate gaming interaction models (Fitts' law, engagement metrics)"
+version = "0.1.0"
+thread = "09"
+thread_name = "Gaming / Creative Science"
+spring = "ludoSpring"
+
+[execution]
+type = "native"
+command = "${LUDOSPRING_ROOT:-${SPRINGS_ROOT:-${ECOPRIMALS_ROOT}/springs}/ludoSpring}/barracuda/target/release/validate_interaction"
+working_dir = "${LUDOSPRING_ROOT:-${SPRINGS_ROOT:-${ECOPRIMALS_ROOT}/springs}/ludoSpring}"
+
+[resources]
+max_memory_bytes = 4294967296
+max_cpu_percent = 80.0
+
+[security]
+isolation_level = "Standard"
+trusted_directories = ["${LUDOSPRING_ROOT}", "${ECOPRIMALS_ROOT}"]
+
+[skip]
+when = "binary_missing"
+binary = "${LUDOSPRING_ROOT:-${SPRINGS_ROOT:-${ECOPRIMALS_ROOT}/springs}/ludoSpring}/barracuda/target/release/validate_interaction"
+reason = "ludoSpring binary requires: cargo build --release --features barracuda in ludoSpring/barracuda"
+
+[provenance]
+chain = "rhizoCrypt"
+attestation = "sweetGrass"
+spine = "loamSpine"
+requires_trio = true

@@ -56,27 +56,9 @@ done
 
 mkdir -p "$RESULTS_DIR"
 
-# Capability-based primal discovery: each primal's port is resolved from
-# environment (explicit config), then XDG runtime discovery socket, then
-# well-known defaults. No primal has baked knowledge of other primals'
-# locations — foundation discovers at runtime.
-discover_port() {
-    local name="$1" default="$2"
-    local env_var="${name^^}_PORT"
-    local env_val="${!env_var:-}"
-    if [[ -n "$env_val" ]]; then echo "$env_val"; return; fi
-
-    local discovery_sock="${XDG_RUNTIME_DIR:-/tmp}/ecoPrimals/discovery.sock"
-    if [[ -S "$discovery_sock" ]]; then
-        local port
-        port=$(echo "{\"jsonrpc\":\"2.0\",\"method\":\"capability.resolve\",\"params\":{\"primal\":\"$name\"},\"id\":1}" \
-            | nc -w 2 -U "$discovery_sock" 2>/dev/null \
-            | python3 -c "import sys,json; print(json.load(sys.stdin).get('result',{}).get('port',''))" 2>/dev/null)
-        if [[ -n "$port" ]]; then echo "$port"; return; fi
-    fi
-
-    echo "$default"
-}
+# Source shared IPC helpers (discovery, RPC clients, hashing)
+# shellcheck source=lib/primal_ipc.sh
+source "$SCRIPT_DIR/lib/primal_ipc.sh"
 
 BEARDOG_PORT=$(discover_port "beardog" "9100")
 SONGBIRD_PORT=$(discover_port "songbird" "9200")
@@ -88,64 +70,11 @@ SWEETGRASS_PORT=$(discover_port "sweetgrass" "9850")
 
 log() { echo "[$(date +%H:%M:%S)] $*"; }
 
-blake3_hash() { b3sum "$1" | cut -d' ' -f1; }
+if [[ $DISCOVERY_FALLBACK_COUNT -gt 0 ]]; then
+    log "[WARN] $DISCOVERY_FALLBACK_COUNT primal port(s) resolved via hardcoded defaults."
+    log "  For production, ensure discovery.sock or {PRIMAL}_PORT env vars are set."
+fi
 
-# RPC host resolved at runtime — never assume localhost.
-PRIMAL_HOST="${PRIMAL_HOST:-127.0.0.1}"
-
-rpc_nestgate() {
-    printf '%s\n' "$1" | nc -w 5 "$PRIMAL_HOST" "$NESTGATE_PORT" 2>/dev/null
-}
-
-rpc_rhizocrypt() {
-    local sock="${XDG_RUNTIME_DIR:-/tmp/biomeos}/biomeos/rhizocrypt-${FAMILY_ID:-}.sock"
-    if [[ -S "$sock" ]]; then
-        python3 -c "
-import socket, sys, json
-s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-s.settimeout(10)
-s.connect('$sock')
-s.sendall((sys.argv[1] + '\n').encode())
-data = b''
-while True:
-    try:
-        chunk = s.recv(65536)
-        if not chunk: break
-        data += chunk
-        try:
-            json.loads(data)
-            break
-        except Exception: pass
-    except socket.timeout: break
-s.close()
-print(data.decode().strip())
-" "$1" 2>/dev/null
-    else
-        printf '%s\n' "$1" | nc -w 5 "$PRIMAL_HOST" "$RHIZOCRYPT_PORT" 2>/dev/null
-    fi
-}
-
-rpc_loamspine() {
-    curl -s -X POST "http://${PRIMAL_HOST}:${LOAMSPINE_PORT}" \
-        -H 'Content-Type: application/json' -d "$1" 2>/dev/null
-}
-
-rpc_sweetgrass() {
-    curl -s -X POST "http://${PRIMAL_HOST}:${SWEETGRASS_PORT}/jsonrpc" \
-        -H 'Content-Type: application/json' -d "$1" 2>/dev/null
-}
-
-hash_to_byte_array() {
-    local hex="$1"
-    local arr="["
-    for i in $(seq 0 2 62); do
-        local byte=$((16#${hex:$i:2}))
-        [ "$i" -gt 0 ] && arr+=","
-        arr+="$byte"
-    done
-    arr+="]"
-    echo "$arr"
-}
 
 log "═══════════════════════════════════════════════════════════"
 log "  Foundation Validation Pipeline"
@@ -175,8 +104,17 @@ rpc_health() {
     fi
 
     if [[ "$name" == "rhizoCrypt" ]]; then
+        local rhizo_sock="${XDG_RUNTIME_DIR:-/tmp/biomeos}/biomeos/rhizocrypt-${FAMILY_ID:-}.sock"
+        if [[ -S "$rhizo_sock" ]]; then
+            local rhizo_resp
+            rhizo_resp=$(rpc_rhizocrypt '{"jsonrpc":"2.0","method":"health.liveness","params":{},"id":0}')
+            if [[ -n "$rhizo_resp" ]] && echo "$rhizo_resp" | grep -q '"result"'; then
+                log "  [OK] $name (UDS $rhizo_sock)"
+                return 0
+            fi
+        fi
         if pgrep -f "primals/rhizocrypt" >/dev/null 2>&1; then
-            log "  [OK] $name (PID alive)"
+            log "  [OK] $name (PID alive, UDS not verified)"
             return 0
         fi
         log "  [FAIL] $name not running"
@@ -237,8 +175,8 @@ log ""
 log "── Phase 2: Create Provenance Session ──"
 
 SESSION_NAME="foundation-$THREAD_FILTER-$(date +%Y%m%d-%H%M%S)"
-SESSION_RESP=$(rpc_rhizocrypt "{\"jsonrpc\":\"2.0\",\"method\":\"dag.session.create\",\"params\":{\"name\":\"$SESSION_NAME\"},\"id\":1}")
-SESSION_ID=$(echo "$SESSION_RESP" | python3 -c "import sys,json; print(json.load(sys.stdin)['result'])" 2>/dev/null) || SESSION_ID=""
+SESSION_RESP=$(rpc_rhizocrypt "{\"jsonrpc\":\"2.0\",\"method\":\"dag.session.create\",\"params\":{\"session_type\":\"Experiment\",\"description\":\"$SESSION_NAME\"},\"id\":1}")
+SESSION_ID=$(echo "$SESSION_RESP" | python3 -c "import sys,json; r=json.load(sys.stdin); print(r.get('result',{}).get('session_id','') or r.get('result',''))" 2>/dev/null) || SESSION_ID=""
 
 if [[ -z "$SESSION_ID" ]]; then
     log "  [FAIL] Could not create DAG session: $SESSION_RESP"
@@ -303,10 +241,58 @@ register_data_file() {
     log "  [OK] $key → blake3:${hash:0:16}…"
 }
 
+SOURCES_MANIFEST_DIR="$FOUNDATION_ROOT/data/sources"
+register_from_manifest() {
+    local manifest="$1"
+    local thread_name
+    thread_name=$(basename "$manifest" .toml)
+    python3 -c "
+import sys
+try:
+    import tomllib
+except ImportError:
+    import tomli as tomllib
+with open('$manifest', 'rb') as f:
+    data = tomllib.load(f)
+for s in data.get('sources', []):
+    sid = s.get('id', '')
+    accs = s.get('accessions', [])
+    for acc in accs:
+        print(f'{sid}|{acc}')
+    if not accs:
+        print(f'{sid}|')
+" 2>/dev/null | while IFS='|' read -r sid acc; do
+        [[ -z "$sid" ]] && continue
+        local found=false
+        if [[ -n "$acc" && -d "$DATA_DIR" ]]; then
+            while IFS= read -r -d '' candidate; do
+                if [[ "$(basename "$candidate")" == *"$acc"* ]]; then
+                    local rel="${candidate#"$DATA_DIR/"}"
+                    register_data_file "$candidate" "foundation:${thread_name}:${sid}:${rel//\//:}"
+                    found=true
+                fi
+            done < <(find "$DATA_DIR" -type f -name "*${acc}*" -print0 2>/dev/null)
+        fi
+    done
+}
+
 if [[ -d "$DATA_DIR" ]]; then
+    if [[ "$THREAD_FILTER" == "all" ]]; then
+        for manifest in "$SOURCES_MANIFEST_DIR"/*.toml; do
+            [[ -f "$manifest" ]] || continue
+            register_from_manifest "$manifest"
+        done
+    else
+        for manifest in "$SOURCES_MANIFEST_DIR"/thread*"${THREAD_FILTER}"*.toml; do
+            [[ -f "$manifest" ]] || continue
+            register_from_manifest "$manifest"
+        done
+    fi
+
+    # Register any remaining files not covered by manifests
     while IFS= read -r -d '' f; do
         rel="${f#"$DATA_DIR/"}"
-        key="foundation:${rel//\//:}"
+        key="foundation:data:${rel//\//:}"
         register_data_file "$f" "$key"
     done < <(find "$DATA_DIR" -type f -print0 2>/dev/null | sort -z)
 fi
@@ -323,6 +309,7 @@ WORKLOAD_DIR="$FOUNDATION_ROOT/workloads"
 WORKLOAD_TABLE=""
 TOTAL_OK=0
 TOTAL_FAIL=0
+TOTAL_SKIP=0
 
 execute_workload() {
     local toml_path="$1"
@@ -369,11 +356,13 @@ print(c, a)
     end_time=$(date +%s)
     local elapsed=$((end_time - start_time))
 
-    local ok_count fail_count
+    local ok_count fail_count skip_count
     ok_count=$(grep -c '\[OK\]' "$output_file" 2>/dev/null || echo 0)
     fail_count=$(grep -c '\[FAIL\]' "$output_file" 2>/dev/null || echo 0)
+    skip_count=$(grep -c '\[SKIP\]' "$output_file" 2>/dev/null || echo 0)
     TOTAL_OK=$((TOTAL_OK + ok_count))
     TOTAL_FAIL=$((TOTAL_FAIL + fail_count))
+    TOTAL_SKIP=$((TOTAL_SKIP + skip_count))
 
     local output_hash
     output_hash=$(blake3_hash "$output_file")
@@ -384,15 +373,16 @@ print(c, a)
     EVENT_IDX=$((EVENT_IDX + 1))
 
     local status="RUN"
+    [[ $skip_count -gt 0 && $ok_count -eq 0 && $fail_count -eq 0 ]] && status="SKIP"
     [[ $fail_count -gt 0 ]] && status="FAIL"
-    [[ $ok_count -gt 0 && $fail_count -eq 0 ]] && status="PASS"
+    [[ $ok_count -gt 0 && $fail_count -eq 0 && $skip_count -eq 0 ]] && status="PASS"
 
-    WORKLOAD_TABLE+="| $name | $ok_count | $fail_count | ${elapsed}s | $status |\n"
-    log "  [$name] $ok_count OK / $fail_count FAIL (${elapsed}s)"
+    WORKLOAD_TABLE+="| $name | $ok_count | $fail_count | $skip_count | ${elapsed}s | $status |\n"
+    log "  [$name] $ok_count OK / $fail_count FAIL / $skip_count SKIP (${elapsed}s)"
 }
 
 if [[ "$THREAD_FILTER" == "all" ]]; then
-    SCAN_DIRS=("$WORKLOAD_DIR"/thread* "$WORKLOAD_DIR"/groundspring "$WORKLOAD_DIR"/airspring "$WORKLOAD_DIR"/wetspring "$WORKLOAD_DIR"/hotspring "$WORKLOAD_DIR"/healthspring "$WORKLOAD_DIR"/neuralspring "$WORKLOAD_DIR"/ludospring)
+    SCAN_DIRS=("$WORKLOAD_DIR"/thread* "$WORKLOAD_DIR"/groundspring "$WORKLOAD_DIR"/hotspring)
 else
     SCAN_DIRS=("$WORKLOAD_DIR/thread"*"$THREAD_FILTER"*)
 fi
@@ -415,80 +405,9 @@ TARGET_DIR="$FOUNDATION_ROOT/data/targets"
 TARGET_HITS=0
 TARGET_MISS=0
 
-compare_targets() {
-    local thread_short="$1"
-    local target_file="$TARGET_DIR/thread*_${thread_short}_targets.toml"
-
-    # shellcheck disable=SC2086
-    local match
-    match=$(ls $target_file 2>/dev/null | head -1) || true
-    if [[ -z "$match" || ! -f "$match" ]]; then
-        log "  [INFO] No target file for thread: $thread_short"
-        return 0
-    fi
-
-    local targets
-    targets=$(python3 -c "
-try:
-    import tomllib
-except ImportError:
-    import tomli as tomllib
-import sys
-with open('$match', 'rb') as f:
-    data = tomllib.load(f)
-for t in data.get('targets', []):
-    tid = t.get('id', '')
-    metric = t.get('metric', '')
-    expected = t.get('expected', '')
-    tolerance = t.get('tolerance', '')
-    print(f'{tid}|{metric}|{expected}|{tolerance}')
-" 2>/dev/null) || true
-
-    if [[ -z "$targets" ]]; then
-        return 0
-    fi
-
-    while IFS='|' read -r tid metric expected tolerance; do
-        [[ -z "$tid" ]] && continue
-
-        local found=false actual_val=""
-        for result_file in "$RESULTS_DIR"/*.stdout; do
-            [[ -f "$result_file" ]] || continue
-            actual_val=$(grep -oP "$metric[^0-9]*\K[0-9]+\.?[0-9]*" "$result_file" 2>/dev/null | head -1) || true
-            if [[ -n "$actual_val" ]]; then
-                found=true
-                break
-            fi
-            if grep -q "$metric" "$result_file" 2>/dev/null; then
-                found=true
-                break
-            fi
-        done
-
-        if $found; then
-            if [[ -n "$actual_val" && -n "$expected" && -n "$tolerance" ]]; then
-                local match
-                match=$(python3 -c "
-e, a, t = float('$expected'), float('$actual_val'), float('$tolerance')
-print('PASS' if abs(a - e) <= t else 'FAIL')
-" 2>/dev/null) || match="SKIP"
-                if [[ "$match" == "PASS" ]]; then
-                    log "  [OK]   $tid — $metric: $actual_val ≈ $expected (±$tolerance)"
-                    TARGET_HITS=$((TARGET_HITS + 1))
-                else
-                    log "  [FAIL] $tid — $metric: $actual_val vs $expected (±$tolerance)"
-                    TARGET_MISS=$((TARGET_MISS + 1))
-                fi
-            else
-                log "  [HIT]  $tid — $metric (expected: $expected)"
-                TARGET_HITS=$((TARGET_HITS + 1))
-            fi
-        else
-            log "  [MISS] $tid — $metric not found in workload output"
-            TARGET_MISS=$((TARGET_MISS + 1))
-        fi
-    done <<< "$targets"
-}
+# Source target comparison logic
+# shellcheck source=lib/target_compare.sh
+source "$SCRIPT_DIR/lib/target_compare.sh"
 
 if [[ "$THREAD_FILTER" == "all" ]]; then
     for target_toml in "$TARGET_DIR"/thread*_targets.toml; do
@@ -508,25 +427,48 @@ log "  Targets: $TARGET_HITS hit, $TARGET_MISS miss"
 log ""
 log "── Phase 7: Commit Provenance ──"
 
+PROVENANCE_WARN=0
+
 COMPLETE_RESP=$(rpc_rhizocrypt "{\"jsonrpc\":\"2.0\",\"method\":\"dag.session.complete\",\"params\":{\"session_id\":\"$SESSION_ID\"},\"id\":800}")
 MERKLE_ROOT=$(echo "$COMPLETE_RESP" | python3 -c "
 import sys,json
 r = json.load(sys.stdin).get('result',{})
-print(r.get('merkle_root','') or r.get('root','') or 'unknown')
-" 2>/dev/null) || MERKLE_ROOT="unknown"
-log "  [OK] DAG Merkle root: $MERKLE_ROOT"
+print(r.get('merkle_root','') or r.get('root','') or '')
+" 2>/dev/null) || MERKLE_ROOT=""
+if [[ -n "$MERKLE_ROOT" && "$MERKLE_ROOT" != "unknown" ]]; then
+    log "  [OK] DAG Merkle root: $MERKLE_ROOT"
+else
+    log "  [WARN] DAG session.complete returned no Merkle root: $COMPLETE_RESP"
+    MERKLE_ROOT="unknown"
+    PROVENANCE_WARN=$((PROVENANCE_WARN + 1))
+fi
 
 MERKLE_BYTES=$(hash_to_byte_array "${MERKLE_ROOT:-0000000000000000000000000000000000000000000000000000000000000000}")
 COMMIT_RESP=$(rpc_loamspine "{\"jsonrpc\":\"2.0\",\"method\":\"entry.append\",\"params\":{\"spine_id\":\"$SPINE_ID\",\"entry_type\":{\"SessionCommit\":{\"session_hash\":$MERKLE_BYTES}},\"committer\":\"did:primal:foundation\",\"data\":{\"session\":\"$SESSION_NAME\",\"merkle_root\":\"$MERKLE_ROOT\",\"events\":$EVENT_IDX,\"ok\":$TOTAL_OK,\"fail\":$TOTAL_FAIL}},\"id\":801}")
-log "  [OK] loamSpine committed"
+if echo "$COMMIT_RESP" | grep -q '"result"' 2>/dev/null; then
+    log "  [OK] loamSpine committed"
+else
+    log "  [WARN] loamSpine commit may have failed: $COMMIT_RESP"
+    PROVENANCE_WARN=$((PROVENANCE_WARN + 1))
+fi
 
 BRAID_RESP=$(rpc_sweetgrass "{\"jsonrpc\":\"2.0\",\"method\":\"braid.create\",\"params\":{\"creator\":\"did:primal:foundation\",\"subject\":\"foundation-validation:$SESSION_NAME\",\"claims\":[{\"type\":\"ProvenanceValidation\",\"data\":{\"session\":\"$SESSION_NAME\",\"merkle_root\":\"$MERKLE_ROOT\",\"ok\":$TOTAL_OK,\"fail\":$TOTAL_FAIL,\"events\":$EVENT_IDX}}]},\"id\":802}")
 BRAID_URN=$(echo "$BRAID_RESP" | python3 -c "
 import sys,json
 r = json.load(sys.stdin).get('result',{})
-print(r.get('urn','') or r.get('id','') or 'unknown')
-" 2>/dev/null) || BRAID_URN="unknown"
-log "  [OK] sweetGrass braid: $BRAID_URN"
+print(r.get('urn','') or r.get('id','') or '')
+" 2>/dev/null) || BRAID_URN=""
+if [[ -n "$BRAID_URN" && "$BRAID_URN" != "unknown" ]]; then
+    log "  [OK] sweetGrass braid: $BRAID_URN"
+else
+    log "  [WARN] sweetGrass braid creation returned no URN: $BRAID_RESP"
+    BRAID_URN="unknown"
+    PROVENANCE_WARN=$((PROVENANCE_WARN + 1))
+fi
+
+if [[ $PROVENANCE_WARN -gt 0 ]]; then
+    log "  [WARN] $PROVENANCE_WARN provenance step(s) incomplete — chain is partial"
+fi
 
 echo "$BRAID_RESP" > "$RESULTS_DIR/braid.json"
 
@@ -542,7 +484,7 @@ cat > "$RESULTS_DIR/VALIDATION_REPORT.md" << REPORT
 **Session**: $SESSION_NAME
 **Thread**: $THREAD_FILTER
 **Date**: $(date -Iseconds)
-**NUCLEUS Gate**: ironGate
+**NUCLEUS Gate**: irongate
 
 ## Provenance Chain
 
@@ -562,11 +504,11 @@ $(echo -e "$ARTIFACT_TABLE")
 
 ## Workload Results
 
-| Workload | OK | FAIL | Time | Status |
-|----------|---:|-----:|-----:|--------|
+| Workload | OK | FAIL | SKIP | Time | Status |
+|----------|---:|-----:|-----:|-----:|--------|
 $(echo -e "$WORKLOAD_TABLE")
 
-**Total**: $TOTAL_OK OK / $TOTAL_FAIL FAIL
+**Total**: $TOTAL_OK OK / $TOTAL_FAIL FAIL / $TOTAL_SKIP SKIP
 
 ## Sediment Layer
 
@@ -583,7 +525,7 @@ log "  [OK] Report: $RESULTS_DIR/VALIDATION_REPORT.md"
 log ""
 log "═══════════════════════════════════════════════════════════"
 log "  Foundation Validation Complete"
-log "  $TOTAL_OK OK / $TOTAL_FAIL FAIL across $EVENT_IDX provenance events"
+log "  $TOTAL_OK OK / $TOTAL_FAIL FAIL / $TOTAL_SKIP SKIP across $EVENT_IDX provenance events"
 log "  Merkle root: $MERKLE_ROOT"
 log "  Braid: $BRAID_URN"
 log "  Results: $RESULTS_DIR"

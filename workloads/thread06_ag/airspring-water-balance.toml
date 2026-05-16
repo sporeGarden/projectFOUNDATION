@@ -3,6 +3,8 @@
 name = "airspring-water-balance"
 description = "FAO-56 Chapter 8 daily soil water balance + dual Kc + Stewart yield response"
 version = "0.1.0"
+thread = "06"
+thread_name = "Agricultural Science"
 
 [execution]
 type = "native"
@@ -14,7 +16,8 @@ max_memory_bytes = 4294967296
 max_cpu_percent = 80.0
 
 [security]
-isolation_level = "None"
+isolation_level = "Standard"
+trusted_directories = ["${SPRINGS_ROOT}", "${ECOPRIMALS_ROOT}"]
 
 [skip]
 when = "binary_missing"

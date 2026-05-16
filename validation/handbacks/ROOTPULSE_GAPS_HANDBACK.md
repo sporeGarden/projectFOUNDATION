@@ -1,11 +1,11 @@
 # Upstream Gaps — RootPulse Commit Workflow Execution
 
 **Date**: 2026-05-07
-**From**: projectNUCLEUS (ironGate)
+**From**: projectNUCLEUS (irongate)
 **For**: biomeOS, rhizoCrypt, LoamSpine, sweetGrass teams, primalSpring
 **Context**: Ported `rootpulse_commit.toml` from `biomeOS/graphs/` to
 `projectNUCLEUS/graphs/`. Executed all 6 phases of the workflow against
-the live 13-primal NUCLEUS composition on ironGate.
+the live 13-primal NUCLEUS composition on irongate.
 
 ---
 

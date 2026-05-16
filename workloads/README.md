@@ -6,13 +6,18 @@ toadStool-executable workload definitions for foundation validation.
 
 ```
 workloads/
-  thread01_wcm/       Whole-Cell Modeling validation workloads
-  thread02_plasma/    Plasma Physics — thread-scoped (Sarkas MD)
-  thread04_enviro/    Environmental Genomics (QS + lithoSpore Module 6)
-  thread06_ag/        Agricultural Science (airSpring suite)
-  thread07_anderson/  Anderson Mathematics (22 targets + lithoSpore Module 7)
-  groundspring/       groundSpring cross-cutting (29 validators, GPU bench)
-  hotspring/          hotSpring cross-cutting (Chuna + Sarkas MD)
+  thread01_wcm/          Whole-Cell Modeling validation workloads
+  thread02_plasma/       Plasma Physics — thread-scoped (Sarkas MD)
+  thread03_immuno/       Immunology (healthSpring PK + LTEE-B5)
+  thread04_enviro/       Environmental Genomics (QS + lithoSpore Module 6)
+  thread05_ltee/         LTEE (lithoSpore fitness + mutations + Anderson)
+  thread06_ag/           Agricultural Science (airSpring suite)
+  thread07_anderson/     Anderson Mathematics (22 targets + lithoSpore Module 7)
+  thread08_health/       Health (healthSpring full validation)
+  thread09_gaming/       Gaming / Creative (ludoSpring)
+  thread10_provenance/   Provenance / Economics (primalSpring)
+  groundspring/          groundSpring cross-cutting (29 validators, GPU bench)
+  hotspring/             hotSpring cross-cutting (Chuna + Sarkas MD)
 ```
 
 Thread-scoped directories (`thread02_plasma/`) contain workloads relevant to a
@@ -41,7 +46,8 @@ max_memory_bytes = 1073741824
 max_cpu_percent = 80.0
 
 [security]
-isolation_level = "None"
+isolation_level = "Standard"
+trusted_directories = ["${SPRINGS_ROOT}", "${ECOPRIMALS_ROOT}"]
 ```
 
 ## Available Workloads
