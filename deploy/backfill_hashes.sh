@@ -96,45 +96,79 @@ backfill_source_toml() {
 
     log "  [$thread_name] $empty_count empty blake3 fields"
 
-    local dir_hash=""
-    local data_file_count
-    data_file_count=$(echo -n "$HASH_MANIFEST" | wc -l 2>/dev/null || echo 0)
-    if [[ "$data_file_count" -gt 0 ]]; then
-        dir_hash=$(echo -n "$HASH_MANIFEST" | cut -d'|' -f2 | sort | b3sum | cut -d' ' -f1)
-    fi
-
     if [[ "$DRY_RUN" == "true" ]]; then
-        log "  [$thread_name] DRY RUN: would update $empty_count blake3 fields"
-        log "  [$thread_name] Aggregate hash: ${dir_hash:-none}"
+        log "  [$thread_name] DRY RUN: would attempt to match $empty_count entries"
         return
     fi
 
-    python3 -c "
-import sys
+    local updated
+    updated=$(python3 -c "
+import sys, re, os
 if sys.version_info >= (3, 11):
     import tomllib
 else:
     import tomli as tomllib
 
+manifest = '''$HASH_MANIFEST'''
+
+file_hashes = {}
+for line in manifest.strip().split('\n'):
+    if '|' not in line:
+        continue
+    parts = line.split('|')
+    if len(parts) >= 2:
+        file_hashes[parts[0].lower()] = parts[1]
+
 with open('$toml_file', 'rb') as f:
     data = tomllib.load(f)
 
 lines = open('$toml_file').readlines()
+sources = data.get('sources', [])
 updated = 0
-i = 0
-while i < len(lines):
-    line = lines[i]
-    if line.strip() == 'blake3 = \"\"' and updated < 1 and '$dir_hash':
-        lines[i] = 'blake3 = \"$dir_hash\"\n'
-        if i + 1 < len(lines) and lines[i+1].strip() == 'retrieved = \"\"':
-            lines[i+1] = 'retrieved = \"$TIMESTAMP\"\n'
-        updated += 1
-    i += 1
+
+for src in sources:
+    accessions = src.get('accessions', [])
+    src_id = src.get('id', '')
+    matched_hash = ''
+
+    for acc in accessions:
+        acc_lower = acc.lower()
+        for fname, fhash in file_hashes.items():
+            if acc_lower in fname:
+                matched_hash = fhash
+                break
+        if matched_hash:
+            break
+
+    if not matched_hash:
+        continue
+
+    in_source_block = False
+    for i, line in enumerate(lines):
+        stripped = line.strip()
+        if stripped.startswith('id = ') and src_id and src_id in stripped:
+            in_source_block = True
+        elif stripped == '[[sources]]' and in_source_block:
+            break
+        elif in_source_block and stripped == 'blake3 = \"\"':
+            lines[i] = f'blake3 = \"{matched_hash}\"\n'
+            if i + 1 < len(lines) and lines[i+1].strip() == 'retrieved = \"\"':
+                lines[i+1] = f'retrieved = \"$TIMESTAMP\"\n'
+            updated += 1
+            in_source_block = False
 
 with open('$toml_file', 'w') as f:
     f.writelines(lines)
-print(f'Updated {updated} entries')
-" 2>/dev/null && ((UPDATED++)) || ((SKIPPED++)) || true
+print(updated)
+" 2>/dev/null) || updated=0
+
+    if [[ "$updated" -gt 0 ]]; then
+        log "  [$thread_name] Updated $updated entries with per-accession hashes"
+        UPDATED=$((UPDATED + updated))
+    else
+        log "  [$thread_name] No accession matches found in fetched data"
+        SKIPPED=$((SKIPPED + 1))
+    fi
 }
 
 build_hash_manifest

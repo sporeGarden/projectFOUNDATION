@@ -186,6 +186,92 @@ jobs:
           sys.exit(1 if errors else 0)
           "
 
+      - name: Run CPU parity benchmarks
+        run: |
+          pip install -r benchmarks/barracuda_cpu_parity/requirements.txt
+          python3 benchmarks/barracuda_cpu_parity/stats_variance.py
+          python3 benchmarks/barracuda_cpu_parity/stats_mean.py
+          python3 benchmarks/barracuda_cpu_parity/md_velocity_verlet.py
+          python3 benchmarks/barracuda_cpu_parity/spectral_eigenvalues.py
+          python3 benchmarks/barracuda_cpu_parity/linalg_solve.py
+          python3 benchmarks/barracuda_cpu_parity/matmul.py
+
+      - name: Graph TOML structural validation
+        run: |
+          python3 -c "
+          import sys, pathlib
+          try:
+              import tomllib
+          except ImportError:
+              import tomli as tomllib
+
+          errors = 0
+          for f in sorted(pathlib.Path('graphs').glob('*.toml')):
+              data = tomllib.loads(f.read_text())
+              graph = data.get('graph', {})
+
+              if not graph.get('name'):
+                  print(f'FAIL: {f.name}: missing graph.name')
+                  errors += 1
+              if not graph.get('id'):
+                  print(f'FAIL: {f.name}: missing graph.id')
+                  errors += 1
+
+              nodes = graph.get('nodes', [])
+              if not nodes:
+                  print(f'FAIL: {f.name}: no graph.nodes defined')
+                  errors += 1
+
+              node_names = set()
+              for i, node in enumerate(nodes):
+                  name = node.get('name', '')
+                  if not name:
+                      print(f'FAIL: {f.name}: node[{i}] missing name')
+                      errors += 1
+                  if name in node_names:
+                      print(f'FAIL: {f.name}: duplicate node name \"{name}\"')
+                      errors += 1
+                  node_names.add(name)
+
+                  if 'by_capability' not in node:
+                      print(f'WARN: {f.name}: node \"{name}\" missing by_capability')
+                  if 'health_method' not in node:
+                      print(f'WARN: {f.name}: node \"{name}\" missing health_method')
+
+                  for dep in node.get('depends_on', []):
+                      if dep not in node_names:
+                          print(f'FAIL: {f.name}: node \"{name}\" depends_on \"{dep}\" which is not defined (or ordered after)')
+                          errors += 1
+
+          print(f'{errors} graph validation error(s)' if errors else 'All graphs structurally valid')
+          sys.exit(1 if errors else 0)
+          "
+
+      - name: Target count reconciliation
+        run: |
+          python3 -c "
+          import sys, pathlib
+          try:
+              import tomllib
+          except ImportError:
+              import tomli as tomllib
+
+          errors = 0
+          for f in sorted(pathlib.Path('data/targets').glob('*.toml')):
+              data = tomllib.loads(f.read_text())
+              meta = data.get('meta', {})
+              declared = meta.get('total_targets')
+              actual = len(data.get('targets', []))
+              if declared is not None and declared != actual:
+                  print(f'FAIL: {f.name}: meta.total_targets={declared} but actual [[targets]] count={actual}')
+                  errors += 1
+              elif declared is None:
+                  print(f'WARN: {f.name}: no meta.total_targets declared')
+
+          print(f'{errors} count mismatch(es)' if errors else 'All target counts match')
+          sys.exit(1 if errors else 0)
+          "
+
       - name: Gate naming consistency
         run: |
           python3 -c "

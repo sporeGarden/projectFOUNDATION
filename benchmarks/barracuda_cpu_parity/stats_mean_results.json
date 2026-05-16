@@ -1,0 +1,90 @@
+{
+  "results": [
+    {
+      "name": "uniform_1k",
+      "n": 1000,
+      "numpy_mean": 0.49717783852843195,
+      "kahan_mean": 0.49717783852843195,
+      "naive_mean": 0.4971778385284313,
+      "chunked_mean": 0.49734864981029736,
+      "rel_err_kahan": 0.0,
+      "rel_err_naive": 1.3398300631153333e-15,
+      "rel_err_chunked": 0.00034356173712607,
+      "elapsed_ns": 200177,
+      "pass": true
+    },
+    {
+      "name": "normal_10k",
+      "n": 10000,
+      "numpy_mean": -0.009132313480502655,
+      "kahan_mean": -0.00913231348050266,
+      "naive_mean": -0.009132313480502656,
+      "chunked_mean": -0.004619727652870963,
+      "rel_err_kahan": 5.698633143771557e-16,
+      "rel_err_naive": 1.8995443812571858e-16,
+      "rel_err_chunked": 0.494133916588167,
+      "elapsed_ns": 969814,
+      "pass": true
+    },
+    {
+      "name": "large_magnitude",
+      "n": 10000,
+      "numpy_mean": 1000000000000000.0,
+      "kahan_mean": 1000000000000000.0,
+      "naive_mean": 1000000000000000.0,
+      "chunked_mean": 1000000000000000.0,
+      "rel_err_kahan": 0.0,
+      "rel_err_naive": 0.0,
+      "rel_err_chunked": 0.0,
+      "elapsed_ns": 944339,
+      "pass": true
+    },
+    {
+      "name": "alternating_sign",
+      "n": 10000,
+      "numpy_mean": -0.5,
+      "kahan_mean": -0.5,
+      "naive_mean": -0.5,
+      "chunked_mean": -0.5,
+      "rel_err_kahan": 0.0,
+      "rel_err_naive": 0.0,
+      "rel_err_chunked": 0.0,
+      "elapsed_ns": 920699,
+      "pass": true
+    },
+    {
+      "name": "near_zero",
+      "n": 5000,
+      "numpy_mean": 2.5346155936665043e-17,
+      "kahan_mean": 2.5346155936665043e-17,
+      "naive_mean": 2.5346155936665105e-17,
+      "chunked_mean": 2.322167972719443e-17,
+      "rel_err_kahan": 0.0,
+      "rel_err_naive": 2.4315228855370395e-15,
+      "rel_err_chunked": 0.08381847783069166,
+      "elapsed_ns": 467572,
+      "pass": true
+    },
+    {
+      "name": "exponential_100k",
+      "n": 100000,
+      "numpy_mean": 1.0029146432947245,
+      "kahan_mean": 1.0029146432947245,
+      "naive_mean": 1.002914643294716,
+      "chunked_mean": 1.0028954331867077,
+      "rel_err_kahan": 0.0,
+      "rel_err_naive": 8.413173587167998e-15,
+      "rel_err_chunked": 1.9154280122629238e-05,
+      "elapsed_ns": 14328463,
+      "pass": true
+    }
+  ],
+  "provenance": {
+    "generated": "2026-05-16T15:15:29.231995+00:00",
+    "python": "3.10.12",
+    "numpy": "1.21.5",
+    "platform": "Linux-6.12.10-76061203-generic-x86_64-with-glibc2.35",
+    "git_commit": "0724440",
+    "command": "python3 /home/irongate/Development/ecoPrimals/gardens/projectFOUNDATION/benchmarks/barracuda_cpu_parity/stats_mean.py"
+  }
+}

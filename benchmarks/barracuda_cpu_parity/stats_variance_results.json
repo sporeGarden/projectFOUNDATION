@@ -1,68 +1,78 @@
-[
-  {
-    "name": "uniform_1k",
-    "n": 1000,
-    "numpy_variance": 0.08502221368027148,
-    "welford_variance": 0.08502221368027135,
-    "two_pass_variance": 0.0850222136802715,
-    "ulp_welford_vs_numpy": 9.0,
-    "ulp_two_pass_vs_numpy": 2.0,
-    "elapsed_ns": 261803,
-    "pass": true
-  },
-  {
-    "name": "normal_10k",
-    "n": 10000,
-    "numpy_variance": 1.0132061020335057,
-    "welford_variance": 1.0132061020335053,
-    "two_pass_variance": 1.0132061020335046,
-    "ulp_welford_vs_numpy": 2.0,
-    "ulp_two_pass_vs_numpy": 5.0,
-    "elapsed_ns": 1948885,
-    "pass": true
-  },
-  {
-    "name": "exponential_100k",
-    "n": 100000,
-    "numpy_variance": 1.0162684414149752,
-    "welford_variance": 1.016268441414957,
-    "two_pass_variance": 1.016268441414972,
-    "ulp_welford_vs_numpy": 82.0,
-    "ulp_two_pass_vs_numpy": 14.0,
-    "elapsed_ns": 18983026,
-    "pass": true
-  },
-  {
-    "name": "near_constant",
-    "n": 5000,
-    "numpy_variance": 1.0103100521533483e-28,
-    "welford_variance": 1.0417287771442473e-28,
-    "two_pass_variance": 8.064425807081564e-26,
-    "ulp_welford_vs_numpy": 140132196096949.0,
-    "ulp_two_pass_vs_numpy": 3.5923479685146957e+18,
-    "elapsed_ns": 603349,
-    "pass": true
-  },
-  {
-    "name": "large_magnitude",
-    "n": 10000,
-    "numpy_variance": 1.00457702020202,
-    "welford_variance": 1.0046973447344734,
-    "two_pass_variance": 1.00457702020202,
-    "ulp_welford_vs_numpy": 541893519520.0,
-    "ulp_two_pass_vs_numpy": 0.0,
-    "elapsed_ns": 1066118,
-    "pass": true
-  },
-  {
-    "name": "alternating_sign",
-    "n": 10000,
-    "numpy_variance": 33341667.416741673,
-    "welford_variance": 33341667.416741673,
-    "two_pass_variance": 33341667.416741673,
-    "ulp_welford_vs_numpy": 0.0,
-    "ulp_two_pass_vs_numpy": 0.0,
-    "elapsed_ns": 1031767,
-    "pass": true
+{
+  "results": [
+    {
+      "name": "uniform_1k",
+      "n": 1000,
+      "numpy_variance": 0.08502221368027148,
+      "welford_variance": 0.08502221368027135,
+      "two_pass_variance": 0.0850222136802715,
+      "ulp_welford_vs_numpy": 9.0,
+      "ulp_two_pass_vs_numpy": 2.0,
+      "elapsed_ns": 319967,
+      "pass": true
+    },
+    {
+      "name": "normal_10k",
+      "n": 10000,
+      "numpy_variance": 1.0132061020335057,
+      "welford_variance": 1.0132061020335053,
+      "two_pass_variance": 1.0132061020335046,
+      "ulp_welford_vs_numpy": 2.0,
+      "ulp_two_pass_vs_numpy": 5.0,
+      "elapsed_ns": 2002412,
+      "pass": true
+    },
+    {
+      "name": "exponential_100k",
+      "n": 100000,
+      "numpy_variance": 1.0162684414149752,
+      "welford_variance": 1.016268441414957,
+      "two_pass_variance": 1.016268441414972,
+      "ulp_welford_vs_numpy": 82.0,
+      "ulp_two_pass_vs_numpy": 14.0,
+      "elapsed_ns": 18867290,
+      "pass": true
+    },
+    {
+      "name": "near_constant",
+      "n": 5000,
+      "numpy_variance": 1.0103100521533483e-28,
+      "welford_variance": 1.0417287771442473e-28,
+      "two_pass_variance": 8.064425807081564e-26,
+      "ulp_welford_vs_numpy": 140132196096949.0,
+      "ulp_two_pass_vs_numpy": 3.5923479685146957e+18,
+      "elapsed_ns": 987805,
+      "pass": true
+    },
+    {
+      "name": "large_magnitude",
+      "n": 10000,
+      "numpy_variance": 1.00457702020202,
+      "welford_variance": 1.0046973447344734,
+      "two_pass_variance": 1.00457702020202,
+      "ulp_welford_vs_numpy": 541893519520.0,
+      "ulp_two_pass_vs_numpy": 0.0,
+      "elapsed_ns": 1906257,
+      "pass": true
+    },
+    {
+      "name": "alternating_sign",
+      "n": 10000,
+      "numpy_variance": 33341667.416741673,
+      "welford_variance": 33341667.416741673,
+      "two_pass_variance": 33341667.416741673,
+      "ulp_welford_vs_numpy": 0.0,
+      "ulp_two_pass_vs_numpy": 0.0,
+      "elapsed_ns": 1834839,
+      "pass": true
+    }
+  ],
+  "provenance": {
+    "generated": "2026-05-16T15:15:45.852838+00:00",
+    "python": "3.10.12",
+    "numpy": "1.21.5",
+    "platform": "Linux-6.12.10-76061203-generic-x86_64-with-glibc2.35",
+    "git_commit": "0724440",
+    "command": "python3 /home/irongate/Development/ecoPrimals/gardens/projectFOUNDATION/benchmarks/barracuda_cpu_parity/stats_variance.py"
   }
-]
+}

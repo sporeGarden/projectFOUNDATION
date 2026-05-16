@@ -43,7 +43,30 @@ done
 
 log() { echo "[$(date +%H:%M:%S)] $*"; }
 
-blake3_hash() { b3sum "$1" | cut -d' ' -f1; }
+blake3_hash() {
+    if command -v b3sum >/dev/null 2>&1; then
+        b3sum "$1" | cut -d' ' -f1
+    else
+        python3 -c "
+import hashlib, sys
+h = hashlib.blake2b(open(sys.argv[1], 'rb').read())
+print(h.hexdigest())
+" "$1" 2>/dev/null || echo "no-hash"
+    fi
+}
+
+fetch_with_retry() {
+    local url="$1" out="$2" max_retries="${3:-3}" timeout="${4:-120}"
+    local attempt=0
+    while [[ $attempt -lt $max_retries ]]; do
+        attempt=$((attempt + 1))
+        if curl -sf --max-time "$timeout" -o "$out" "$url"; then
+            return 0
+        fi
+        [[ $attempt -lt $max_retries ]] && log "    Retry $attempt/$max_retries..." && sleep "$((attempt * 2))"
+    done
+    return 1
+}
 
 rpc_nestgate() {
     printf '%s\n' "$1" | nc -w 5 "${PRIMAL_HOST:-127.0.0.1}" "$NESTGATE_PORT" 2>/dev/null
@@ -84,7 +107,7 @@ fetch_ncbi_nucleotide() {
     log "  [FETCH] ncbi:$accession ..."
     local url="${NCBI_BASE}/efetch.fcgi?db=nucleotide&id=${accession}&rettype=gb&retmode=text${NCBI_PARAMS}"
 
-    if curl -sf --max-time 120 -o "$out_file" "$url"; then
+    if fetch_with_retry "$url" "$out_file" 3 120; then
         local hash
         hash=$(blake3_hash "$out_file")
         local size
@@ -121,7 +144,7 @@ fetch_ncbi_assembly() {
     log "  [FETCH] assembly:$accession ..."
     local url="https://api.ncbi.nlm.nih.gov/datasets/v2/genome/accession/${accession}/dataset_report${NCBI_PARAMS:+?${NCBI_PARAMS#&}}"
 
-    if curl -sf --max-time 60 -o "$out_file" "$url"; then
+    if fetch_with_retry "$url" "$out_file" 3 60; then
         local hash
         hash=$(blake3_hash "$out_file")
         log "  [OK]    assembly:$accession → blake3:${hash:0:16}…"
@@ -155,7 +178,7 @@ fetch_uniprot_proteome() {
     log "  [FETCH] uniprot:$accession ..."
     local url="https://rest.uniprot.org/uniprotkb/stream?compressed=true&format=fasta&query=(proteome:${accession})"
 
-    if curl -sf --max-time 120 -o "$out_file" "$url"; then
+    if fetch_with_retry "$url" "$out_file" 3 120; then
         local size
         size=$(stat -c%s "$out_file" 2>/dev/null || stat -f%z "$out_file" 2>/dev/null)
 
@@ -209,7 +232,7 @@ fetch_ncbi_bioproject() {
     log "  [FETCH] bioproject:$accession ..."
     local url="${NCBI_BASE}/efetch.fcgi?db=bioproject&id=${accession}&rettype=xml${NCBI_PARAMS}"
 
-    if curl -sf --max-time 60 -o "$out_file" "$url"; then
+    if fetch_with_retry "$url" "$out_file" 3 60; then
         local hash
         hash=$(blake3_hash "$out_file")
         log "  [OK]    bioproject:$accession → blake3:${hash:0:16}…"
@@ -241,7 +264,7 @@ fetch_kegg_org() {
     fi
 
     log "  [FETCH] kegg:$org_code ..."
-    if curl -sf --max-time 60 -o "$out_file" "https://rest.kegg.jp/list/pathway/$org_code"; then
+    if fetch_with_retry "https://rest.kegg.jp/list/pathway/$org_code" "$out_file" 3 60; then
         local hash
         hash=$(blake3_hash "$out_file")
         log "  [OK]    kegg:$org_code → blake3:${hash:0:16}…"

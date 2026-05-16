@@ -128,7 +128,9 @@ if __name__ == "__main__":
     print("barraCuda CPU parity: Statistical Variance")
     print("=" * 50)
     results, all_pass = run_benchmark()
-    results.update(provenance_header())
+    output = {"results": results}
+    output.update(provenance_header())
+    results = output
 
     out_path = "benchmarks/barracuda_cpu_parity/stats_variance_results.json"
     try:

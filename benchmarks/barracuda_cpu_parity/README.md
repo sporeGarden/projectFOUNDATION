@@ -10,22 +10,23 @@ These baselines serve as ground truth for numerical parity verification:
 
 ## Operations Covered
 
-| Baseline | barraCuda equivalent | Parity standard |
-|----------|---------------------|-----------------|
-| `stats_variance.py` | `VarianceF64` kernel | rel_err < 1e-6 (Welford vs two-pass) |
-| `md_velocity_verlet.py` | `velocity_verlet_split_f64.wgsl` | relative energy drift < 5% |
-| `spectral_eigenvalues.py` | Anderson localization eigensolver | max eigenvalue diff < 1e-10 |
+| Baseline | barraCuda equivalent | Parity standard | Cases |
+|----------|---------------------|-----------------|-------|
+| `stats_variance.py` | `VarianceF64` kernel | rel_err < 1e-6 (Welford vs two-pass) | 6 |
+| `stats_mean.py` | `stats.mean` capability | rel_err < 1e-14 (Kahan compensated) | 6 |
+| `md_velocity_verlet.py` | `velocity_verlet_split_f64.wgsl` | relative energy drift < 5% | 3 |
+| `spectral_eigenvalues.py` | Anderson localization eigensolver | max eigenvalue diff < 1e-10 | 5 |
+| `linalg_solve.py` | `linalg.solve` capability | relative residual < 1e-10 | 6 |
+| `matmul.py` | `tensor.matmul` capability | element-wise rel_err < 1e-10 | 6 |
 
-## Coverage Gaps
+**Total**: 32 test cases across 6 baselines, all executed in CI.
 
-Operations referenced in projectFOUNDATION graphs/expressions that lack
-CPU parity baselines here:
+## Remaining Coverage Gaps
+
+Operations referenced in expressions but not yet baselined:
 
 | Missing baseline | Referenced in | barraCuda surface |
 |-----------------|---------------|-------------------|
-| Matrix multiplication | `foundation_validation.toml`, MEASUREMENT_SCIENCE.md | `tensor.matmul` |
-| Linear solve | `foundation_validation.toml` | `linalg.solve` |
-| Statistical mean | `foundation_validation.toml`, MEASUREMENT_SCIENCE.md | `stats.mean` |
 | FFT / spectral | PLASMA_QCD_SOVEREIGN_GPU.md | `spectral.*` |
 | Sigmoid / activation | GAMING_CREATIVE_SCIENCE.md | `math.sigmoid` |
 | Random number generation | GAMING_CREATIVE_SCIENCE.md | `rng.*` |

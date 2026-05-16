@@ -1,0 +1,78 @@
+{
+  "results": [
+    {
+      "name": "tiny_4x4",
+      "shape": "4x4 @ 4x4",
+      "max_abs_diff": 0.0,
+      "rel_err": 0.0,
+      "naive_max_diff": 0.0,
+      "blas_ns": 319814,
+      "tiled_ns": 20759,
+      "flops": 128,
+      "pass": true
+    },
+    {
+      "name": "small_32x32",
+      "shape": "32x32 @ 32x32",
+      "max_abs_diff": 0.0,
+      "rel_err": 0.0,
+      "naive_max_diff": 0.0,
+      "blas_ns": 16161,
+      "tiled_ns": 15359,
+      "flops": 65536,
+      "pass": true
+    },
+    {
+      "name": "rect_64x128x32",
+      "shape": "64x128 @ 128x32",
+      "max_abs_diff": 2.842170943040401e-14,
+      "rel_err": 6.203535308680957e-16,
+      "naive_max_diff": "skipped",
+      "blas_ns": 59038,
+      "tiled_ns": 68886,
+      "flops": 524288,
+      "pass": true
+    },
+    {
+      "name": "medium_256x256",
+      "shape": "256x256 @ 256x256",
+      "max_abs_diff": 5.861977570020827e-14,
+      "rel_err": 7.776018440365189e-16,
+      "naive_max_diff": "skipped",
+      "blas_ns": 66732271,
+      "tiled_ns": 14805107,
+      "flops": 33554432,
+      "pass": true
+    },
+    {
+      "name": "large_512x512",
+      "shape": "512x512 @ 512x512",
+      "max_abs_diff": 8.526512829121202e-14,
+      "rel_err": 7.748763016802906e-16,
+      "naive_max_diff": "skipped",
+      "blas_ns": 310329699,
+      "tiled_ns": 81939579,
+      "flops": 268435456,
+      "pass": true
+    },
+    {
+      "name": "tall_1024x64",
+      "shape": "1024x64 @ 64x64",
+      "max_abs_diff": 2.4868995751603507e-14,
+      "rel_err": 7.301038936810036e-16,
+      "naive_max_diff": "skipped",
+      "blas_ns": 320274715,
+      "tiled_ns": 1678278,
+      "flops": 8388608,
+      "pass": true
+    }
+  ],
+  "provenance": {
+    "generated": "2026-05-16T15:15:32.502657+00:00",
+    "python": "3.10.12",
+    "numpy": "1.21.5",
+    "platform": "Linux-6.12.10-76061203-generic-x86_64-with-glibc2.35",
+    "git_commit": "0724440",
+    "command": "python3 /home/irongate/Development/ecoPrimals/gardens/projectFOUNDATION/benchmarks/barracuda_cpu_parity/matmul.py"
+  }
+}

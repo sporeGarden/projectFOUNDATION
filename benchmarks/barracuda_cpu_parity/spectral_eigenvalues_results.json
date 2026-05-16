@@ -1,63 +1,74 @@
-[
-  {
-    "name": "1d_w2_n100",
-    "n": 100,
-    "disorder_w": 2.0,
-    "max_eigenvalue_diff": 8.881784197001252e-15,
-    "band_center_ipr": 0.02322678575664365,
-    "lyapunov_exponent": 0.023098670488621985,
-    "elapsed_ns": 1140072,
-    "pass": true
-  },
-  {
-    "name": "1d_w4_n500",
-    "n": 500,
-    "disorder_w": 4.0,
-    "max_eigenvalue_diff": 7.37188088351104e-14,
-    "band_center_ipr": 0.1114506012283695,
-    "lyapunov_exponent": 0.1560696376219421,
-    "elapsed_ns": 9758957,
-    "pass": true
-  },
-  {
-    "name": "1d_w8_n1000",
-    "n": 1000,
-    "disorder_w": 8.0,
-    "max_eigenvalue_diff": 1.1013412404281553e-13,
-    "band_center_ipr": 0.6339034655937404,
-    "lyapunov_exponent": 0.5358590553641234,
-    "elapsed_ns": 41294724,
-    "pass": true
-  },
-  {
-    "name": "1d_w16_n200",
-    "n": 200,
-    "disorder_w": 16.0,
-    "max_eigenvalue_diff": 9.325873406851315e-14,
-    "band_center_ipr": 0.41743913444008723,
-    "lyapunov_exponent": 1.0622337006623581,
-    "elapsed_ns": 2090823,
-    "pass": true
-  },
-  {
-    "name": "lyapunov_scaling",
-    "ws": [
-      0.5,
-      1.0,
-      2.0,
-      4.0
-    ],
-    "gammas": [
-      0.0029084879677998185,
-      0.008118940670840333,
-      0.03912242265759704,
-      0.17156236779448295
-    ],
-    "fitted_exponent": 1.9915592263583781,
-    "expected_range": [
-      1.5,
-      2.5
-    ],
-    "pass": true
+{
+  "results": [
+    {
+      "name": "1d_w2_n100",
+      "n": 100,
+      "disorder_w": 2.0,
+      "max_eigenvalue_diff": 8.881784197001252e-15,
+      "band_center_ipr": 0.02322678575664365,
+      "lyapunov_exponent": 0.023098670488621985,
+      "elapsed_ns": 1209458,
+      "pass": true
+    },
+    {
+      "name": "1d_w4_n500",
+      "n": 500,
+      "disorder_w": 4.0,
+      "max_eigenvalue_diff": 7.37188088351104e-14,
+      "band_center_ipr": 0.1114506012283695,
+      "lyapunov_exponent": 0.1560696376219421,
+      "elapsed_ns": 10307690,
+      "pass": true
+    },
+    {
+      "name": "1d_w8_n1000",
+      "n": 1000,
+      "disorder_w": 8.0,
+      "max_eigenvalue_diff": 1.1013412404281553e-13,
+      "band_center_ipr": 0.6339034655937404,
+      "lyapunov_exponent": 0.5358590553641234,
+      "elapsed_ns": 43082390,
+      "pass": true
+    },
+    {
+      "name": "1d_w16_n200",
+      "n": 200,
+      "disorder_w": 16.0,
+      "max_eigenvalue_diff": 9.325873406851315e-14,
+      "band_center_ipr": 0.41743913444008723,
+      "lyapunov_exponent": 1.0622337006623581,
+      "elapsed_ns": 2222132,
+      "pass": true
+    },
+    {
+      "name": "lyapunov_scaling",
+      "ws": [
+        0.5,
+        1.0,
+        2.0,
+        4.0
+      ],
+      "gammas": [
+        0.0029084879677998185,
+        0.008118940670840333,
+        0.03912242265759704,
+        0.17156236779448295
+      ],
+      "fitted_exponent": 1.9915592263583781,
+      "expected_range": [
+        1.5,
+        2.5
+      ],
+      "pass": true
+    }
+  ],
+  "provenance": {
+    "generated": "2026-05-16T15:15:46.326477+00:00",
+    "python": "3.10.12",
+    "numpy": "1.21.5",
+    "scipy": "1.8.0",
+    "platform": "Linux-6.12.10-76061203-generic-x86_64-with-glibc2.35",
+    "git_commit": "0724440",
+    "command": "python3 /home/irongate/Development/ecoPrimals/gardens/projectFOUNDATION/benchmarks/barracuda_cpu_parity/spectral_eigenvalues.py"
   }
-]
+}

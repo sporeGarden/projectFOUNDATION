@@ -44,7 +44,15 @@ for t in data.get('targets', []):
         local found=false actual_val=""
         for result_file in "$RESULTS_DIR"/*.stdout; do
             [[ -f "$result_file" ]] || continue
-            actual_val=$(grep -oP "${tid}[^0-9.eE+-]*\K[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?" "$result_file" 2>/dev/null | head -1) || true
+            actual_val=$(python3 -c "
+import re, sys
+pat = re.compile(re.escape('$tid') + r'[^0-9.eE+-]*([-+]?[0-9]*\.?[0-9]+(?:[eE][-+]?[0-9]+)?)')
+for line in open('$result_file'):
+    m = pat.search(line)
+    if m:
+        print(m.group(1))
+        sys.exit(0)
+" 2>/dev/null) || true
             if [[ -n "$actual_val" ]]; then
                 found=true
                 break
