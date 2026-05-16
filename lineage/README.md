@@ -1,12 +1,12 @@
 # lineage/
 
-The unified scientific lineage that gives foundation its substance.
+The unified scientific lineage that gives projectFOUNDATION its substance.
 
 ## Contents
 
 - **THE_UNIFIED_LINEAGE.md** — The master document. Maps all 10 domain
   threads with their baseCamp papers, spring validations, contacts, and
-  cross-thread connections. Start here to understand the foundation as
+  cross-thread connections. Start here to understand projectFOUNDATION as
   a whole.
 
 - **THREAD_INDEX.toml** — Machine-readable inventory of all 10 threads.
@@ -18,7 +18,7 @@ The unified scientific lineage that gives foundation its substance.
   meta/coordination) to threads, springs, public data repository
   anchors (NCBI accessions, PhysioNet IDs, DrugBank entries), and
   contacts. The rosetta stone between gen3 baseCamp science and gen4
-  foundation infrastructure.
+  projectFOUNDATION infrastructure.
 
 ## How to Read
 

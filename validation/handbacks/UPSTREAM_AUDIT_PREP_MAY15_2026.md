@@ -1,12 +1,12 @@
 # Upstream Audit Preparation — primalPing Review
 
 **Date**: 2026-05-15
-**From**: CATHEDRAL (lithoSpore + foundation)
+**From**: CATHEDRAL (lithoSpore + projectFOUNDATION)
 **For**: primalPing, upstream primal teams
 
 ## Summary
 
-Both `lithoSpore` and `foundation` repos have been cleaned for upstream
+Both `lithoSpore` and `projectFOUNDATION` repos have been cleaned for upstream
 audit. This document consolidates open items that require attention from
 upstream primal teams.
 
@@ -43,7 +43,7 @@ UDS RPC transport is **implemented**. TURN-relayed RPC remains a documented
 stub. All callers degrade gracefully. Needs Songbird client library for
 actual TURN relay IPC.
 
-## foundation — Open Items for Upstream Teams
+## projectFOUNDATION — Open Items for Upstream Teams
 
 ### Data Integrity
 
@@ -77,5 +77,5 @@ acting on the findings.
 ## Repos Ready for Push
 
 Both repos pass local `cargo check` / `cargo test` / `cargo clippy`.
-Foundation CI jobs (shellcheck, TOML syntax, thread index, hash coverage)
+projectFOUNDATION CI jobs (shellcheck, TOML syntax, thread index, hash coverage)
 expected to pass on clean state.

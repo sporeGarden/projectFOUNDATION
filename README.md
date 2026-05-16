@@ -1,4 +1,4 @@
-# foundation
+# projectFOUNDATION
 
 The validated scientific lineage that gives sporeGarden products their
 substance. Stand up the soil — data locations, provenance targets,
@@ -11,7 +11,7 @@ can focus on what matters to their audiences.
 
 ## What This Is
 
-foundation is the scientific knowledge layer of the ecoPrimals ecosystem.
+projectFOUNDATION is the scientific knowledge layer of the ecoPrimals ecosystem.
 It maps the complete validated lineage — 26 baseCamp companion papers
 (28 including companion hardware and coordination notes),
 8 springs with 13,100+ quantitative checks, 70+ reproduced papers, and
@@ -24,14 +24,14 @@ ecoPrimals (organisms) → syntheticChemistry (springs/validation) → sporeGard
                             primalSpring                          projectNUCLEUS
                          (validates compositions)          (deploys compositions)
                                                                         ↑
-                                                                  foundation
+                                                          projectFOUNDATION
                                                           (the soil: what to validate,
                                                            where the data lives,
                                                            what the targets are)
 ```
 
 projectNUCLEUS defines HOW to deploy (primals, graphs, gates).
-foundation defines WHAT to validate (data, papers, targets, threads).
+projectFOUNDATION defines WHAT to validate (data, papers, targets, threads).
 Products define WHO benefits (helixVision for biologists, esotericWebb
 for creators, blueFish for labs).
 

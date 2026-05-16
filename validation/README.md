@@ -1,6 +1,6 @@
 # validation/
 
-Validation results, provenance manifests, and gap reports from foundation
+Validation results, provenance manifests, and gap reports from projectFOUNDATION
 validation runs.
 
 ## What Goes Here

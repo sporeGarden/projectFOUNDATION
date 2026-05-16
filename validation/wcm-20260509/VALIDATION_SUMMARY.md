@@ -2,7 +2,7 @@
 
 **Run ID:** `wcm-20260509`  
 **Date:** 2026-05-09 (America/Chicago session)  
-**Repository:** `ecoPrimals/gardens/foundation`  
+**Repository:** `ecoPrimals/gardens/projectFOUNDATION`  
 **Expression:** `expressions/ABG_WHOLE_CELL_REBUILD.md`  
 **Machine-readable sources:** `data/sources/thread01_wcm.toml`  
 **Numerical targets (not executed in this run):** `data/targets/thread01_wcm_targets.toml`

@@ -4,8 +4,8 @@ Foundation-specific deploy graphs for validation runs.
 
 ## Relationship to projectNUCLEUS
 
-foundation does not own the canonical primal deploy graphs. Those live
-in projectNUCLEUS (curated from primalSpring). Foundation graphs are
+projectFOUNDATION does not own the canonical primal deploy graphs. Those live
+in projectNUCLEUS (curated from primalSpring). These graphs are
 **validation compositions** — they specify which NUCLEUS atomics are
 required to validate a particular domain thread.
 
