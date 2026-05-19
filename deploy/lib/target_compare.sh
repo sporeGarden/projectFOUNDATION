@@ -5,13 +5,34 @@
 # Sourced by foundation_validate.sh.
 # Requires: FOUNDATION_ROOT, RESULTS_DIR, TARGET_HITS, TARGET_MISS, log()
 
+resolve_target_file() {
+    local short="$1"
+    local dir="$2"
+    # Explicit aliases for thread shorts that don't match filename patterns
+    case "$short" in
+        ml)          echo "$dir/thread05_ml_surrogates_targets.toml" ;;
+        wcm)         echo "$dir/thread01_wcm_targets.toml" ;;
+        plasma)      echo "$dir/thread02_plasma_targets.toml" ;;
+        immuno)      echo "$dir/thread03_immuno_targets.toml" ;;
+        enviro)      echo "$dir/thread04_enviro_targets.toml" ;;
+        ltee)        echo "$dir/thread05_ltee_targets.toml" ;;
+        ag)          echo "$dir/thread06_ag_targets.toml" ;;
+        anderson)    echo "$dir/thread07_anderson_targets.toml" ;;
+        health)      echo "$dir/thread08_health_targets.toml" ;;
+        gaming)      echo "$dir/thread09_gaming_targets.toml" ;;
+        provenance)  echo "$dir/thread10_provenance_targets.toml" ;;
+        *)
+            # Fallback: glob match
+            # shellcheck disable=SC2086
+            ls "$dir"/thread*_${short}*_targets.toml 2>/dev/null | head -1
+            ;;
+    esac
+}
+
 compare_targets() {
     local thread_short="$1"
-    local target_file="$TARGET_DIR/thread*_${thread_short}_targets.toml"
-
-    # shellcheck disable=SC2086
     local match
-    match=$(ls $target_file 2>/dev/null | head -1) || true
+    match=$(resolve_target_file "$thread_short" "$TARGET_DIR")
     if [[ -z "$match" || ! -f "$match" ]]; then
         log "  [INFO] No target file for thread: $thread_short"
         return 0

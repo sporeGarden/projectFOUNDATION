@@ -9,7 +9,7 @@ thread = 8
 thread_name = "Human Health & Clinical Translation"
 expression = "expressions/SOVEREIGN_HEALTH.md"
 last_updated = "2026-05-06"
-total_sources = 14
+total_sources = 13
 
 # =============================================================================
 # PK/PD & Population Pharmacokinetics (Track 1)

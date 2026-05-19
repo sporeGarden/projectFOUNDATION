@@ -372,15 +372,20 @@ fetch_thread05_ltee() {
     log ""
     log "── Thread 5: Evolutionary Biology / LTEE ──"
 
-    # LTEE ancestral + K-12 reference genomes
-    fetch_ncbi_nucleotide "NC_012967.1"     # REL606 ancestral strain
-    fetch_ncbi_nucleotide "NC_000913.3"     # E. coli K-12 MG1655 (comparative)
+    # Genomes — aligned with data/sources/thread05_ltee.toml accessions
+    fetch_ncbi_nucleotide "CP000819.1"      # REL606 ancestor (ncbi_barrick_2009_genome)
+    fetch_ncbi_nucleotide "U00096.3"        # E. coli K-12 MG1655 outgroup (ncbi_k12_mg1655)
 
-    # BioProject metadata for LTEE sequencing projects
-    fetch_ncbi_bioproject "PRJNA29543"      # Barrick 2009 mutation accumulation
-    fetch_ncbi_bioproject "PRJNA380528"     # Good 2017 allele trajectories
-    fetch_ncbi_bioproject "PRJNA188627"     # Blount 2012 citrate innovation
-    fetch_ncbi_bioproject "PRJNA294072"     # Tenaillon 2016 264 genomes
+    # BioProject metadata — aligned with manifest
+    fetch_ncbi_bioproject "PRJNA294072"     # Tenaillon 2016 264 genomes (ncbi_tenaillon_2016_genomes)
+    fetch_ncbi_bioproject "PRJNA188989"     # Wiser 2013 population data (ncbi_wiser_2013_popdata)
+
+    # SRA metadata (manifest uses SRP accessions — fetch BioProject metadata as proxy)
+    fetch_ncbi_bioproject "PRJNA295606"     # Tenaillon 2016 VCF (ncbi_tenaillon_2016_vcf)
+
+    # Dryad DOIs are not auto-fetchable via simple API — manifest documents them
+    log "  [INFO] Dryad sources (Barrick 2009, Wiser 2013, Good 2017) documented in manifest"
+    log "  [INFO] SRA accessions (SRP001064, SRP073287, SRP064605) need SRA toolkit for bulk download"
 }
 
 # ==========================================================================
@@ -451,56 +456,143 @@ fetch_thread10_provenance() {
 }
 
 # ==========================================================================
-# Dispatch
+# Manifest-driven fetch — reads data/sources/*.toml, dispatches by database
 # ==========================================================================
 
-ALL_THREADS=(
-    "wcm|thread01|fetch_thread01_wcm"
-    "plasma|thread02|fetch_thread02_plasma"
-    "immuno|thread03|fetch_thread03_immuno"
-    "enviro|thread04|fetch_thread04_enviro"
-    "ltee|thread05|fetch_thread05_ltee"
-    "ml|thread05_ml|fetch_thread05_ml"
-    "ag|thread06|fetch_thread06_ag"
-    "anderson|thread07|fetch_thread07_anderson"
-    "health|thread08|fetch_thread08_health"
-    "gaming|thread09|fetch_thread09_gaming"
-    "provenance|thread10|fetch_thread10_provenance"
-)
-
-fetch_thread02_plasma() {
+fetch_from_manifest() {
+    local toml_file="$1"
+    local thread_name
+    thread_name=$(basename "$toml_file" .toml)
     log ""
-    log "── Thread 2: Plasma Physics ──"
-    log "  [INFO] Thread 2 sources are literature-only — no automated fetch."
-    SKIP_COUNT=$((SKIP_COUNT + 1))
+    log "── Manifest: $thread_name ──"
+
+    python3 << MANIFEST_EOF
+import sys, json
+try:
+    import tomllib
+except ImportError:
+    import tomli as tomllib
+
+with open("$toml_file", "rb") as f:
+    data = tomllib.load(f)
+
+sources = data.get("sources", [])
+fetchable = []
+for s in sources:
+    db = s.get("database", "").lower()
+    accs = s.get("accessions", [])
+    sid = s.get("id", "")
+    fmt = s.get("format", "")
+    if not accs:
+        continue
+    for acc in accs:
+        if not acc or acc.startswith("10.") or acc.startswith("doi:"):
+            continue
+        entry = {"id": sid, "database": db, "accession": acc, "format": fmt}
+        fetchable.append(entry)
+
+for e in fetchable:
+    print(json.dumps(e))
+MANIFEST_EOF
 }
 
-dispatch_thread() {
+dispatch_manifest_entry() {
+    local db="$1" accession="$2" fmt="$3" sid="$4"
+    case "$db" in
+        "ncbi nucleotide"|"ncbi")
+            if [[ "$fmt" == "genbank" || "$fmt" == "fasta" ]]; then
+                fetch_ncbi_nucleotide "$accession"
+            fi ;;
+        "ncbi assembly")
+            fetch_ncbi_assembly "$accession" ;;
+        "uniprot")
+            fetch_uniprot_proteome "$accession" ;;
+        "kegg")
+            fetch_kegg_org "$accession" ;;
+        "ncbi bioproject"|"ncbi sra")
+            if [[ "$accession" == PRJNA* || "$accession" == PRJEB* ]]; then
+                fetch_ncbi_bioproject "$accession"
+            else
+                log "  [SKIP] $sid: SRA accession $accession needs SRA toolkit"
+                SKIP_COUNT=$((SKIP_COUNT + 1))
+            fi ;;
+        *)
+            log "  [SKIP] $sid: no fetcher for database '$db'"
+            SKIP_COUNT=$((SKIP_COUNT + 1)) ;;
+    esac
+}
+
+run_manifest_driven() {
+    local toml_file="$1"
+    local entries
+    entries=$(fetch_from_manifest "$toml_file" 2>/dev/null) || return
+    if [[ -z "$entries" ]]; then
+        log "  [INFO] No fetchable accessions in $(basename "$toml_file")"
+        SKIP_COUNT=$((SKIP_COUNT + 1))
+        return
+    fi
+    while IFS= read -r line; do
+        local db acc fmt sid
+        db=$(echo "$line" | python3 -c "import sys,json; print(json.load(sys.stdin)['database'])")
+        acc=$(echo "$line" | python3 -c "import sys,json; print(json.load(sys.stdin)['accession'])")
+        fmt=$(echo "$line" | python3 -c "import sys,json; print(json.load(sys.stdin)['format'])")
+        sid=$(echo "$line" | python3 -c "import sys,json; print(json.load(sys.stdin)['id'])")
+        dispatch_manifest_entry "$db" "$acc" "$fmt" "$sid"
+    done <<< "$entries"
+}
+
+# ==========================================================================
+# Dispatch — manifest-driven with legacy fallback
+# ==========================================================================
+
+SOURCES_DIR="$FOUNDATION_ROOT/data/sources"
+
+THREAD_MAP=(
+    "wcm|thread01_wcm"
+    "plasma|thread02_plasma"
+    "immuno|thread03_immuno"
+    "enviro|thread04_enviro"
+    "ltee|thread05_ltee"
+    "ml|thread05_ml_surrogates"
+    "ag|thread06_ag"
+    "anderson|thread07_anderson"
+    "health|thread08_health"
+    "gaming|thread09_gaming"
+    "provenance|thread10_provenance"
+)
+
+resolve_thread_toml() {
     local filter="$1"
-    for entry in "${ALL_THREADS[@]}"; do
-        IFS='|' read -r short full func <<< "$entry"
-        if [[ "$filter" == "$short" || "$filter" == "$full" ]]; then
-            $func
+    for entry in "${THREAD_MAP[@]}"; do
+        IFS='|' read -r short toml_stem <<< "$entry"
+        if [[ "$filter" == "$short" || "$filter" == "$toml_stem" ]]; then
+            echo "$SOURCES_DIR/${toml_stem}.toml"
             return 0
         fi
     done
-    log "Unknown thread: $filter"
-    exit 1
+    local glob_match
+    glob_match=$(ls "$SOURCES_DIR"/thread*"${filter}"*.toml 2>/dev/null | head -1)
+    [[ -n "$glob_match" ]] && echo "$glob_match" && return 0
+    return 1
 }
 
 if [[ -n "$THREAD_FILTER" ]]; then
     if [[ "$THREAD_FILTER" == "all" ]]; then
-        for entry in "${ALL_THREADS[@]}"; do
-            IFS='|' read -r short full func <<< "$entry"
-            $func
+        for toml_file in "$SOURCES_DIR"/*.toml; do
+            [[ -f "$toml_file" ]] || continue
+            run_manifest_driven "$toml_file"
         done
     else
-        dispatch_thread "$THREAD_FILTER"
+        toml_file=$(resolve_thread_toml "$THREAD_FILTER") || {
+            log "Unknown thread: $THREAD_FILTER"
+            exit 1
+        }
+        run_manifest_driven "$toml_file"
     fi
 else
-    for entry in "${ALL_THREADS[@]}"; do
-        IFS='|' read -r short full func <<< "$entry"
-        $func
+    for toml_file in "$SOURCES_DIR"/*.toml; do
+        [[ -f "$toml_file" ]] || continue
+        run_manifest_driven "$toml_file"
     done
 fi
 

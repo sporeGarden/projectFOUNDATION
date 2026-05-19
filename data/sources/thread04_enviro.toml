@@ -9,7 +9,7 @@ thread = 4
 thread_name = "Environmental Genomics & Field Science"
 expression = "expressions/ENVIRONMENTAL_GENOMICS.md"
 last_updated = "2026-05-12"
-total_sources = 23
+total_sources = 20
 
 # =============================================================================
 # Anderson QS Framework (Papers 01, 05, 06) — Metagenomic Diversity Data
@@ -264,7 +264,7 @@ id = "noaa_weather_stations"
 database = "NOAA GHCN"
 description = "NOAA Global Historical Climatology Network — Michigan weather station data"
 accessions = []
-url = "https://www.ncbi.nlm.nih.gov/datasets/"
+url = "https://www.ncei.noaa.gov/products/land-based-station/global-historical-climatology-network-daily"
 format = "csv"
 blake3 = ""
 retrieved = ""

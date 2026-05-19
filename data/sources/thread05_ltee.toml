@@ -9,7 +9,7 @@ thread = 5
 thread_name = "Evolutionary Biology / LTEE"
 expression = "expressions/LTEE_EVOLUTIONARY_DYNAMICS.md"
 last_updated = "2026-05-11"
-total_sources = 12
+total_sources = 11
 
 # =============================================================================
 # Paper B1: Barrick et al. 2009 — Genome evolution in a long-term experiment

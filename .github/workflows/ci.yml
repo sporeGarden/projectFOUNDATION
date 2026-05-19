@@ -258,6 +258,46 @@ jobs:
           sys.exit(1 if errors else 0)
           "
 
+      - name: Source count reconciliation and schema
+        run: |
+          python3 -c "
+          import sys, pathlib
+          try:
+              import tomllib
+          except ImportError:
+              import tomli as tomllib
+
+          errors = 0
+          total_sources = 0
+          for f in sorted(pathlib.Path('data/sources').glob('*.toml')):
+              data = tomllib.loads(f.read_text())
+              meta = data.get('meta', {})
+              sources = data.get('sources', [])
+              actual = len(sources)
+              total_sources += actual
+
+              declared = meta.get('total_sources')
+              if declared is not None and declared != actual:
+                  print(f'FAIL: {f.name}: meta.total_sources={declared} but actual [[sources]] count={actual}')
+                  errors += 1
+
+              for i, s in enumerate(sources):
+                  sid = s.get('id', f'sources[{i}]')
+                  if not s.get('id'):
+                      print(f'FAIL: {f.name} source [{i}]: missing id')
+                      errors += 1
+                  if not s.get('database'):
+                      print(f'FAIL: {f.name} source {sid}: missing database')
+                      errors += 1
+                  if not s.get('description'):
+                      print(f'FAIL: {f.name} source {sid}: missing description')
+                      errors += 1
+
+          print(f'Checked {total_sources} sources across {len(list(pathlib.Path(\"data/sources\").glob(\"*.toml\")))} files')
+          print(f'{errors} source schema error(s)' if errors else 'All sources conform to schema')
+          sys.exit(1 if errors else 0)
+          "
+
       - name: Target count reconciliation
         run: |
           python3 -c "

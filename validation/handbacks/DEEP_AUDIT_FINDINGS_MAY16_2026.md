@@ -78,19 +78,24 @@ matching GPU hardware.
 
 ## 4. Data Integrity — BLAKE3 Status
 
-**165 data sources across 11 TOML files. ALL have `blake3 = ""`.**
-Zero hashes have been backfilled.
+**Updated May 19, 2026**: 10/165 sources now have BLAKE3 hashes (Thread 1 WCM
+backfilled). CI gates on non-regression (baseline 10).
 
-| Blocker | Resolution path |
-|---------|----------------|
-| No `.data/` directory | Run `deploy/fetch_sources.sh` to download NCBI/UniProt/KEGG data |
-| No `b3sum` in CI | CI only reports hash coverage, doesn't fetch |
-| Threshold set to `pct < 0` | CI hash coverage check never fails (by design — tracks trend) |
+| Item | Status |
+|------|--------|
+| Thread 1 WCM: 10/25 hashed | **DONE** (May 19 — NCBI/UniProt/KEGG fetched) |
+| Source count reconciliation | **DONE** (6 mismatches fixed, CI gate added) |
+| CI hash regression gate | **DONE** (fails if WCM < 10 or overall < 10) |
+| Manifest-driven fetch | **DONE** (fetch_sources.sh reads TOMLs, not hardcoded) |
+| Remaining 155 sources | Open — 15 WCM unfetchable, others need thread-by-thread runs |
+| `blake3_hash` fallback bug | **FIXED** (was blake2b, now requires blake3 or b3sum) |
 
-### Specific data gaps
+### Remaining data gaps
 
-- **Thread 1**: Accession enumeration from Paper A Table S7 incomplete
+- **Thread 1 WCM**: 15 sources lack automated fetchers (BRENDA, EcoCyc, GitHub, etc.)
 - **Thread 4**: Brandt farm soil data "Accession TBD"
+- **Thread 4**: NOAA URL was pointing at NCBI — **FIXED**
+- **Thread 5**: LTEE accession mismatches (fetch vs manifest) — **FIXED**
 - **Thread 9**: Game design theory rows flagged "Queued for experiment design"
 
 ---

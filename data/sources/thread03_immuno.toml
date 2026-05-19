@@ -9,7 +9,7 @@ thread = 3
 thread_name = "Immunology, Drug Discovery & Clinical Translation"
 expression = "expressions/IMMUNO_DRUG_DISCOVERY.md"
 last_updated = "2026-05-06"
-total_sources = 18
+total_sources = 17
 
 # =============================================================================
 # Paper 12: Anderson in Immunological Signaling

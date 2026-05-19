@@ -9,7 +9,7 @@ thread = 6
 thread_name = "Agricultural Science"
 expression = "expressions/MEASUREMENT_SCIENCE.md"
 last_updated = "2026-05-07"
-total_sources = 18
+total_sources = 16
 
 # =============================================================================
 # Paper 01: Sensor Noise Characterization (Dong et al. 2020)

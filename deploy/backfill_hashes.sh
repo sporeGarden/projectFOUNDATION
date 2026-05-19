@@ -7,7 +7,7 @@
 #
 # The fetch layout uses subdirectories by source type (.data/ncbi/, .data/uniprot/,
 # .data/kegg/, etc.) — this script matches files to TOML entries by accession
-# pattern or filename, then fills the first empty blake3="" field per source.
+# pattern, then fills empty blake3="" fields.
 #
 # Usage:
 #   ./backfill_hashes.sh [--thread THREAD] [--data-dir DIR] [--dry-run]
@@ -58,25 +58,22 @@ log "  Timestamp: $TIMESTAMP"
 [[ "$DRY_RUN" == "true" ]] && log "  DRY RUN — no files will be modified"
 echo ""
 
-build_hash_manifest() {
-    log "Building file hash manifest from $DATA_DIR..."
-    HASH_MANIFEST=""
-    while IFS= read -r -d '' filepath; do
-        local hash
-        hash=$(b3sum "$filepath" | cut -d' ' -f1)
-        local basename
-        basename=$(basename "$filepath")
-        HASH_MANIFEST+="${basename}|${hash}|${filepath}"$'\n'
-    done < <(find "$DATA_DIR" -type f -print0 2>/dev/null | sort -z)
-    local file_count
-    file_count=$(echo -n "$HASH_MANIFEST" | grep -c '|' 2>/dev/null || echo 0)
-    log "  Indexed $file_count files"
-}
+# Build a file index: accession-token → blake3 hash
+# Written to a temp file to avoid shell quoting issues
+MANIFEST_FILE=$(mktemp)
+trap 'rm -f "$MANIFEST_FILE"' EXIT
 
-lookup_hash() {
-    local pattern="$1"
-    echo "$HASH_MANIFEST" | grep -i "$pattern" | head -1 | cut -d'|' -f2
-}
+log "Building file hash manifest from $DATA_DIR..."
+FILE_COUNT=0
+while IFS= read -r -d '' filepath; do
+    hash=$(b3sum "$filepath" | cut -d' ' -f1)
+    basename=$(basename "$filepath")
+    # Strip common extensions to extract accession token
+    token=$(echo "$basename" | sed 's/\.\(gb\|fasta\.gz\|fasta\|xml\|json\|txt\|csv\|tsv\|vcf\)$//' | sed 's/_report$//' | sed 's/_pathways$//')
+    echo "${token}	${hash}	${filepath}" >> "$MANIFEST_FILE"
+    FILE_COUNT=$((FILE_COUNT + 1))
+done < <(find "$DATA_DIR" -type f -print0 2>/dev/null | sort -z)
+log "  Indexed $FILE_COUNT files"
 
 backfill_source_toml() {
     local toml_file="$1"
@@ -101,28 +98,36 @@ backfill_source_toml() {
         return
     fi
 
+    # Pass manifest via stdin to avoid shell quoting issues
     local updated
-    updated=$(python3 -c "
-import sys, re, os
-if sys.version_info >= (3, 11):
+    updated=$(python3 - "$toml_file" "$TIMESTAMP" < "$MANIFEST_FILE" << 'PYEOF'
+import sys, re
+
+manifest_path = sys.stdin
+toml_file = sys.argv[1]
+timestamp = sys.argv[2]
+
+try:
     import tomllib
-else:
+except ImportError:
     import tomli as tomllib
 
-manifest = '''$HASH_MANIFEST'''
-
+# Build accession → hash lookup from manifest (stdin)
 file_hashes = {}
-for line in manifest.strip().split('\n'):
-    if '|' not in line:
+for line in manifest_path:
+    line = line.strip()
+    if not line:
         continue
-    parts = line.split('|')
+    parts = line.split('\t')
     if len(parts) >= 2:
-        file_hashes[parts[0].lower()] = parts[1]
+        token = parts[0]
+        bhash = parts[1]
+        file_hashes[token.lower()] = bhash
 
-with open('$toml_file', 'rb') as f:
+with open(toml_file, 'rb') as f:
     data = tomllib.load(f)
 
-lines = open('$toml_file').readlines()
+lines = open(toml_file).readlines()
 sources = data.get('sources', [])
 updated = 0
 
@@ -131,39 +136,47 @@ for src in sources:
     src_id = src.get('id', '')
     matched_hash = ''
 
+    # Try exact accession match against manifest tokens
     for acc in accessions:
+        if not acc:
+            continue
         acc_lower = acc.lower()
-        for fname, fhash in file_hashes.items():
-            if acc_lower in fname:
-                matched_hash = fhash
-                break
-        if matched_hash:
+        # Exact match first
+        if acc_lower in file_hashes:
+            matched_hash = file_hashes[acc_lower]
+            break
+        # Try without version suffix (e.g., NC_000908.2 -> NC_000908)
+        base = acc_lower.rsplit('.', 1)[0] if '.' in acc_lower else acc_lower
+        if base in file_hashes:
+            matched_hash = file_hashes[base]
             break
 
     if not matched_hash:
         continue
 
+    # Find this source's blake3 field by locating the id line, then scanning forward
     in_source_block = False
     for i, line in enumerate(lines):
         stripped = line.strip()
-        if stripped.startswith('id = ') and src_id and src_id in stripped:
+        if stripped == f'id = "{src_id}"':
             in_source_block = True
         elif stripped == '[[sources]]' and in_source_block:
             break
-        elif in_source_block and stripped == 'blake3 = \"\"':
-            lines[i] = f'blake3 = \"{matched_hash}\"\n'
-            if i + 1 < len(lines) and lines[i+1].strip() == 'retrieved = \"\"':
-                lines[i+1] = f'retrieved = \"$TIMESTAMP\"\n'
+        elif in_source_block and stripped == 'blake3 = ""':
+            lines[i] = f'blake3 = "{matched_hash}"\n'
+            if i + 1 < len(lines) and lines[i + 1].strip() == 'retrieved = ""':
+                lines[i + 1] = f'retrieved = "{timestamp}"\n'
             updated += 1
             in_source_block = False
 
-with open('$toml_file', 'w') as f:
+with open(toml_file, 'w') as f:
     f.writelines(lines)
 print(updated)
-" 2>/dev/null) || updated=0
+PYEOF
+    ) || updated=0
 
     if [[ "$updated" -gt 0 ]]; then
-        log "  [$thread_name] Updated $updated entries with per-accession hashes"
+        log "  [$thread_name] Updated $updated entries"
         UPDATED=$((UPDATED + updated))
     else
         log "  [$thread_name] No accession matches found in fetched data"
@@ -171,17 +184,12 @@ print(updated)
     fi
 }
 
-build_hash_manifest
-
 SOURCES_DIR="$FOUNDATION_ROOT/data/sources"
 for toml_file in "$SOURCES_DIR"/*.toml; do
     [[ -f "$toml_file" ]] || continue
+    [[ "$(basename "$toml_file")" == *.md ]] && continue
     backfill_source_toml "$toml_file"
 done
 
 echo ""
 log "Backfill complete: $UPDATED updated, $SKIPPED skipped"
-log ""
-log "NOTE: This fills the first empty blake3 per source TOML with an aggregate"
-log "hash of all fetched data. For per-accession hashes, run fetch_sources.sh"
-log "with --register to anchor individual files via NestGate."

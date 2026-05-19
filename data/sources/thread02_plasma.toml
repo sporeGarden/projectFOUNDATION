@@ -9,7 +9,7 @@ thread = 2
 thread_name = "Plasma Physics, Lattice QCD & GPU Compute"
 expression = "expressions/PLASMA_QCD_SOVEREIGN_GPU.md"
 last_updated = "2026-05-06"
-total_sources = 18
+total_sources = 17
 
 # =============================================================================
 # Warm Dense Matter (Paper 07) — Transport Coefficients

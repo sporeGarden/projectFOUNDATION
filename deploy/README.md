@@ -32,8 +32,13 @@ bash fetch_sources.sh --thread all               # All threads
 bash fetch_sources.sh --thread all --register    # + register with NestGate
 ```
 
-**Supported threads**: `wcm` (1), `plasma` (2, literature-only), `immuno` (3),
-`enviro` (4), `health` (8), `all`.
+**Supported threads**: `wcm` (1), `plasma` (2), `immuno` (3), `enviro` (4),
+`ltee` (5), `ml` (5-ML), `ag` (6), `anderson` (7), `health` (8), `gaming` (9),
+`provenance` (10), `all`.
+
+The fetcher is **manifest-driven** — it reads `data/sources/*.toml` and
+dispatches by `database` field + `accessions`. Per-thread hardcoded fetchers
+are kept as legacy fallback but the manifest is the source of truth.
 
 **NCBI API key**: Set `NCBI_API_KEY` for 10 requests/sec (vs 3/sec default).
 
