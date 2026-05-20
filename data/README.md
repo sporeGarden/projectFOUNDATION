@@ -6,30 +6,30 @@ Data source manifests and validation targets for the unified lineage.
 
 ```
 data/
-  sources/
-    thread01_wcm.toml              Whole-Cell Modeling (27 sources, 7 ABG papers)
-    thread02_plasma.toml            Plasma Physics & Lattice QCD (18 sources)
-    thread03_immuno.toml            Immunology & Drug Discovery (18 sources)
-    thread04_enviro.toml            Environmental Genomics & Field Science (23 sources)
-    thread05_ltee.toml              Evolutionary Biology / LTEE (12 sources)
-    thread05_ml_surrogates.toml     ML surrogates for LTEE (neuralSpring)
-    thread06_ag.toml                Agricultural Science
-    thread07_anderson.toml          Anderson Mathematics
-    thread08_health.toml            Human Health & Clinical Translation (14 sources)
-    thread09_gaming.toml            Gaming / Creative (ludoSpring)
-    thread10_provenance.toml        Provenance / Economics
-  targets/
-    thread01_wcm_targets.toml            Whole-Cell Modeling (24 targets across Papers A-G)
-    thread02_plasma_targets.toml         Plasma Physics & Lattice QCD targets
-    thread03_immuno_targets.toml         Immunology & Drug Discovery (12 targets)
-    thread04_enviro_targets.toml         Environmental Genomics targets
-    thread05_ltee_targets.toml           LTEE evolutionary dynamics (10 targets)
-    thread05_ml_surrogates_targets.toml  ML surrogate targets (neuralSpring)
-    thread06_ag_targets.toml             Agricultural science targets
-    thread07_anderson_targets.toml       Anderson mathematics targets
-    thread08_health_targets.toml         Human health targets
-    thread09_gaming_targets.toml         Gaming / creative targets (13 targets)
-    thread10_provenance_targets.toml     Provenance / economics targets
+  sources/                                    165 sources across 11 files (10 BLAKE3-anchored)
+    thread01_wcm.toml                         Whole-Cell Modeling (25 sources, 7 ABG papers)
+    thread02_plasma.toml                      Plasma Physics & Lattice QCD (17 sources)
+    thread03_immuno.toml                      Immunology & Drug Discovery (17 sources)
+    thread04_enviro.toml                      Environmental Genomics & Field Science (20 sources)
+    thread05_ltee.toml                        Evolutionary Biology / LTEE (11 sources)
+    thread05_ml_surrogates.toml               ML surrogates for LTEE (15 sources)
+    thread06_ag.toml                          Agricultural Science (16 sources)
+    thread07_anderson.toml                    Anderson Mathematics (11 sources)
+    thread08_health.toml                      Human Health & Clinical Translation (13 sources)
+    thread09_gaming.toml                      Gaming / Creative (14 sources)
+    thread10_provenance.toml                  Provenance / Economics (6 sources)
+  targets/                                    184 targets across 11 files
+    thread01_wcm_targets.toml                 Whole-Cell Modeling (27 targets across Papers A-G)
+    thread02_plasma_targets.toml              Plasma Physics & Lattice QCD (12 targets)
+    thread03_immuno_targets.toml              Immunology & Drug Discovery (12 targets)
+    thread04_enviro_targets.toml              Environmental Genomics (12 targets)
+    thread05_ltee_targets.toml                LTEE evolutionary dynamics (18 targets)
+    thread05_ml_surrogates_targets.toml       ML surrogate targets (12 targets)
+    thread06_ag_targets.toml                  Agricultural science (36 targets)
+    thread07_anderson_targets.toml            Anderson mathematics (23 targets)
+    thread08_health_targets.toml              Human health (11 targets)
+    thread09_gaming_targets.toml              Gaming / creative (13 targets)
+    thread10_provenance_targets.toml          Provenance / economics (8 targets)
 ```
 
 ## Public Data Repository Anchors
@@ -63,9 +63,9 @@ url = "https://www.brenda-enzymes.org/"
 format = "json"
 blake3 = ""                   # populated after first retrieval
 retrieved = ""                # ISO 8601 timestamp of last retrieval
-thread = 1
-papers = ["A", "D"]
-notes = "Km and kcat values for M. genitalium metabolic enzymes"
+paper = "A"
+description = "Km and kcat values for M. genitalium metabolic enzymes"
+notes = ""
 ```
 
 Sources are stub-populated initially and filled in as springs begin

@@ -8,25 +8,38 @@
 resolve_target_file() {
     local short="$1"
     local dir="$2"
-    # Explicit aliases for thread shorts that don't match filename patterns
-    case "$short" in
-        ml)          echo "$dir/thread05_ml_surrogates_targets.toml" ;;
-        wcm)         echo "$dir/thread01_wcm_targets.toml" ;;
-        plasma)      echo "$dir/thread02_plasma_targets.toml" ;;
-        immuno)      echo "$dir/thread03_immuno_targets.toml" ;;
-        enviro)      echo "$dir/thread04_enviro_targets.toml" ;;
-        ltee)        echo "$dir/thread05_ltee_targets.toml" ;;
-        ag)          echo "$dir/thread06_ag_targets.toml" ;;
-        anderson)    echo "$dir/thread07_anderson_targets.toml" ;;
-        health)      echo "$dir/thread08_health_targets.toml" ;;
-        gaming)      echo "$dir/thread09_gaming_targets.toml" ;;
-        provenance)  echo "$dir/thread10_provenance_targets.toml" ;;
-        *)
-            # Fallback: glob match
-            # shellcheck disable=SC2086
-            ls "$dir"/thread*_${short}*_targets.toml 2>/dev/null | head -1
-            ;;
-    esac
+    local index_path="${FOUNDATION_ROOT}/lineage/THREAD_INDEX.toml"
+
+    # Resolve via THREAD_INDEX.toml data_targets field
+    if [[ -f "$index_path" ]]; then
+        local tgt_path
+        tgt_path=$(python3 -c "
+import sys
+try:
+    import tomllib
+except ImportError:
+    import tomli as tomllib
+with open('$index_path', 'rb') as f:
+    data = tomllib.load(f)
+for t in data.get('threads', []):
+    if t['short'] == '$short':
+        print(t.get('data_targets', ''))
+        break
+    # ML companion check
+    ml_tgt = t.get('ml_data_targets', '')
+    if '$short' == 'ml' and ml_tgt:
+        print(ml_tgt)
+        break
+" 2>/dev/null) || tgt_path=""
+        if [[ -n "$tgt_path" ]]; then
+            local full_path="${FOUNDATION_ROOT}/${tgt_path}"
+            [[ -f "$full_path" ]] && echo "$full_path" && return
+        fi
+    fi
+
+    # Fallback: glob match
+    # shellcheck disable=SC2086
+    ls "$dir"/thread*_${short}*_targets.toml 2>/dev/null | head -1
 }
 
 compare_targets() {

@@ -75,16 +75,16 @@ need to evolve:
 
 | Thread | Date | Spring | Targets | Status |
 |--------|------|--------|---------|--------|
-| 1 — Whole-Cell Modeling | 2026-05-09 | hotSpring, wetSpring, healthSpring | 0/27 validated | Attempted — fetch infra validated, RPC upstream-blocked |
+| 1 — Whole-Cell Modeling | 2026-05-09 | hotSpring, wetSpring, healthSpring | 0/27 validated | Fetch + CI gates validated; RPC upstream-blocked; 10/25 sources BLAKE3-anchored |
 | 2 — Plasma Physics | 2026-05-11 | hotSpring v0.6.32 | 12/12 PASS | Validated |
-| 3 — Immunology | — | healthSpring | Pending | Expression + targets ready, spring validation pending |
-| 4 — Env Genomics | — | wetSpring, airSpring | Pending | Expression + 13 targets ready, spring validation pending |
+| 3 — Immunology | — | healthSpring | 0/12 pending | Expression + targets ready, spring validation pending |
+| 4 — Env Genomics | — | wetSpring, airSpring | 0/12 pending | Expression + targets ready, spring validation pending |
 | 5 — LTEE / Evolution | — | groundSpring, wetSpring, hotSpring, neuralSpring | 14/18 partial | 4 pending — braid evidence from wetSpring ferment transcripts |
 | 6 — Agricultural Science | 2026-05-11 | airSpring v0.10.0 | 36/36 PASS | Validated |
-| 7 — Anderson Mathematics | 2026-05-11 | groundSpring V142 | 18/18 PASS | Validated |
-| 8 — Human Health | — | healthSpring | Pending | Expression ready, spring expanding |
-| 9 — Gaming / Creative | — | ludoSpring | Seeded | Expression + 13 targets ready |
-| 10 — Provenance | — | primalSpring, ludoSpring | Seeded | Expression + 8 targets ready |
+| 7 — Anderson Mathematics | 2026-05-11 | groundSpring V142 | 23/23 PASS | Validated (18→23 after target expansion) |
+| 8 — Human Health | — | healthSpring | 0/11 pending | Expression ready, spring expanding |
+| 9 — Gaming / Creative | — | ludoSpring | 0/13 seeded | Expression + targets ready |
+| 10 — Provenance | — | primalSpring, ludoSpring | 0/8 seeded | Expression + targets ready |
 
 Legacy runs: `wcm-20260509/`, `plasma-20260511/`, `ag-20260511/`, `anderson-20260511/`.
 Future runs: `<spring>/<YYYY-MM-DD>/` per `PROVENANCE_FOLDER_CONVENTION.md`.

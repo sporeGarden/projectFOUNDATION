@@ -115,7 +115,7 @@ data/               Data source manifests and validation targets
   targets/          Per-thread validation target TOMLs (11 files, 184 targets)
 graphs/             Foundation-specific deploy graphs (references projectNUCLEUS)
 deploy/             Operational scripts
-  lib/              Sourced shell libraries (primal_ipc.sh, target_compare.sh)
+  lib/              Sourced shell libraries (primal_ipc, json_rpc, thread_registry, target_compare)
   fetch_sources.sh  Fetch NCBI/UniProt/KEGG data, compute BLAKE3 hashes
   backfill_hashes.sh  Compute BLAKE3 hashes and update source TOMLs
   foundation_validate.sh  Full validation pipeline with provenance wrapping

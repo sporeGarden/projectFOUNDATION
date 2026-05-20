@@ -36,6 +36,10 @@ while [[ $# -gt 0 ]]; do
         --register)   REGISTER=true; shift ;;
         -h|--help)
             echo "Usage: $0 [--thread THREAD_SHORT] [--data-dir DIR] [--register]"
+            if [[ -f "$SCRIPT_DIR/lib/thread_registry.sh" ]]; then
+                source "$SCRIPT_DIR/lib/thread_registry.sh"
+                thread_help_text
+            fi
             exit 0 ;;
         *)            echo "Unknown option: $1"; exit 1 ;;
     esac
@@ -281,181 +285,6 @@ fetch_kegg_org() {
 }
 
 # ==========================================================================
-# Thread 1: Whole-Cell Modeling
-# ==========================================================================
-
-fetch_thread01_wcm() {
-    log ""
-    log "── Thread 1: Whole-Cell Modeling ──"
-
-    # Genomes
-    fetch_ncbi_nucleotide "NC_000908.2"     # M. genitalium
-    fetch_ncbi_nucleotide "CP016816.2"      # JCVI-syn3A
-    fetch_ncbi_nucleotide "NC_000913.3"     # E. coli K-12
-
-    # Assemblies
-    fetch_ncbi_assembly "GCA_000027325.1"   # M. genitalium assembly
-    fetch_ncbi_assembly "GCA_900015295.1"   # JCVI-syn3.0 assembly
-
-    # Proteomes
-    fetch_uniprot_proteome "UP000000807"    # M. genitalium
-    fetch_uniprot_proteome "UP000000625"    # E. coli K-12
-    fetch_uniprot_proteome "UP000018174"    # M. mycoides (closest to syn3A)
-
-    # KEGG metabolic networks
-    fetch_kegg_org "mge"                    # M. genitalium
-    fetch_kegg_org "eco"                    # E. coli
-    fetch_kegg_org "mmc"                    # M. mycoides
-
-    # BioProject metadata
-    fetch_ncbi_bioproject "PRJNA357500"     # JCVI synthetic biology
-}
-
-# ==========================================================================
-# Thread 4: Environmental Genomics
-# ==========================================================================
-
-fetch_thread04_enviro() {
-    log ""
-    log "── Thread 4: Environmental Genomics ──"
-
-    # BioProject metadata
-    fetch_ncbi_bioproject "PRJNA488170"     # Saginaw Bay HAB (already validated!)
-    fetch_ncbi_bioproject "PRJNA285472"     # Lake Erie cyanobacteria
-    fetch_ncbi_bioproject "PRJNA636789"     # PFAS microbiome
-    fetch_ncbi_bioproject "PRJNA503411"     # Deep-sea cold seep
-    fetch_ncbi_bioproject "PRJNA473816"     # Coral holobiont
-    fetch_ncbi_bioproject "PRJNA524590"     # No-till soil
-    fetch_ncbi_bioproject "PRJNA546013"     # MinION reference
-    fetch_ncbi_bioproject "PRJNA547561"     # Anaerobic digester
-    fetch_ncbi_bioproject "PRJNA517152"     # Gut anaerobic
-    fetch_ncbi_bioproject "PRJNA480600"     # Rhizosphere
-}
-
-# ==========================================================================
-# Thread 3: Immunology & Drug Discovery
-# ==========================================================================
-
-fetch_thread03_immuno() {
-    log ""
-    log "── Thread 3: Immunology & Drug Discovery ──"
-
-    # GEO datasets (metadata)
-    fetch_ncbi_bioproject "PRJNA175577"     # GSE32924 approximate BioProject
-    fetch_ncbi_bioproject "PRJNA187999"     # GSE36842 approximate BioProject
-    fetch_ncbi_bioproject "PRJNA422434"     # Gut metabolome
-    fetch_ncbi_bioproject "PRJNA388210"     # FMT clinical
-    fetch_ncbi_bioproject "PRJNA355023"     # Antibiotic perturbation
-}
-
-# ==========================================================================
-# Thread 8: Human Health
-# ==========================================================================
-
-fetch_thread08_health() {
-    log ""
-    log "── Thread 8: Human Health ──"
-
-    # Canine genome
-    fetch_ncbi_assembly "GCA_011100685.1"   # CanFam4
-
-    # Health BioProjects (metadata)
-    fetch_ncbi_bioproject "PRJNA388210"     # FMT (shared with thread 3)
-    fetch_ncbi_bioproject "PRJNA355023"     # Antibiotic perturbation (shared)
-}
-
-# ==========================================================================
-# Thread 5: LTEE (Evolutionary Biology)
-# ==========================================================================
-
-fetch_thread05_ltee() {
-    log ""
-    log "── Thread 5: Evolutionary Biology / LTEE ──"
-
-    # Genomes — aligned with data/sources/thread05_ltee.toml accessions
-    fetch_ncbi_nucleotide "CP000819.1"      # REL606 ancestor (ncbi_barrick_2009_genome)
-    fetch_ncbi_nucleotide "U00096.3"        # E. coli K-12 MG1655 outgroup (ncbi_k12_mg1655)
-
-    # BioProject metadata — aligned with manifest
-    fetch_ncbi_bioproject "PRJNA294072"     # Tenaillon 2016 264 genomes (ncbi_tenaillon_2016_genomes)
-    fetch_ncbi_bioproject "PRJNA188989"     # Wiser 2013 population data (ncbi_wiser_2013_popdata)
-
-    # SRA metadata (manifest uses SRP accessions — fetch BioProject metadata as proxy)
-    fetch_ncbi_bioproject "PRJNA295606"     # Tenaillon 2016 VCF (ncbi_tenaillon_2016_vcf)
-
-    # Dryad DOIs are not auto-fetchable via simple API — manifest documents them
-    log "  [INFO] Dryad sources (Barrick 2009, Wiser 2013, Good 2017) documented in manifest"
-    log "  [INFO] SRA accessions (SRP001064, SRP073287, SRP064605) need SRA toolkit for bulk download"
-}
-
-# ==========================================================================
-# Thread 6: Agricultural Science
-# ==========================================================================
-
-fetch_thread06_ag() {
-    log ""
-    log "── Thread 6: Agricultural Science ──"
-
-    # Soil microbiome sequencing projects
-    fetch_ncbi_bioproject "PRJNA524590"     # No-till soil 16S
-    fetch_ncbi_bioproject "PRJNA480600"     # Rhizosphere microbiome
-
-    # NOAA weather data is fetched via separate tooling (large datasets).
-    # IRIS/KEGG are web-service queries, not bulk downloads.
-    log "  [INFO] FAO-56, NOAA, ERA5, IRIS sources are web-service or literature — fetch via workload"
-}
-
-# ==========================================================================
-# Thread 5-ML: ML Surrogates & Evolutionary Dynamics
-# ==========================================================================
-
-fetch_thread05_ml() {
-    log ""
-    log "── Thread 5-ML: ML Surrogates & Evolutionary Dynamics ──"
-    log "  [INFO] Thread 5-ML sources are literature references, public APIs (Open-Meteo),"
-    log "  [INFO] and standard ML datasets (MNIST via torchvision)."
-    log "  [INFO] Paper DOIs and dataset URLs are catalogued in thread05_ml_surrogates.toml."
-    log "  [INFO] No bulk NCBI/UniProt data to fetch. ERA5 and MNIST fetched at train time."
-    SKIP_COUNT=$((SKIP_COUNT + 1))
-}
-
-# ==========================================================================
-# Thread 7: Anderson Mathematics
-# ==========================================================================
-
-fetch_thread07_anderson() {
-    log ""
-    log "── Thread 7: Anderson Mathematics ──"
-    log "  [INFO] Thread 7 sources are literature references and internal models."
-    log "  [INFO] No public data to fetch. Validation data is generated by springs."
-    SKIP_COUNT=$((SKIP_COUNT + 1))
-}
-
-# ==========================================================================
-# Thread 9: Gaming / Creative
-# ==========================================================================
-
-fetch_thread09_gaming() {
-    log ""
-    log "── Thread 9: Gaming / Creative ──"
-    log "  [INFO] Thread 9 sources are literature references and procedural generation benchmarks."
-    log "  [INFO] No public data to fetch. Validation data is generated by ludoSpring."
-    SKIP_COUNT=$((SKIP_COUNT + 1))
-}
-
-# ==========================================================================
-# Thread 10: Provenance / Economics
-# ==========================================================================
-
-fetch_thread10_provenance() {
-    log ""
-    log "── Thread 10: Provenance / Economics ──"
-    log "  [INFO] Thread 10 sources are internal test vectors (rhizoCrypt, loamSpine, sweetGrass)."
-    log "  [INFO] No external public data to fetch. Validation via NUCLEUS composition."
-    SKIP_COUNT=$((SKIP_COUNT + 1))
-}
-
-# ==========================================================================
 # Manifest-driven fetch — reads data/sources/*.toml, dispatches by database
 # ==========================================================================
 
@@ -531,64 +360,77 @@ run_manifest_driven() {
         SKIP_COUNT=$((SKIP_COUNT + 1))
         return
     fi
-    while IFS= read -r line; do
-        local db acc fmt sid
-        db=$(echo "$line" | python3 -c "import sys,json; print(json.load(sys.stdin)['database'])")
-        acc=$(echo "$line" | python3 -c "import sys,json; print(json.load(sys.stdin)['accession'])")
-        fmt=$(echo "$line" | python3 -c "import sys,json; print(json.load(sys.stdin)['format'])")
-        sid=$(echo "$line" | python3 -c "import sys,json; print(json.load(sys.stdin)['id'])")
+    while IFS=$'\t' read -r db acc fmt sid; do
         dispatch_manifest_entry "$db" "$acc" "$fmt" "$sid"
-    done <<< "$entries"
+    done < <(echo "$entries" | python3 -c "
+import sys, json
+for line in sys.stdin:
+    line = line.strip()
+    if not line: continue
+    e = json.loads(line)
+    print(f\"{e['database']}\t{e['accession']}\t{e['format']}\t{e['id']}\")
+")
 }
 
 # ==========================================================================
-# Dispatch — manifest-driven with legacy fallback
+# Dispatch — manifest-driven, thread resolution via THREAD_INDEX.toml
 # ==========================================================================
 
 SOURCES_DIR="$FOUNDATION_ROOT/data/sources"
 
-THREAD_MAP=(
-    "wcm|thread01_wcm"
-    "plasma|thread02_plasma"
-    "immuno|thread03_immuno"
-    "enviro|thread04_enviro"
-    "ltee|thread05_ltee"
-    "ml|thread05_ml_surrogates"
-    "ag|thread06_ag"
-    "anderson|thread07_anderson"
-    "health|thread08_health"
-    "gaming|thread09_gaming"
-    "provenance|thread10_provenance"
-)
+# Source thread_registry.sh if available for typed resolution;
+# fall back to direct TOML read if not sourced.
+if [[ -f "$SCRIPT_DIR/lib/thread_registry.sh" ]]; then
+    # shellcheck source=lib/thread_registry.sh
+    source "$SCRIPT_DIR/lib/thread_registry.sh"
+fi
 
 resolve_thread_toml() {
     local filter="$1"
-    for entry in "${THREAD_MAP[@]}"; do
-        IFS='|' read -r short toml_stem <<< "$entry"
-        if [[ "$filter" == "$short" || "$filter" == "$toml_stem" ]]; then
-            echo "$SOURCES_DIR/${toml_stem}.toml"
-            return 0
-        fi
-    done
+    # Try THREAD_INDEX.toml resolution first
+    local data_sources
+    data_sources=$(python3 -c "
+import sys
+try:
+    import tomllib
+except ImportError:
+    import tomli as tomllib
+with open('$FOUNDATION_ROOT/lineage/THREAD_INDEX.toml', 'rb') as f:
+    data = tomllib.load(f)
+for t in data.get('threads', []):
+    short = t['short']
+    if '$filter' == short:
+        # Primary source file
+        print(t.get('data_sources', ''))
+        # ML companion if it exists
+        ml = t.get('ml_data_sources', '')
+        if ml:
+            print(ml)
+        break
+" 2>/dev/null) || data_sources=""
+
+    if [[ -n "$data_sources" ]]; then
+        while IFS= read -r src_path; do
+            [[ -n "$src_path" ]] && echo "$FOUNDATION_ROOT/$src_path"
+        done <<< "$data_sources"
+        return 0
+    fi
+    # Glob fallback for non-indexed filters
     local glob_match
     glob_match=$(ls "$SOURCES_DIR"/thread*"${filter}"*.toml 2>/dev/null | head -1)
     [[ -n "$glob_match" ]] && echo "$glob_match" && return 0
     return 1
 }
 
-if [[ -n "$THREAD_FILTER" ]]; then
-    if [[ "$THREAD_FILTER" == "all" ]]; then
-        for toml_file in "$SOURCES_DIR"/*.toml; do
-            [[ -f "$toml_file" ]] || continue
-            run_manifest_driven "$toml_file"
-        done
-    else
-        toml_file=$(resolve_thread_toml "$THREAD_FILTER") || {
-            log "Unknown thread: $THREAD_FILTER"
-            exit 1
-        }
+if [[ -n "$THREAD_FILTER" && "$THREAD_FILTER" != "all" ]]; then
+    resolved_files=$(resolve_thread_toml "$THREAD_FILTER") || {
+        log "Unknown thread: $THREAD_FILTER"
+        exit 1
+    }
+    while IFS= read -r toml_file; do
+        [[ -f "$toml_file" ]] || continue
         run_manifest_driven "$toml_file"
-    fi
+    done <<< "$resolved_files"
 else
     for toml_file in "$SOURCES_DIR"/*.toml; do
         [[ -f "$toml_file" ]] || continue

@@ -37,8 +37,8 @@ bash fetch_sources.sh --thread all --register    # + register with NestGate
 `provenance` (10), `all`.
 
 The fetcher is **manifest-driven** — it reads `data/sources/*.toml` and
-dispatches by `database` field + `accessions`. Per-thread hardcoded fetchers
-are kept as legacy fallback but the manifest is the source of truth.
+dispatches by `database` field + `accessions`. Thread resolution uses
+`lineage/THREAD_INDEX.toml` via `lib/thread_registry.sh`.
 
 **NCBI API key**: Set `NCBI_API_KEY` for 10 requests/sec (vs 3/sec default).
 
@@ -99,9 +99,18 @@ Layer 3: Cross-thread validation (shared parameters, provenance braids across th
 Layer 4: Product validation (helixVision, blueFish, esotericWebb consuming validated data)
 ```
 
+## Shared Libraries (`lib/`)
+
+| File | Purpose |
+|------|---------|
+| `primal_ipc.sh` | Primal discovery, RPC clients, hashing |
+| `json_rpc.sh` | Typed JSON-RPC response parsing (replaces grep) |
+| `thread_registry.sh` | Runtime thread metadata from `THREAD_INDEX.toml` |
+| `target_compare.sh` | Phase 6 target comparison logic |
+
 ## Prerequisites
 
 - NUCLEUS composition running (`deploy.sh --composition nest --gate irongate`)
 - `b3sum` (BLAKE3 hasher)
-- `curl`, `nc` (netcat), `python3` (for JSON parsing)
+- `curl`, `nc` (netcat), `python3` (for JSON/TOML parsing)
 - `toadstool` binary in plasmidBin (or PATH)

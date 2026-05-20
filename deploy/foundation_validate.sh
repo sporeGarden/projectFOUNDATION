@@ -245,6 +245,7 @@ register_data_file() {
 }
 
 SOURCES_MANIFEST_DIR="$FOUNDATION_ROOT/data/sources"
+declare -A REGISTERED_FILES
 register_from_manifest() {
     local manifest="$1"
     local thread_name
@@ -266,13 +267,11 @@ for s in data.get('sources', []):
         print(f'{sid}|')
 " 2>/dev/null | while IFS='|' read -r sid acc; do
         [[ -z "$sid" ]] && continue
-        local found=false
         if [[ -n "$acc" && -d "$DATA_DIR" ]]; then
             while IFS= read -r -d '' candidate; do
                 if [[ "$(basename "$candidate")" == *"$acc"* ]]; then
-                    local rel="${candidate#"$DATA_DIR/"}"
-                    register_data_file "$candidate" "foundation:${thread_name}:${sid}:${rel//\//:}"
-                    found=true
+                    register_data_file "$candidate" "foundation:${thread_name}:${sid}:$(basename "$candidate")"
+                    REGISTERED_FILES["$candidate"]=1
                 fi
             done < <(find "$DATA_DIR" -type f -name "*${acc}*" -print0 2>/dev/null)
         fi
@@ -291,13 +290,6 @@ if [[ -d "$DATA_DIR" ]]; then
             register_from_manifest "$manifest"
         done
     fi
-
-    # Register any remaining files not covered by manifests
-    while IFS= read -r -d '' f; do
-        rel="${f#"$DATA_DIR/"}"
-        key="foundation:data:${rel//\//:}"
-        register_data_file "$f" "$key"
-    done < <(find "$DATA_DIR" -type f -print0 2>/dev/null | sort -z)
 fi
 
 log "  Registered $EVENT_IDX data artifacts"
@@ -523,6 +515,13 @@ $(echo -e "$WORKLOAD_TABLE")
 
 **Total**: $TOTAL_OK OK / $TOTAL_FAIL FAIL / $TOTAL_SKIP SKIP
 
+## Target Comparison
+
+| Metric | Count |
+|--------|------:|
+| Targets hit | $TARGET_HITS |
+| Targets missed | $TARGET_MISS |
+
 ## Degradation State
 
 | Aspect | Value |
@@ -558,6 +557,8 @@ composition = "nest"
 total_ok = $TOTAL_OK
 total_fail = $TOTAL_FAIL
 total_skip = $TOTAL_SKIP
+target_hits = $TARGET_HITS
+target_misses = $TARGET_MISS
 events = $EVENT_IDX
 
 [provenance]
@@ -575,31 +576,77 @@ PROVTOML
 
 log "  [OK] Provenance: $RESULTS_DIR/provenance.toml"
 
+TRIO_STATE=$(if [[ -n "$BRAID_URN" && "$BRAID_URN" != "unknown" ]]; then echo "full"; elif [[ -n "$SPINE_ID" && "$SPINE_ID" != "unknown" ]]; then echo "dag_spine"; elif [[ -n "$SESSION_ID" && "$SESSION_ID" != "unknown" ]]; then echo "dag_only"; else echo "standalone"; fi)
+
+python3 -c "
+import json, sys
+results = {
+    'schema': 'foundation-validation-result/v1',
+    'session': '$SESSION_NAME',
+    'thread': '$THREAD_FILTER',
+    'date': '$(date -u +%Y-%m-%dT%H:%M:%SZ)',
+    'gate': '$GATE_NAME',
+    'composition': 'nest',
+    'results': {
+        'ok': $TOTAL_OK,
+        'fail': $TOTAL_FAIL,
+        'skip': $TOTAL_SKIP,
+        'target_hits': $TARGET_HITS,
+        'target_misses': $TARGET_MISS,
+        'events': $EVENT_IDX,
+    },
+    'provenance': {
+        'dag_session_id': '$SESSION_ID',
+        'merkle_root': '$MERKLE_ROOT',
+        'spine_id': '$SPINE_ID',
+        'braid_urn': '$BRAID_URN',
+    },
+    'degradation': {
+        'discovery_fallbacks': $DISCOVERY_FALLBACK_COUNT,
+        'provenance_warnings': $PROVENANCE_WARN,
+        'trio_state': '$TRIO_STATE',
+    },
+}
+with open('$RESULTS_DIR/results.json', 'w') as f:
+    json.dump(results, f, indent=2)
+" 2>/dev/null
+log "  [OK] Results JSON: $RESULTS_DIR/results.json"
+
 # Copy results into spring-oriented dated folders per PROVENANCE_FOLDER_CONVENTION
 VALIDATION_BASE="$FOUNDATION_ROOT/validation"
 RUN_DATE=$(date +%Y-%m-%d)
+
+# Build workload-to-spring mapping from workload metadata
+copy_to_spring_folder() {
+    local spring="$1"
+    local dated_dir="$VALIDATION_BASE/$spring/$RUN_DATE"
+    mkdir -p "$dated_dir"
+    cp "$RESULTS_DIR/provenance.toml" "$dated_dir/" 2>/dev/null || true
+    cp "$RESULTS_DIR/results.json" "$dated_dir/" 2>/dev/null || true
+    cp "$RESULTS_DIR/braid.json" "$dated_dir/" 2>/dev/null || true
+}
+
 for stdout_file in "$RESULTS_DIR"/*.stdout; do
     [[ -f "$stdout_file" ]] || continue
     local_name=$(basename "$stdout_file" .stdout)
-    for spring_dir in "$VALIDATION_BASE"/*/; do
-        spring_name=$(basename "$spring_dir")
-        case "$local_name" in
-            hs-*|hotspring*) [[ "$spring_name" == "hotSpring" ]] || continue ;;
-            gs-*|groundspring*) [[ "$spring_name" == "groundSpring" ]] || continue ;;
-            airspring*) [[ "$spring_name" == "airSpring" ]] || continue ;;
-            healthspring*) [[ "$spring_name" == "healthSpring" ]] || continue ;;
-            ludospring*) [[ "$spring_name" == "ludoSpring" ]] || continue ;;
-            primalspring*) [[ "$spring_name" == "primalSpring" ]] || continue ;;
-            litho-*) [[ "$spring_name" == "groundSpring" ]] || continue ;;
-            wcm-*) continue ;;
-            *) continue ;;
-        esac
-        local dated_dir="$spring_dir/$RUN_DATE"
-        mkdir -p "$dated_dir"
-        cp "$stdout_file" "$dated_dir/"
-        cp "$RESULTS_DIR/provenance.toml" "$dated_dir/" 2>/dev/null || true
-        cp "$RESULTS_DIR/braid.json" "$dated_dir/" 2>/dev/null || true
-    done
+    # Resolve spring from workload prefix or lithoSpore integration
+    target_spring=""
+    case "$local_name" in
+        hs-*|hotspring*)      target_spring="hotSpring" ;;
+        gs-*|groundspring*)   target_spring="groundSpring" ;;
+        ws-*|wetspring*)      target_spring="wetSpring" ;;
+        ns-*|neuralspring*)   target_spring="neuralSpring" ;;
+        airspring*)           target_spring="airSpring" ;;
+        healthspring*)        target_spring="healthSpring" ;;
+        ludospring*)          target_spring="ludoSpring" ;;
+        primalspring*)        target_spring="primalSpring" ;;
+        litho-breseq*)        target_spring="wetSpring" ;;
+        litho-anderson*)      target_spring="hotSpring" ;;
+    esac
+    if [[ -n "$target_spring" ]]; then
+        copy_to_spring_folder "$target_spring"
+        cp "$stdout_file" "$VALIDATION_BASE/$target_spring/$RUN_DATE/" 2>/dev/null || true
+    fi
 done
 
 log ""
