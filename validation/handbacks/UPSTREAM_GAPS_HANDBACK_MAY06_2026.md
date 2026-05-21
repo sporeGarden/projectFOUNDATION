@@ -19,7 +19,7 @@ hand back via `primalSpring/docs/PRIMAL_GAPS.md`.
 The CHECKSUMS file was not regenerated after refactoring.
 
 **Files affected**:
-- `ecoPrimal/src/bin/primalspring_guidestone/main.rs`
+- `ecoPrimal/src/certification/` (absorbed into `primalspring certify` UniBin organelle, Wave 32)
 - `ecoPrimal/src/composition/mod.rs`
 - `ecoPrimal/src/validation/mod.rs`
 - `ecoPrimal/src/tolerances/mod.rs`

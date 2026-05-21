@@ -167,7 +167,7 @@ in this document and in `UPSTREAM_AUDIT_PREP_MAY15_2026.md`. They are now
 | `primal.list` canonical schema | **SHIPPED** | `{ "primals": [...], "count": N }` envelope guaranteed |
 | `capability.list` canonical schema | **SHIPPED** | `{ "capabilities": [...], "count": N, "primal": "name" }` |
 | UB-1: Discovery chain canonicalization | **SHIPPED** | Wire format standardized |
-| UB-2: Method registration parity | **SHIPPED** | 452 methods registered (Wave 20) |
+| UB-2: Method registration parity | **SHIPPED** | 445 methods registered (Wave 20) |
 | UB-3: Graph hygiene | **SHIPPED** | Structure validation in primalSpring |
 | UB-4: Port ladder documentation | **SHIPPED** | Per-primal port docs |
 | Method stability tiers | **SHIPPED** | `stable` / `evolving` / `internal` in capability_registry.toml |
