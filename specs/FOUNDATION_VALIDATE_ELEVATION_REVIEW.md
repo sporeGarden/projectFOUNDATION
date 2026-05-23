@@ -1,14 +1,14 @@
 # foundation_validate.sh — Rust Elevation Feasibility Review
 
-**Date:** 2026-05-16
-**Status:** Analysis complete, elevation recommended
-**Referenced by:** lithoSpore UPSTREAM_GAPS.md
+**Date:** 2026-05-16 (updated May 23 for Wave 46 context)
+**Status:** Phase A complete, Phase B unblocked by primalSpring v0.9.27
+**Referenced by:** lithoSpore UPSTREAM_GAPS.md, primalSpring CROSS_SPRING_PARITY_SCORECARD
 
 ## Current State
 
-`deploy/foundation_validate.sh` is a ~535-line bash script (plus ~184 lines in
-sourced libraries `deploy/lib/primal_ipc.sh` and `deploy/lib/target_compare.sh`)
-orchestrating 8 phases:
+`deploy/foundation_validate.sh` is a ~660-line bash script (plus ~435 lines in
+4 sourced libraries: `json_rpc.sh`, `primal_ipc.sh`, `target_compare.sh`,
+`thread_registry.sh`) orchestrating 8 phases:
 
 1. Health-check 7 NUCLEUS primals (HTTP + JSON-RPC + UDS)
 2. Create provenance session (rhizoCrypt DAG + loamSpine spine)
@@ -167,15 +167,36 @@ current 4-call pattern with response validation is the correct interim.
 1. **Phase A (complete):** Bash script fixes — Phase 2 params, Phase 6
    schema alignment, trusted_directories, modularization, skip counting,
    provenance response validation. Shipped May 16, 2026.
-2. **Phase B (next sprint):** Extract `foundation-core` types + `foundation-ipc`
-   clients. These are reusable across lithoSpore and other gardens.
-   Use `CompositionContext` from primalSpring for IPC.
+2. **Phase B (next sprint — unblocked by Wave 46):** Extract `foundation-core`
+   types + `foundation-ipc` clients. These are reusable across lithoSpore and
+   other gardens. Use `CompositionContext` from primalSpring for IPC.
+   **Wave 46 provides:** `CompositionContext::from_live_discovery_with_fallback()`,
+   `env_keys.rs` (FAMILY_ID, socket/manifest discovery, port overrides),
+   `DispatchError` / `PhasedIpcError` typed error system, 5-tier discovery
+   chain (songbird → NeuralAPI → UDS → manifest → TCP opt-in).
 3. **Phase C (following sprint):** Replace `foundation_validate.sh` with
    `foundation validate` UniBin command. Adopt `ctx.dispatch("nest.store")`
-   and `ctx.dispatch("nest.commit")` for signal-based provenance.
-   Keep `fetch_sources.sh` as last bash holdout until `foundation-fetch` matures.
+   and `ctx.dispatch("nest.commit")` for signal-based provenance (14 atomic
+   signals available). Use `primalspring::env_keys` for all env resolution.
 4. **Phase D:** Replace `fetch_sources.sh` with `foundation fetch`.
    At this point the repo is pure Rust + TOML + Markdown.
 
 This progression lets the bash script keep working while Rust phases land
 incrementally. Each phase is independently useful and testable.
+
+### Wave 46 Absorption Context (primalSpring v0.9.27)
+
+The primal/spring layer is at zero gate debt. Key upstream APIs for Phase B:
+
+| API | Module | Foundation use |
+|-----|--------|----------------|
+| `CompositionContext::discover()` | `composition/context.rs` | Replace `discover_port()` + `rpc_*()` |
+| `CompositionContext::dispatch()` | `composition/context.rs` | Replace 4-call RPC sequences |
+| `env_keys::FAMILY_ID` | `env_keys.rs` | Replace `${FAMILY_ID:-}` bash |
+| `env_keys::NESTGATE_PORT` etc | `env_keys.rs` | Replace hardcoded port defaults |
+| `DispatchError` | `composition/neural_dispatch.rs` | Replace `\|\| true` silent failures |
+| `PhasedIpcError` | `ipc/error.rs` | Typed IPC error chains |
+| `primal.announce` | IPC standard | Single-call registration (12/12 compliant) |
+
+The 458-method registry and 49-scenario test suite validates the surface
+foundation-ipc will consume.

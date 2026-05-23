@@ -33,3 +33,24 @@ toadstool execute graphs/foundation_validation.toml
 As thread expressions mature, thread-specific validation graphs may be
 added (e.g. `thread01_wcm_validation.toml` for whole-cell modeling runs
 requiring full Node Atomic with GPU dispatch).
+
+## Alignment Notes (Wave 46, primalSpring v0.9.27)
+
+The local graph is a **validation superset** of the primalSpring canonical
+`compositions/foundation_validation.toml`. Known intentional deltas:
+
+| Aspect | Local | primalSpring canonical |
+|--------|-------|----------------------|
+| `skunkbat` node | Present (defense layer for validation security audit) | Absent |
+| `by_capability` strings | `crypto`, `storage`, `spine`, `braid` | `security`, `content`, `ledger`, `attribution` |
+| `bonding_policy` | Not specified (defaults) | Covalent/metallic/weak tiers |
+| `fallback = "skip"` on optionals | Not specified | Present on coralreef, petaltongue, squirrel |
+| Per-node `security_model` | Graph-level only (`btsp_enforced`) | Per-node |
+
+The `by_capability` drift is cosmetic — toadStool resolves by songbird
+registry, not string matching. The graph will converge with Rust elevation
+(Phase B) when `CompositionContext` replaces the bash discovery layer.
+
+**Signal graphs** (`nest.store`, `nest.commit`) are not referenced locally.
+The bash pipeline uses 4-call RPC sequences as documented in the elevation
+review. Signal adoption targets Phase C (Rust UniBin).

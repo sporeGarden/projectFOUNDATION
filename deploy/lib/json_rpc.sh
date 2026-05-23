@@ -112,3 +112,28 @@ with open(sys.argv[1]) as f:
 print(f'{ok} {fail} {skip}')
 " "$output_file" 2>/dev/null || echo "0 0 0"
 }
+
+# Compute trio provenance state from session/spine/braid availability.
+# Single source of truth — call once, reuse in report/toml/json.
+compute_trio_state() {
+    local session="$1" spine="$2" braid="$3"
+    if [[ -n "$braid" && "$braid" != "unknown" ]]; then
+        echo "full"
+    elif [[ -n "$spine" && "$spine" != "unknown" ]]; then
+        echo "dag_spine"
+    elif [[ -n "$session" && "$session" != "unknown" ]]; then
+        echo "dag_only"
+    else
+        echo "standalone"
+    fi
+}
+
+# Human-readable trio state label.
+trio_state_label() {
+    case "$1" in
+        full)       echo "Full (DAG+spine+braid)" ;;
+        dag_spine)  echo "Partial (DAG+spine)" ;;
+        dag_only)   echo "Partial (DAG only)" ;;
+        *)          echo "Standalone (no trio)" ;;
+    esac
+}

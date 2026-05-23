@@ -47,6 +47,13 @@ done
 
 log() { echo "[$(date +%H:%M:%S)] $*"; }
 
+# Source shared IPC helpers for blake3_hash and discovery
+if [[ -f "$SCRIPT_DIR/lib/primal_ipc.sh" ]]; then
+    # shellcheck source=lib/primal_ipc.sh
+    source "$SCRIPT_DIR/lib/primal_ipc.sh"
+fi
+
+# blake3_hash with Python fallback (extends primal_ipc.sh's b3sum-only version)
 blake3_hash() {
     if command -v b3sum >/dev/null 2>&1; then
         b3sum "$1" | cut -d' ' -f1
@@ -76,9 +83,12 @@ fetch_with_retry() {
     return 1
 }
 
-rpc_nestgate() {
-    printf '%s\n' "$1" | nc -w 5 "${PRIMAL_HOST:-127.0.0.1}" "$NESTGATE_PORT" 2>/dev/null
-}
+# Use primal_ipc.sh rpc_nestgate when sourced; local fallback for standalone use
+if ! declare -f rpc_nestgate >/dev/null 2>&1; then
+    rpc_nestgate() {
+        printf '%s\n' "$1" | nc -w 5 "${PRIMAL_HOST:-127.0.0.1}" "${NESTGATE_PORT:-9500}" 2>/dev/null
+    }
+fi
 
 NCBI_BASE="https://eutils.ncbi.nlm.nih.gov/entrez/eutils"
 NCBI_PARAMS=""

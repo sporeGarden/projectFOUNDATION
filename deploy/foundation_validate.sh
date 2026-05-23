@@ -144,12 +144,21 @@ rpc_health() {
 
 HEALTH_FAIL=0
 HEALTH_WARN=0
-REQUIRED_PRIMALS="NestGate rhizoCrypt loamSpine"
+REQUIRED_PRIMALS=(NestGate rhizoCrypt loamSpine)
+
+is_required_primal() {
+    local name="$1"
+    for req in "${REQUIRED_PRIMALS[@]}"; do
+        [[ "$req" == "$name" ]] && return 0
+    done
+    return 1
+}
+
 for pair in "BearDog:$BEARDOG_PORT" "Songbird:$SONGBIRD_PORT" "ToadStool:$TOADSTOOL_PORT" "NestGate:$NESTGATE_PORT" "rhizoCrypt:$RHIZOCRYPT_PORT" "loamSpine:$LOAMSPINE_PORT" "sweetGrass:$SWEETGRASS_PORT"; do
     name="${pair%%:*}"
     port="${pair#*:}"
     if ! rpc_health "$name" "$port"; then
-        if echo "$REQUIRED_PRIMALS" | grep -qw "$name"; then
+        if is_required_primal "$name"; then
             HEALTH_FAIL=$((HEALTH_FAIL + 1))
         else
             HEALTH_WARN=$((HEALTH_WARN + 1))
@@ -245,7 +254,6 @@ register_data_file() {
 }
 
 SOURCES_MANIFEST_DIR="$FOUNDATION_ROOT/data/sources"
-declare -A REGISTERED_FILES
 register_from_manifest() {
     local manifest="$1"
     local thread_name
@@ -271,7 +279,6 @@ for s in data.get('sources', []):
             while IFS= read -r -d '' candidate; do
                 if [[ "$(basename "$candidate")" == *"$acc"* ]]; then
                     register_data_file "$candidate" "foundation:${thread_name}:${sid}:$(basename "$candidate")"
-                    REGISTERED_FILES["$candidate"]=1
                 fi
             done < <(find "$DATA_DIR" -type f -name "*${acc}*" -print0 2>/dev/null)
         fi
@@ -483,6 +490,8 @@ echo "$BRAID_RESP" > "$RESULTS_DIR/braid.json"
 log ""
 log "── Phase 8: Write Report ──"
 
+TRIO_STATE=$(compute_trio_state "$SESSION_ID" "$SPINE_ID" "$BRAID_URN")
+
 cat > "$RESULTS_DIR/VALIDATION_REPORT.md" << REPORT
 # Foundation Validation Report
 
@@ -528,7 +537,7 @@ $(echo -e "$WORKLOAD_TABLE")
 |--------|-------|
 | Discovery fallbacks | $DISCOVERY_FALLBACK_COUNT |
 | Provenance warnings | $PROVENANCE_WARN |
-| Trio state | $(if [[ -n "$BRAID_URN" && "$BRAID_URN" != "unknown" ]]; then echo "Full (DAG+spine+braid)"; elif [[ -n "$SPINE_ID" && "$SPINE_ID" != "unknown" ]]; then echo "Partial (DAG+spine)"; elif [[ -n "$SESSION_ID" && "$SESSION_ID" != "unknown" ]]; then echo "Partial (DAG only)"; else echo "Standalone (no trio)"; fi) |
+| Trio state | $(trio_state_label "$(compute_trio_state "$SESSION_ID" "$SPINE_ID" "$BRAID_URN")") |
 
 > Science is never gated behind primal availability. Partial provenance
 > is valid provenance. See \`docs/DEGRADATION_BEHAVIOR.md\`.
@@ -571,12 +580,10 @@ provenance_warnings = $PROVENANCE_WARN
 [degradation]
 discovery_fallbacks = $DISCOVERY_FALLBACK_COUNT
 provenance_partial = $PROVENANCE_WARN
-trio_state = "$(if [[ -n "$BRAID_URN" && "$BRAID_URN" != "unknown" ]]; then echo "full"; elif [[ -n "$SPINE_ID" && "$SPINE_ID" != "unknown" ]]; then echo "dag_spine"; elif [[ -n "$SESSION_ID" && "$SESSION_ID" != "unknown" ]]; then echo "dag_only"; else echo "standalone"; fi)"
+trio_state = "$TRIO_STATE"
 PROVTOML
 
 log "  [OK] Provenance: $RESULTS_DIR/provenance.toml"
-
-TRIO_STATE=$(if [[ -n "$BRAID_URN" && "$BRAID_URN" != "unknown" ]]; then echo "full"; elif [[ -n "$SPINE_ID" && "$SPINE_ID" != "unknown" ]]; then echo "dag_spine"; elif [[ -n "$SESSION_ID" && "$SESSION_ID" != "unknown" ]]; then echo "dag_only"; else echo "standalone"; fi)
 
 python3 -c "
 import json, sys
@@ -626,23 +633,44 @@ copy_to_spring_folder() {
     cp "$RESULTS_DIR/braid.json" "$dated_dir/" 2>/dev/null || true
 }
 
+resolve_workload_spring() {
+    local workload_name="$1"
+    # Try reading spring from workload TOML metadata
+    local toml_match
+    toml_match=$(find "$FOUNDATION_ROOT/workloads" -name "${workload_name}.toml" -print -quit 2>/dev/null)
+    if [[ -n "$toml_match" && -f "$toml_match" ]]; then
+        local spring
+        spring=$(python3 -c "
+import sys
+try:
+    import tomllib
+except ImportError:
+    import tomli as tomllib
+with open('$toml_match', 'rb') as f:
+    data = tomllib.load(f)
+prov = data.get('provenance', {})
+meta = data.get('metadata', {})
+print(prov.get('upstream_spring', meta.get('spring_upstream', '')))
+" 2>/dev/null) || spring=""
+        if [[ -n "$spring" ]]; then echo "$spring"; return; fi
+    fi
+    # Prefix-based fallback for workloads named after springs
+    case "$workload_name" in
+        hs-*|hotspring*)      echo "hotSpring" ;;
+        gs-*|groundspring*)   echo "groundSpring" ;;
+        ws-*|wetspring*)      echo "wetSpring" ;;
+        ns-*|neuralspring*)   echo "neuralSpring" ;;
+        airspring*)           echo "airSpring" ;;
+        healthspring*)        echo "healthSpring" ;;
+        ludospring*)          echo "ludoSpring" ;;
+        primalspring*)        echo "primalSpring" ;;
+    esac
+}
+
 for stdout_file in "$RESULTS_DIR"/*.stdout; do
     [[ -f "$stdout_file" ]] || continue
     local_name=$(basename "$stdout_file" .stdout)
-    # Resolve spring from workload prefix or lithoSpore integration
-    target_spring=""
-    case "$local_name" in
-        hs-*|hotspring*)      target_spring="hotSpring" ;;
-        gs-*|groundspring*)   target_spring="groundSpring" ;;
-        ws-*|wetspring*)      target_spring="wetSpring" ;;
-        ns-*|neuralspring*)   target_spring="neuralSpring" ;;
-        airspring*)           target_spring="airSpring" ;;
-        healthspring*)        target_spring="healthSpring" ;;
-        ludospring*)          target_spring="ludoSpring" ;;
-        primalspring*)        target_spring="primalSpring" ;;
-        litho-breseq*)        target_spring="wetSpring" ;;
-        litho-anderson*)      target_spring="hotSpring" ;;
-    esac
+    target_spring=$(resolve_workload_spring "$local_name")
     if [[ -n "$target_spring" ]]; then
         copy_to_spring_folder "$target_spring"
         cp "$stdout_file" "$VALIDATION_BASE/$target_spring/$RUN_DATE/" 2>/dev/null || true

@@ -167,7 +167,7 @@ in this document and in `UPSTREAM_AUDIT_PREP_MAY15_2026.md`. They are now
 | `primal.list` canonical schema | **SHIPPED** | `{ "primals": [...], "count": N }` envelope guaranteed |
 | `capability.list` canonical schema | **SHIPPED** | `{ "capabilities": [...], "count": N, "primal": "name" }` |
 | UB-1: Discovery chain canonicalization | **SHIPPED** | Wire format standardized |
-| UB-2: Method registration parity | **SHIPPED** | 445 methods registered (Wave 20) |
+| UB-2: Method registration parity | **SHIPPED** | 458 methods registered (Wave 46, primalSpring v0.9.27) |
 | UB-3: Graph hygiene | **SHIPPED** | Structure validation in primalSpring |
 | UB-4: Port ladder documentation | **SHIPPED** | Per-primal port docs |
 | Method stability tiers | **SHIPPED** | `stable` / `evolving` / `internal` in capability_registry.toml |
@@ -195,7 +195,7 @@ than no provenance at all.
 ## Wins
 
 1. **toadStool dispatch works end-to-end**: 29 workload TOMLs loaded, parsed, dispatched, and executed without modification to any primal binary
-2. **13,100+ Rust validation checks** across 8 springs via composition dispatch
+2. **13,100+ Rust validation checks** across 8 springs via composition dispatch (458 methods, 49 scenarios at primalSpring v0.9.27)
 3. **Real NCBI data processed**: 11.9M paired-end reads (PRJNA488170) through Rust validators, 50K reads through Python baseline
 4. **Full provenance pipeline operational**: BLAKE3 → rhizoCrypt DAG → loamSpine ledger → sweetGrass braid, all via JSON-RPC
 5. **13 primals stable**: Full NUCLEUS ran for hours across all validation sessions without crashes
