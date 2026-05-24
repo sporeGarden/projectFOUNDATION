@@ -31,7 +31,6 @@ validation/
       <dataset_id>.json     Machine-verifiable upstream computation record
 ```
 
-Example: `validation/hotSpring/2026-05-11/` for hotSpring's May 11 run.
 Example: `validation/wetSpring/braids/barrick_2009_mutations.json` for ferment braid.
 
 See `PROVENANCE_FOLDER_CONVENTION.md` for the full template.
@@ -69,22 +68,23 @@ need to evolve:
 - `PRIMAL_DEEP_DEBT_HANDBACK.md` — Technical debt across primal implementations
 - `ROOTPULSE_GAPS_HANDBACK.md` — Monitoring and metrics gaps
 - `UPSTREAM_AUDIT_PREP_MAY15_2026.md` — Pre-push audit prep (lithoSpore + petalTongue refactor summary)
+- `DEEP_AUDIT_FINDINGS_MAY16_2026.md` — Deep audit: benchmarks, provenance, data integrity
 - `../COMPOSITION_GAPS.md` — Composition-level capability mismatches (at `validation/COMPOSITION_GAPS.md`)
 
 ### Validation Runs
 
 | Thread | Date | Spring | Targets | Status |
 |--------|------|--------|---------|--------|
-| 1 — Whole-Cell Modeling | 2026-05-09 | hotSpring, wetSpring, healthSpring | 0/27 validated | Fetch + CI gates validated; RPC upstream-blocked; 10/25 sources BLAKE3-anchored |
+| 1 — Whole-Cell Modeling | 2026-05-09 | hotSpring, wetSpring, healthSpring | 0/27 validated | Fetch + CI gates validated; 10/25 sources BLAKE3-anchored |
 | 2 — Plasma Physics | 2026-05-11 | hotSpring v0.6.32 | 12/12 PASS | Validated |
-| 3 — Immunology | — | healthSpring | 0/12 pending | Expression + targets ready, spring validation pending |
-| 4 — Env Genomics | — | wetSpring, airSpring | 0/12 pending | Expression + targets ready, spring validation pending |
+| 3 — Immunology | — | healthSpring, wetSpring, neuralSpring | 12/12 PASS | Spring-validated (targets `validated = true`) |
+| 4 — Env Genomics | — | wetSpring, airSpring | 8/12 partial | 8 spring-validated, 4 pending |
 | 5 — LTEE / Evolution | — | groundSpring, wetSpring, hotSpring, neuralSpring | 14/18 partial | 4 pending — braid evidence from wetSpring ferment transcripts |
 | 6 — Agricultural Science | 2026-05-11 | airSpring v0.10.0 | 36/36 PASS | Validated |
 | 7 — Anderson Mathematics | 2026-05-11 | groundSpring V142 | 23/23 PASS | Validated (18→23 after target expansion) |
-| 8 — Human Health | — | healthSpring | 0/11 pending | Expression ready, spring expanding |
-| 9 — Gaming / Creative | — | ludoSpring | 0/13 seeded | Expression + targets ready |
-| 10 — Provenance | — | primalSpring, ludoSpring | 0/8 seeded | Expression + targets ready |
+| 8 — Human Health | — | healthSpring | 11/11 PASS | Spring-validated (targets `validated = true`) |
+| 9 — Gaming / Creative | — | ludoSpring | 13/13 PASS | Spring-validated (targets `validated = true`) |
+| 10 — Provenance | — | primalSpring, ludoSpring | 5/8 partial | 5 spring-validated, 3 pending |
 
 Legacy runs: `wcm-20260509/`, `plasma-20260511/`, `ag-20260511/`, `anderson-20260511/`.
 Future runs: `<spring>/<YYYY-MM-DD>/` per `PROVENANCE_FOLDER_CONVENTION.md`.

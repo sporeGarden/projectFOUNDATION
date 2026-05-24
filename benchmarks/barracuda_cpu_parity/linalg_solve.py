@@ -12,7 +12,6 @@ Industry references:
   - cuSOLVER: cusolverDnDgetrf + cusolverDnDgetrs
 """
 
-import json
 import sys
 import time
 

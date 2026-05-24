@@ -10,7 +10,7 @@
       "rel_err_kahan": 0.0,
       "rel_err_naive": 1.3398300631153333e-15,
       "rel_err_chunked": 0.00034356173712607,
-      "elapsed_ns": 93653,
+      "elapsed_ns": 130339,
       "pass": true
     },
     {
@@ -23,7 +23,7 @@
       "rel_err_kahan": 5.698633143771557e-16,
       "rel_err_naive": 1.8995443812571858e-16,
       "rel_err_chunked": 0.494133916588167,
-      "elapsed_ns": 563022,
+      "elapsed_ns": 686513,
       "pass": true
     },
     {
@@ -36,7 +36,7 @@
       "rel_err_kahan": 0.0,
       "rel_err_naive": 0.0,
       "rel_err_chunked": 0.0,
-      "elapsed_ns": 558536,
+      "elapsed_ns": 542775,
       "pass": true
     },
     {
@@ -49,7 +49,7 @@
       "rel_err_kahan": 0.0,
       "rel_err_naive": 0.0,
       "rel_err_chunked": 0.0,
-      "elapsed_ns": 549435,
+      "elapsed_ns": 524936,
       "pass": true
     },
     {
@@ -62,7 +62,7 @@
       "rel_err_kahan": 0.0,
       "rel_err_naive": 2.4315228855370395e-15,
       "rel_err_chunked": 0.08381847783069166,
-      "elapsed_ns": 275475,
+      "elapsed_ns": 263734,
       "pass": true
     },
     {
@@ -75,16 +75,16 @@
       "rel_err_kahan": 0.0,
       "rel_err_naive": 8.413173587167998e-15,
       "rel_err_chunked": 1.9154280122629238e-05,
-      "elapsed_ns": 6735966,
+      "elapsed_ns": 6302423,
       "pass": true
     }
   ],
   "provenance": {
-    "generated": "2026-05-24T00:11:58.266009+00:00",
+    "generated": "2026-05-24T00:19:19.739168+00:00",
     "python": "3.10.12",
     "numpy": "1.21.5",
     "platform": "Linux-6.12.10-76061203-generic-x86_64-with-glibc2.35",
-    "git_commit": "83d6c51",
+    "git_commit": "512395c",
     "command": "python3 benchmarks/barracuda_cpu_parity/stats_mean.py"
   }
 }

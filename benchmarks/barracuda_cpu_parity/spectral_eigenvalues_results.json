@@ -7,7 +7,7 @@
       "max_eigenvalue_diff": 8.881784197001252e-15,
       "band_center_ipr": 0.02322678575664365,
       "lyapunov_exponent": 0.023098670488621985,
-      "elapsed_ns": 681006,
+      "elapsed_ns": 832078,
       "pass": true
     },
     {
@@ -17,7 +17,7 @@
       "max_eigenvalue_diff": 7.37188088351104e-14,
       "band_center_ipr": 0.1114506012283695,
       "lyapunov_exponent": 0.1560696376219421,
-      "elapsed_ns": 10582442,
+      "elapsed_ns": 11522720,
       "pass": true
     },
     {
@@ -27,7 +27,7 @@
       "max_eigenvalue_diff": 1.1013412404281553e-13,
       "band_center_ipr": 0.6339034655937404,
       "lyapunov_exponent": 0.5358590553641234,
-      "elapsed_ns": 46192969,
+      "elapsed_ns": 48985023,
       "pass": true
     },
     {
@@ -37,7 +37,7 @@
       "max_eigenvalue_diff": 9.325873406851315e-14,
       "band_center_ipr": 0.41743913444008723,
       "lyapunov_exponent": 1.0622337006623581,
-      "elapsed_ns": 2353153,
+      "elapsed_ns": 2547886,
       "pass": true
     },
     {
@@ -63,12 +63,12 @@
     }
   ],
   "provenance": {
-    "generated": "2026-05-24T00:12:05.286258+00:00",
+    "generated": "2026-05-24T00:19:20.414603+00:00",
     "python": "3.10.12",
     "numpy": "1.21.5",
     "scipy": "1.8.0",
     "platform": "Linux-6.12.10-76061203-generic-x86_64-with-glibc2.35",
-    "git_commit": "83d6c51",
+    "git_commit": "512395c",
     "command": "python3 benchmarks/barracuda_cpu_parity/spectral_eigenvalues.py"
   }
 }

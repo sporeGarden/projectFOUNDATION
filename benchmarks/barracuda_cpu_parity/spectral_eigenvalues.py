@@ -14,7 +14,6 @@ Industry references:
   - groundSpring Exp 008: Lyapunov exponent validation
 """
 
-import json
 import sys
 import time
 

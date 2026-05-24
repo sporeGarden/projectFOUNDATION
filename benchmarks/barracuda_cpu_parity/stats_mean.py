@@ -13,7 +13,6 @@ Industry references:
   - Higham 2002: accuracy and stability of numerical algorithms
 """
 
-import json
 import sys
 import time
 

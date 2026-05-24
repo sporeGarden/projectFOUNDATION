@@ -14,7 +14,6 @@ Industry references:
   - Sarkas: Python OCP Yukawa reference (Silvestri et al.)
 """
 
-import json
 import sys
 import time
 

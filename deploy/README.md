@@ -61,7 +61,7 @@ bash foundation_validate.sh --skip-fetch          # Skip fetch, use cached data
 5. Execute workloads through toadStool
 6. Compare results against validation targets (`data/targets/*.toml`)
 7. Commit provenance (Merkle root + loamSpine + sweetGrass braid)
-8. Write validation report to `validation/run-<timestamp>/`
+8. Write `results.json`, `provenance.toml`, and `VALIDATION_REPORT.md` to `validation/run-<timestamp>/`
 
 ## Data Flow
 
@@ -97,6 +97,15 @@ Layer 1: Structural validation (gene counts, pathway counts, format checks)
 Layer 2: Computational validation (spring experiments reproducing published results)
 Layer 3: Cross-thread validation (shared parameters, provenance braids across threads)
 Layer 4: Product validation (helixVision, blueFish, esotericWebb consuming validated data)
+```
+
+### `backfill_hashes.sh`
+
+Adds BLAKE3 hashes to source manifest TOMLs for files already in `.data/`.
+Used to incrementally populate the `blake3` field as data is fetched.
+
+```bash
+bash backfill_hashes.sh data/sources/thread01_wcm.toml
 ```
 
 ## Shared Libraries (`lib/`)

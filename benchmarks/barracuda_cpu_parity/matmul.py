@@ -13,7 +13,6 @@ Industry references:
   - Strassen 1969: sub-cubic matrix multiplication
 """
 
-import json
 import sys
 import time
 

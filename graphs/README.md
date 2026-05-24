@@ -42,9 +42,9 @@ The local graph is a **validation superset** of the primalSpring canonical
 | Aspect | Local | primalSpring canonical |
 |--------|-------|----------------------|
 | `skunkbat` node | Present (defense layer for validation security audit) | Absent |
-| `by_capability` strings | `crypto`, `storage`, `spine`, `braid` | `security`, `content`, `ledger`, `attribution` |
+| `by_capability` strings | `crypto`, `storage`, `spine`, `braid`, `orchestration`, `discovery`, `defense`, `compute`, `math`, `dag`, `visualization`, `ai` | `security`, `content`, `ledger`, `attribution` |
 | `bonding_policy` | Not specified (defaults) | Covalent/metallic/weak tiers |
-| `fallback = "skip"` on optionals | Not specified | Present on coralreef, petaltongue, squirrel |
+| `fallback = "skip"` on optionals | Present on coralreef, petaltongue, squirrel | Present on coralreef, petaltongue, squirrel |
 | Per-node `security_model` | Graph-level only (`btsp_enforced`) | Per-node |
 
 The `by_capability` drift is cosmetic — toadStool resolves by songbird

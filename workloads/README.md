@@ -12,7 +12,7 @@ workloads/
   thread04_enviro/       Environmental Genomics (QS + lithoSpore Module 6)
   thread05_ltee/         LTEE (lithoSpore fitness + mutations + Anderson)
   thread06_ag/           Agricultural Science (airSpring suite)
-  thread07_anderson/     Anderson Mathematics (22 targets + lithoSpore Module 7)
+  thread07_anderson/     Anderson Mathematics (23 targets + lithoSpore Module 7)
   thread08_health/       Health (healthSpring full validation)
   thread09_gaming/       Gaming / Creative (ludoSpring)
   thread10_provenance/   Provenance / Economics (primalSpring)
@@ -99,7 +99,7 @@ trusted_directories = ["${SPRINGS_ROOT}", "${ECOPRIMALS_ROOT}"]
 
 | Workload | Validates |
 |----------|-----------|
-| `anderson-math-validation` | 22 Anderson math targets across groundSpring + neuralSpring |
+| `anderson-math-validation` | 23 Anderson math targets across groundSpring + neuralSpring |
 | `litho-anderson-integration` | lithoSpore Module 7 → Thread 7 anchoring (5/5 PASS) |
 
 ## Method Stability Tiers

@@ -12,7 +12,6 @@ Parity standard: ULP-exact for n < 10^6 (no GPU rounding).
 Industry reference: equivalent to cuBLAS-XT reduce operations.
 """
 
-import json
 import sys
 import time
 

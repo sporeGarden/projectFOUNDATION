@@ -73,7 +73,10 @@ pip install -r benchmarks/barracuda_cpu_parity/requirements.txt
 ## Running
 
 ```bash
+python3 benchmarks/barracuda_cpu_parity/stats_mean.py
 python3 benchmarks/barracuda_cpu_parity/stats_variance.py
+python3 benchmarks/barracuda_cpu_parity/matmul.py
+python3 benchmarks/barracuda_cpu_parity/linalg_solve.py
 python3 benchmarks/barracuda_cpu_parity/md_velocity_verlet.py
 python3 benchmarks/barracuda_cpu_parity/spectral_eigenvalues.py
 ```

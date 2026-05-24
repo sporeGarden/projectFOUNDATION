@@ -2,8 +2,10 @@
 
 **Audit scope**: Full codebase, specs, docs, benchmarks, CI, data manifests, workloads
 **Context**: Post-primalSpring Wave 18, post-CATHEDRAL split
-**Updated**: May 17, 2026 — Wave 21 absorption (canonical schemas, stability tiers,
-degradation behavior, partial trio, ferment transcript preparation)
+**Updated**: May 17, 2026 — Wave 21 absorption
+**Note (May 23)**: Counts in §1–§3 are May 16 snapshots — geological record.
+Current state: 7 shell scripts (~1,648 lines), 7 Python files, 17 CI gates,
+6 CPU parity benchmarks (32 test cases). See root README for live counts.
 
 ---
 

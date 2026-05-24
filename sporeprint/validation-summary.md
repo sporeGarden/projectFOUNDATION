@@ -31,14 +31,14 @@ science, and more.
 |--------|--------:|--------|
 | 1 — Whole-Cell Modeling | 27 | Fetch + CI validated; 10/25 sources BLAKE3-anchored |
 | 2 — Plasma Physics | 12 | Validated (hotSpring) |
-| 3 — Immunology | 12 | Targets ready, spring pending |
-| 4 — Environmental Genomics | 12 | Targets ready, spring pending |
+| 3 — Immunology | 12 | 12/12 spring-validated |
+| 4 — Environmental Genomics | 12 | 8/12 partial |
 | 5 — LTEE / Evolution | 18 | 14/18 partial; ferment braids pending |
 | 6 — Agricultural Science | 36 | Validated (airSpring) |
 | 7 — Anderson Mathematics | 23 | Validated (groundSpring) |
-| 8 — Human Health | 11 | Targets ready, spring pending |
-| 9 — Gaming / Creative | 13 | Expression + targets seeded |
-| 10 — Provenance | 8 | Expression + targets seeded |
+| 8 — Human Health | 11 | 11/11 spring-validated |
+| 9 — Gaming / Creative | 13 | 13/13 spring-validated |
+| 10 — Provenance | 8 | 5/8 partial |
 
 ## Pipeline
 
