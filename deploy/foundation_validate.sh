@@ -254,6 +254,27 @@ register_data_file() {
 }
 
 SOURCES_MANIFEST_DIR="$FOUNDATION_ROOT/data/sources"
+
+# Map (database, accession, format) → expected file path under DATA_DIR.
+# Mirrors the layout created by fetch_sources.sh fetch functions.
+resolve_data_path() {
+    local db="$1" acc="$2" fmt="$3"
+    case "$db" in
+        "ncbi nucleotide"|"ncbi")
+            if [[ "$fmt" == "fasta" ]]; then
+                echo "$DATA_DIR/ncbi/nucleotide/${acc}.fasta"
+            else
+                echo "$DATA_DIR/ncbi/nucleotide/${acc}.gb"
+            fi ;;
+        "ncbi assembly")    echo "$DATA_DIR/ncbi/assembly/${acc}_report.txt" ;;
+        "uniprot")          echo "$DATA_DIR/uniprot/${acc}.fasta.gz" ;;
+        "kegg")             echo "$DATA_DIR/kegg/${acc}_pathways.json" ;;
+        "ncbi bioproject"|"ncbi sra")
+                            echo "$DATA_DIR/ncbi/bioproject/${acc}.xml" ;;
+        *)                  echo "" ;;
+    esac
+}
+
 register_from_manifest() {
     local manifest="$1"
     local thread_name
@@ -268,19 +289,20 @@ with open('$manifest', 'rb') as f:
     data = tomllib.load(f)
 for s in data.get('sources', []):
     sid = s.get('id', '')
+    db = s.get('database', '').lower()
+    fmt = s.get('format', '')
     accs = s.get('accessions', [])
     for acc in accs:
-        print(f'{sid}|{acc}')
+        print(f'{sid}\t{acc}\t{db}\t{fmt}')
     if not accs:
-        print(f'{sid}|')
-" 2>/dev/null | while IFS='|' read -r sid acc; do
+        print(f'{sid}\t\t{db}\t{fmt}')
+" 2>/dev/null | while IFS=$'\t' read -r sid acc db fmt; do
         [[ -z "$sid" ]] && continue
-        if [[ -n "$acc" && -d "$DATA_DIR" ]]; then
-            while IFS= read -r -d '' candidate; do
-                if [[ "$(basename "$candidate")" == *"$acc"* ]]; then
-                    register_data_file "$candidate" "foundation:${thread_name}:${sid}:$(basename "$candidate")"
-                fi
-            done < <(find "$DATA_DIR" -type f -name "*${acc}*" -print0 2>/dev/null)
+        [[ -z "$acc" || ! -d "$DATA_DIR" ]] && continue
+        local expected
+        expected=$(resolve_data_path "$db" "$acc" "$fmt")
+        if [[ -n "$expected" && -f "$expected" ]]; then
+            register_data_file "$expected" "foundation:${thread_name}:${sid}:$(basename "$expected")"
         fi
     done
 }
@@ -292,10 +314,10 @@ if [[ -d "$DATA_DIR" ]]; then
             register_from_manifest "$manifest"
         done
     else
-        for manifest in "$SOURCES_MANIFEST_DIR"/thread*"${THREAD_FILTER}"*.toml; do
+        while IFS= read -r manifest; do
             [[ -f "$manifest" ]] || continue
             register_from_manifest "$manifest"
-        done
+        done < <(resolve_thread_manifests "$THREAD_FILTER")
     fi
 fi
 
@@ -401,7 +423,8 @@ else
     if [[ -n "$local_prefix" && -d "$WORKLOAD_DIR/${local_prefix}_${THREAD_FILTER}" ]]; then
         SCAN_DIRS=("$WORKLOAD_DIR/${local_prefix}_${THREAD_FILTER}")
     else
-        SCAN_DIRS=("$WORKLOAD_DIR/thread"*"$THREAD_FILTER"*)
+        log "  [WARN] No workload directory found for thread '$THREAD_FILTER'"
+        SCAN_DIRS=()
     fi
 fi
 
@@ -428,11 +451,9 @@ TARGET_MISS=0
 source "$SCRIPT_DIR/lib/target_compare.sh"
 
 if [[ "$THREAD_FILTER" == "all" ]]; then
-    for target_toml in "$TARGET_DIR"/thread*_targets.toml; do
-        [[ -f "$target_toml" ]] || continue
-        short=$(basename "$target_toml" | sed 's/thread[0-9]*_//;s/_targets.toml//')
+    while IFS= read -r short; do
         compare_targets "$short"
-    done
+    done < <(list_thread_shorts)
 else
     compare_targets "$THREAD_FILTER"
 fi

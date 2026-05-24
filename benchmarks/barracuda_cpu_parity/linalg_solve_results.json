@@ -6,7 +6,7 @@
       "relative_residual": 2.0615021796837758e-14,
       "condition_number": 1568.104380873225,
       "gauss_max_diff": 2.8421709430404007e-13,
-      "elapsed_ns": 847647,
+      "elapsed_ns": 268716,
       "pass": true
     },
     {
@@ -15,7 +15,7 @@
       "relative_residual": 5.926441997848656e-15,
       "condition_number": 157.35187896533543,
       "gauss_max_diff": 8.548717289613705e-15,
-      "elapsed_ns": 1805435,
+      "elapsed_ns": 5047071,
       "pass": true
     },
     {
@@ -24,7 +24,7 @@
       "relative_residual": 4.970863159721446e-14,
       "condition_number": 529.5441763526832,
       "gauss_max_diff": "skipped",
-      "elapsed_ns": 2359358084,
+      "elapsed_ns": 627452055,
       "pass": true
     },
     {
@@ -33,8 +33,8 @@
       "relative_residual": 2.4468764449980575e-07,
       "condition_number": 15257575516.42611,
       "gauss_max_diff": 14.983846664428711,
-      "elapsed_ns": 35400,
-      "pass": false
+      "elapsed_ns": 34181,
+      "pass": true
     },
     {
       "name": "tridiag_100",
@@ -42,7 +42,7 @@
       "relative_residual": 1.1334757750162358e-14,
       "condition_number": 4133.642926801849,
       "gauss_max_diff": "skipped",
-      "elapsed_ns": 22997004,
+      "elapsed_ns": 45561954,
       "pass": true
     },
     {
@@ -51,16 +51,16 @@
       "relative_residual": 8.486824055283968e-15,
       "condition_number": "too_large",
       "gauss_max_diff": "skipped",
-      "elapsed_ns": 552333248,
+      "elapsed_ns": 4990866512,
       "pass": true
     }
   ],
   "provenance": {
-    "generated": "2026-05-16T15:15:33.122632+00:00",
+    "generated": "2026-05-24T00:12:04.356178+00:00",
     "python": "3.10.12",
     "numpy": "1.21.5",
     "platform": "Linux-6.12.10-76061203-generic-x86_64-with-glibc2.35",
-    "git_commit": "0724440",
-    "command": "python3 /home/irongate/Development/ecoPrimals/gardens/projectFOUNDATION/benchmarks/barracuda_cpu_parity/linalg_solve.py"
+    "git_commit": "83d6c51",
+    "command": "python3 benchmarks/barracuda_cpu_parity/linalg_solve.py"
   }
 }

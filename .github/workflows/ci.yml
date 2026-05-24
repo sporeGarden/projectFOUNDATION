@@ -209,6 +209,22 @@ jobs:
           python3 benchmarks/barracuda_cpu_parity/linalg_solve.py
           python3 benchmarks/barracuda_cpu_parity/matmul.py
 
+      - name: Benchmark result portability check
+        run: |
+          python3 -c "
+          import json, sys, pathlib
+          errors = 0
+          for f in sorted(pathlib.Path('benchmarks/barracuda_cpu_parity').glob('*_results.json')):
+              data = json.loads(f.read_text())
+              cmd = data.get('provenance', {}).get('command', '')
+              if cmd.startswith('/'):
+                  print(f'FAIL: {f}: absolute path in provenance.command: {cmd}')
+                  errors += 1
+          if errors:
+              sys.exit(1)
+          print('All benchmark result JSONs use repo-relative paths')
+          "
+
       - name: Graph TOML structural validation
         run: |
           python3 -c "
@@ -407,6 +423,30 @@ jobs:
                   print(f'  - {m}')
               sys.exit(1)
           print(f'All {total} workloads have [skip] sections')
+          "
+
+      - name: Thread index count reconciliation
+        run: |
+          python3 -c "
+          import sys, pathlib
+          try:
+              import tomllib
+          except ImportError:
+              import tomli as tomllib
+
+          idx = tomllib.loads(pathlib.Path('lineage/THREAD_INDEX.toml').read_text())
+          threads = idx.get('threads', [])
+          declared = idx.get('meta', {}).get('total_threads', -1)
+          actual = len(threads)
+          if declared != actual:
+              print(f'FAIL: meta.total_threads={declared} but found {actual} [[threads]] entries')
+              sys.exit(1)
+          shorts = [t['short'] for t in threads]
+          dupes = [s for s in shorts if shorts.count(s) > 1]
+          if dupes:
+              print(f'FAIL: duplicate shorts: {set(dupes)}')
+              sys.exit(1)
+          print(f'Thread index consistent: {actual} threads, all shorts unique')
           "
 
       - name: Gate naming consistency

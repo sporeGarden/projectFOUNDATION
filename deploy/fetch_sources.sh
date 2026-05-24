@@ -331,7 +331,7 @@ for s in sources:
         fetchable.append(entry)
 
 for e in fetchable:
-    print(json.dumps(e))
+    print(f"{e['database']}\t{e['accession']}\t{e['format']}\t{e['id']}")
 MANIFEST_EOF
 }
 
@@ -372,14 +372,7 @@ run_manifest_driven() {
     fi
     while IFS=$'\t' read -r db acc fmt sid; do
         dispatch_manifest_entry "$db" "$acc" "$fmt" "$sid"
-    done < <(echo "$entries" | python3 -c "
-import sys, json
-for line in sys.stdin:
-    line = line.strip()
-    if not line: continue
-    e = json.loads(line)
-    print(f\"{e['database']}\t{e['accession']}\t{e['format']}\t{e['id']}\")
-")
+    done <<< "$entries"
 }
 
 # ==========================================================================
@@ -397,38 +390,11 @@ fi
 
 resolve_thread_toml() {
     local filter="$1"
-    # Try THREAD_INDEX.toml resolution first
-    local data_sources
-    data_sources=$(python3 -c "
-import sys
-try:
-    import tomllib
-except ImportError:
-    import tomli as tomllib
-with open('$FOUNDATION_ROOT/lineage/THREAD_INDEX.toml', 'rb') as f:
-    data = tomllib.load(f)
-for t in data.get('threads', []):
-    short = t['short']
-    if '$filter' == short:
-        # Primary source file
-        print(t.get('data_sources', ''))
-        # ML companion if it exists
-        ml = t.get('ml_data_sources', '')
-        if ml:
-            print(ml)
-        break
-" 2>/dev/null) || data_sources=""
-
-    if [[ -n "$data_sources" ]]; then
-        while IFS= read -r src_path; do
-            [[ -n "$src_path" ]] && echo "$FOUNDATION_ROOT/$src_path"
-        done <<< "$data_sources"
-        return 0
+    if type resolve_thread_manifests &>/dev/null; then
+        local out
+        out=$(resolve_thread_manifests "$filter")
+        [[ -n "$out" ]] && echo "$out" && return 0
     fi
-    # Glob fallback for non-indexed filters
-    local glob_match
-    glob_match=$(ls "$SOURCES_DIR"/thread*"${filter}"*.toml 2>/dev/null | head -1)
-    [[ -n "$glob_match" ]] && echo "$glob_match" && return 0
     return 1
 }
 

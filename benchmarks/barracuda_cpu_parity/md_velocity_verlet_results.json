@@ -10,7 +10,7 @@
       "energy_initial": 0.03961890213791542,
       "energy_final": 0.03955471309096161,
       "relative_drift": 0.0016201621824441972,
-      "elapsed_ns": 51978460,
+      "elapsed_ns": 31701551,
       "pass": true
     },
     {
@@ -23,7 +23,7 @@
       "energy_initial": 10.989920003575511,
       "energy_final": 11.021553692468414,
       "relative_drift": 0.002878427584787798,
-      "elapsed_ns": 63743913,
+      "elapsed_ns": 63739298,
       "pass": true
     },
     {
@@ -36,16 +36,16 @@
       "energy_initial": 90.7670392359205,
       "energy_final": 92.53542512112548,
       "relative_drift": 0.01948268776960558,
-      "elapsed_ns": 63554837,
+      "elapsed_ns": 63820989,
       "pass": true
     }
   ],
   "provenance": {
-    "generated": "2026-05-16T15:15:46.590869+00:00",
+    "generated": "2026-05-24T00:12:04.657831+00:00",
     "python": "3.10.12",
     "numpy": "1.21.5",
     "platform": "Linux-6.12.10-76061203-generic-x86_64-with-glibc2.35",
-    "git_commit": "0724440",
-    "command": "python3 /home/irongate/Development/ecoPrimals/gardens/projectFOUNDATION/benchmarks/barracuda_cpu_parity/md_velocity_verlet.py"
+    "git_commit": "83d6c51",
+    "command": "python3 benchmarks/barracuda_cpu_parity/md_velocity_verlet.py"
   }
 }

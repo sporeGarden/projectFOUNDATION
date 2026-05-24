@@ -10,7 +10,7 @@
       "rel_err_kahan": 0.0,
       "rel_err_naive": 1.3398300631153333e-15,
       "rel_err_chunked": 0.00034356173712607,
-      "elapsed_ns": 200177,
+      "elapsed_ns": 93653,
       "pass": true
     },
     {
@@ -23,7 +23,7 @@
       "rel_err_kahan": 5.698633143771557e-16,
       "rel_err_naive": 1.8995443812571858e-16,
       "rel_err_chunked": 0.494133916588167,
-      "elapsed_ns": 969814,
+      "elapsed_ns": 563022,
       "pass": true
     },
     {
@@ -36,7 +36,7 @@
       "rel_err_kahan": 0.0,
       "rel_err_naive": 0.0,
       "rel_err_chunked": 0.0,
-      "elapsed_ns": 944339,
+      "elapsed_ns": 558536,
       "pass": true
     },
     {
@@ -49,7 +49,7 @@
       "rel_err_kahan": 0.0,
       "rel_err_naive": 0.0,
       "rel_err_chunked": 0.0,
-      "elapsed_ns": 920699,
+      "elapsed_ns": 549435,
       "pass": true
     },
     {
@@ -62,7 +62,7 @@
       "rel_err_kahan": 0.0,
       "rel_err_naive": 2.4315228855370395e-15,
       "rel_err_chunked": 0.08381847783069166,
-      "elapsed_ns": 467572,
+      "elapsed_ns": 275475,
       "pass": true
     },
     {
@@ -75,16 +75,16 @@
       "rel_err_kahan": 0.0,
       "rel_err_naive": 8.413173587167998e-15,
       "rel_err_chunked": 1.9154280122629238e-05,
-      "elapsed_ns": 14328463,
+      "elapsed_ns": 6735966,
       "pass": true
     }
   ],
   "provenance": {
-    "generated": "2026-05-16T15:15:29.231995+00:00",
+    "generated": "2026-05-24T00:11:58.266009+00:00",
     "python": "3.10.12",
     "numpy": "1.21.5",
     "platform": "Linux-6.12.10-76061203-generic-x86_64-with-glibc2.35",
-    "git_commit": "0724440",
-    "command": "python3 /home/irongate/Development/ecoPrimals/gardens/projectFOUNDATION/benchmarks/barracuda_cpu_parity/stats_mean.py"
+    "git_commit": "83d6c51",
+    "command": "python3 benchmarks/barracuda_cpu_parity/stats_mean.py"
   }
 }

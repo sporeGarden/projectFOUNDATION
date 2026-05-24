@@ -66,6 +66,55 @@ for t in data.get('threads', []):
 " 2>/dev/null
 }
 
+# Resolve thread short to source manifest path(s) (one per line, absolute).
+# Handles ML companion manifests (thread 5 → ltee + ml_surrogates).
+# Usage: while IFS= read -r f; do ... done < <(resolve_thread_manifests "ltee")
+resolve_thread_manifests() {
+    local short="$1"
+    local sources_dir="${FOUNDATION_ROOT}/data/sources"
+    python3 -c "
+import sys
+try:
+    import tomllib
+except ImportError:
+    import tomli as tomllib
+with open('$THREAD_INDEX', 'rb') as f:
+    data = tomllib.load(f)
+for t in data.get('threads', []):
+    if t['short'] == '$short':
+        src = t.get('data_sources', '')
+        if src:
+            print('$FOUNDATION_ROOT/' + src)
+        ml = t.get('ml_data_sources', '')
+        if ml:
+            print('$FOUNDATION_ROOT/' + ml)
+        break
+" 2>/dev/null
+}
+
+# Resolve thread short to target manifest path(s) (one per line, absolute).
+resolve_thread_targets() {
+    local short="$1"
+    python3 -c "
+import sys
+try:
+    import tomllib
+except ImportError:
+    import tomli as tomllib
+with open('$THREAD_INDEX', 'rb') as f:
+    data = tomllib.load(f)
+for t in data.get('threads', []):
+    if t['short'] == '$short':
+        tgt = t.get('data_targets', '')
+        if tgt:
+            print('$FOUNDATION_ROOT/' + tgt)
+        ml = t.get('ml_data_targets', '')
+        if ml:
+            print('$FOUNDATION_ROOT/' + ml)
+        break
+" 2>/dev/null
+}
+
 # Build help text for --thread argument from THREAD_INDEX.
 thread_help_text() {
     echo "Available threads:"

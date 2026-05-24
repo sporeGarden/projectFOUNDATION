@@ -8,7 +8,7 @@
       "two_pass_variance": 0.0850222136802715,
       "ulp_welford_vs_numpy": 9.0,
       "ulp_two_pass_vs_numpy": 2.0,
-      "elapsed_ns": 319967,
+      "elapsed_ns": 274605,
       "pass": true
     },
     {
@@ -19,7 +19,7 @@
       "two_pass_variance": 1.0132061020335046,
       "ulp_welford_vs_numpy": 2.0,
       "ulp_two_pass_vs_numpy": 5.0,
-      "elapsed_ns": 2002412,
+      "elapsed_ns": 1916042,
       "pass": true
     },
     {
@@ -30,7 +30,7 @@
       "two_pass_variance": 1.016268441414972,
       "ulp_welford_vs_numpy": 82.0,
       "ulp_two_pass_vs_numpy": 14.0,
-      "elapsed_ns": 18867290,
+      "elapsed_ns": 20418256,
       "pass": true
     },
     {
@@ -41,7 +41,7 @@
       "two_pass_variance": 8.064425807081564e-26,
       "ulp_welford_vs_numpy": 140132196096949.0,
       "ulp_two_pass_vs_numpy": 3.5923479685146957e+18,
-      "elapsed_ns": 987805,
+      "elapsed_ns": 980815,
       "pass": true
     },
     {
@@ -52,7 +52,7 @@
       "two_pass_variance": 1.00457702020202,
       "ulp_welford_vs_numpy": 541893519520.0,
       "ulp_two_pass_vs_numpy": 0.0,
-      "elapsed_ns": 1906257,
+      "elapsed_ns": 1878819,
       "pass": true
     },
     {
@@ -63,16 +63,16 @@
       "two_pass_variance": 33341667.416741673,
       "ulp_welford_vs_numpy": 0.0,
       "ulp_two_pass_vs_numpy": 0.0,
-      "elapsed_ns": 1834839,
+      "elapsed_ns": 1165603,
       "pass": true
     }
   ],
   "provenance": {
-    "generated": "2026-05-16T15:15:45.852838+00:00",
+    "generated": "2026-05-24T00:11:58.406189+00:00",
     "python": "3.10.12",
     "numpy": "1.21.5",
     "platform": "Linux-6.12.10-76061203-generic-x86_64-with-glibc2.35",
-    "git_commit": "0724440",
-    "command": "python3 /home/irongate/Development/ecoPrimals/gardens/projectFOUNDATION/benchmarks/barracuda_cpu_parity/stats_variance.py"
+    "git_commit": "83d6c51",
+    "command": "python3 benchmarks/barracuda_cpu_parity/stats_variance.py"
   }
 }
