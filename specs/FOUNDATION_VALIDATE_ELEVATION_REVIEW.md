@@ -1,6 +1,6 @@
 # foundation_validate.sh — Rust Elevation Feasibility Review
 
-**Date:** 2026-05-16 (updated May 27 for Wave 55 context)
+**Date:** 2026-05-16 (updated May 27 for Wave 56 context)
 **Status:** Phase A complete, Phase B unblocked by primalSpring v0.9.30
 **Referenced by:** lithoSpore UPSTREAM_GAPS.md, primalSpring CROSS_SPRING_PARITY_SCORECARD
 
@@ -167,13 +167,15 @@ current 4-call pattern with response validation is the correct interim.
 1. **Phase A (complete):** Bash script fixes — Phase 2 params, Phase 6
    schema alignment, trusted_directories, modularization, skip counting,
    provenance response validation. Shipped May 16, 2026.
-2. **Phase B (next sprint — unblocked by Wave 46):** Extract `foundation-core`
-   types + `foundation-ipc` clients. These are reusable across lithoSpore and
-   other gardens. Use `CompositionContext` from primalSpring for IPC.
-   **Wave 46 provides:** `CompositionContext::from_live_discovery_with_fallback()`,
-   `env_keys.rs` (FAMILY_ID, socket/manifest discovery, port overrides),
-   `DispatchError` / `PhasedIpcError` typed error system, 5-tier discovery
-   chain (songbird → NeuralAPI → UDS → manifest → TCP opt-in).
+2. **Phase B (next sprint — unblocked by Wave 46, aligned to Wave 56 VPS standard):**
+   Extract `foundation-core` types + `foundation-ipc` clients. These are reusable
+   across lithoSpore and other gardens. Use `CompositionContext` from primalSpring
+   for IPC. **Wave 56 provides:** `CompositionContext::from_live_discovery()` (UDS-only
+   VPS standard), `nucleus_launcher --uds-only` (zero TCP ports), `env_keys.rs`
+   (FAMILY_ID, socket/manifest discovery), `DispatchError` / `PhasedIpcError` typed
+   error system, 5-tier discovery chain (songbird → NeuralAPI → UDS → manifest →
+   TCP opt-in for desktop only). All spring cell graphs use `spawn=false` overlay
+   pattern. TCP bootstrap is dev/desktop only.
 3. **Phase C (following sprint):** Replace `foundation_validate.sh` with
    `foundation validate` UniBin command. Adopt `ctx.dispatch("nest.store")`
    and `ctx.dispatch("nest.commit")` for signal-based provenance (14 atomic
@@ -184,21 +186,29 @@ current 4-call pattern with response validation is the correct interim.
 This progression lets the bash script keep working while Rust phases land
 incrementally. Each phase is independently useful and testable.
 
-### Wave 55 Context (primalSpring v0.9.30)
+### Wave 55–56 Context (primalSpring v0.9.30)
 
 The primal/spring layer is at zero gate debt. Key upstream APIs for Phase B:
 
 | API | Module | Foundation use |
 |-----|--------|----------------|
-| `CompositionContext::discover()` | `composition/context.rs` | Replace `discover_port()` + `rpc_*()` |
+| `CompositionContext::from_live_discovery()` | `composition/context.rs` | UDS-first discovery (VPS standard) |
 | `CompositionContext::dispatch()` | `composition/context.rs` | Replace 4-call RPC sequences |
 | `env_keys::FAMILY_ID` | `env_keys.rs` | Replace `${FAMILY_ID:-}` bash |
-| `env_keys::NESTGATE_PORT` etc | `env_keys.rs` | Replace hardcoded port defaults |
+| `env_keys::{PRIMAL}_SOCKET` | `env_keys.rs` | Replace `discover_port()` TCP resolution |
 | `DispatchError` | `composition/neural_dispatch.rs` | Replace `\|\| true` silent failures |
 | `PhasedIpcError` | `ipc/error.rs` | Typed IPC error chains |
 | `primal.announce` | IPC standard | Single-call registration (12/12 compliant) |
-| `nucleus.ingest_spore` | capability_registry.toml | New Wave 55 — spore gateway (NC-1) |
-| `nucleus.emit_spore` | capability_registry.toml | New Wave 55 — spore retrieval (NC-1) |
+| `nucleus.ingest_spore` | capability_registry.toml | NC-1 spore gateway |
+| `nucleus.emit_spore` | capability_registry.toml | NC-1 spore retrieval |
+
+**Wave 56 VPS deployment standard:**
+- `nucleus_launcher --uds-only` — zero TCP ports for VPS
+- Cell graph `vps_standard` tagging — 6 spring cells VPS-ready
+- All primals expose UDS endpoints at `${XDG_RUNTIME_DIR}/ecoPrimals/{primal}.sock`
+- `discover_socket()` in bash (Phase A) mirrors `from_live_discovery()` in Rust (Phase B)
+- Foundation `deploy/discovery_defaults.toml` now has `[sockets]` section with per-primal UDS paths
+- Foundation health checks are UDS-first with TCP fallback for desktop/dev
 
 The 460-method registry and 56-scenario test suite validates the surface
 foundation-ipc will consume.

@@ -78,8 +78,8 @@ SWEETGRASS_PORT=$(discover_port "sweetgrass")
 log() { echo "[$(date +%H:%M:%S)] $*"; }
 
 if [[ $DISCOVERY_FALLBACK_COUNT -gt 0 ]]; then
-    log "[WARN] $DISCOVERY_FALLBACK_COUNT primal port(s) resolved via hardcoded defaults."
-    log "  For production, ensure discovery.sock or {PRIMAL}_PORT env vars are set."
+    log "[WARN] $DISCOVERY_FALLBACK_COUNT primal(s) resolved via TCP bootstrap defaults."
+    log "  VPS deployments should use --uds-only (discovery.sock or {PRIMAL}_SOCKET env)."
 fi
 
 
@@ -98,32 +98,34 @@ log "── Phase 1: Health Checks ──"
 
 rpc_health() {
     local name="$1" port="$2"
-    local resp
+    local resp lname
 
+    # Normalize to lowercase for discover_socket lookup
+    lname=$(echo "$name" | tr '[:upper:]' '[:lower:]')
+
+    # UDS-first: try socket for any primal
+    local sock
+    sock=$(discover_socket "$lname")
+    if [[ -n "$sock" ]]; then
+        resp=$(_rpc_uds "$sock" '{"jsonrpc":"2.0","method":"health.liveness","params":{},"id":0}')
+        if rpc_has_result "$resp"; then
+            log "  [OK] $name (UDS)"
+            return 0
+        fi
+    fi
+
+    # Songbird: HTTP GET /health (no JSON-RPC health)
     if [[ "$name" == "Songbird" ]]; then
         resp=$(curl -sf --max-time 3 "http://${PRIMAL_HOST}:$port/health" 2>/dev/null) || resp=""
         if [[ "$resp" == "OK" ]]; then
             log "  [OK] $name (HTTP $port)"
             return 0
         fi
-        log "  [FAIL] $name (HTTP $port)"
+        log "  [FAIL] $name"
         return 1
     fi
 
-    if [[ "$name" == "rhizoCrypt" ]]; then
-        local rhizo_sock="${XDG_RUNTIME_DIR:-/tmp}/ecoPrimals/rhizocrypt-${FAMILY_ID:-}.sock"
-        if [[ -S "$rhizo_sock" ]]; then
-            local rhizo_resp
-            rhizo_resp=$(rpc_rhizocrypt '{"jsonrpc":"2.0","method":"health.liveness","params":{},"id":0}')
-            if rpc_has_result "$rhizo_resp"; then
-                log "  [OK] $name (UDS $rhizo_sock)"
-                return 0
-            fi
-        fi
-        log "  [FAIL] $name not running"
-        return 1
-    fi
-
+    # TCP fallback: curl HTTP POST, then raw nc
     resp=$(curl -sf --max-time 3 "http://${PRIMAL_HOST}:$port" \
         -X POST -H 'Content-Type: application/json' \
         -d '{"jsonrpc":"2.0","method":"health.liveness","params":{},"id":0}' 2>/dev/null) || resp=""
@@ -138,7 +140,7 @@ rpc_health() {
         return 0
     fi
 
-    log "  [FAIL] $name (TCP $port)"
+    log "  [FAIL] $name"
     return 1
 }
 
@@ -176,6 +178,9 @@ if [[ $HEALTH_FAIL -gt 0 ]]; then
     exit 1
 fi
 
+if [[ $DISCOVERY_UDS_COUNT -gt 0 ]]; then
+    log "  $DISCOVERY_UDS_COUNT primal(s) using UDS transport (VPS-standard)"
+fi
 if [[ $HEALTH_WARN -gt 0 ]]; then
     log "  $HEALTH_WARN optional primal(s) not available — provenance chain will be partial"
 fi

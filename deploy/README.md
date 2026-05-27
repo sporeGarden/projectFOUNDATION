@@ -120,8 +120,15 @@ bash backfill_hashes.sh data/sources/thread01_wcm.toml
 
 ## Discovery Config
 
-`discovery_defaults.toml` — single source of truth for bootstrap port defaults.
-Port resolution: env `{PRIMAL}_PORT` → XDG discovery socket → config file.
+`discovery_defaults.toml` — UDS-first primal discovery with TCP bootstrap fallback.
+
+**Transport resolution (per primal):**
+1. Environment: `${PRIMAL}_SOCKET` (UDS) or `${PRIMAL}_PORT` (TCP)
+2. XDG discovery socket: `capability.resolve` → `result.socket` / `result.port`
+3. Config: `[sockets]` (UDS, all primals) then `[bootstrap_tcp]` (dev/desktop only)
+
+VPS deployments (`--uds-only`) resolve at step 1 or 2 and never reach TCP bootstrap.
+All `rpc_*` functions try UDS first, fall back to TCP/HTTP for desktop compatibility.
 
 ## Prerequisites
 

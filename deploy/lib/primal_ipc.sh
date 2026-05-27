@@ -3,20 +3,22 @@
 # primal_ipc.sh — Primal discovery and IPC helpers
 #
 # Sourced by foundation_validate.sh and other deploy scripts.
-# Provides: discover_port, rpc_*, blake3_hash, hash_to_byte_array
-
-# Capability-based primal discovery: each primal's port is resolved from
-# environment (explicit config), then XDG runtime discovery socket, then
-# well-known defaults.
+# Provides: discover_socket, discover_port, rpc_*, blake3_hash, hash_to_byte_array
 #
-# The fallback defaults exist only for bootstrap/dev environments where the
-# discovery socket isn't running yet. In production, all resolution should
-# go through the discovery socket or environment variables.
+# Transport resolution (UDS-first, TCP fallback):
+#   1. Environment: ${PRIMAL}_SOCKET (UDS) or ${PRIMAL}_PORT (TCP)
+#   2. XDG discovery socket: capability.resolve → result.socket / result.port
+#   3. Config file: [sockets] (UDS) then [bootstrap_tcp] (TCP, dev-only)
+#
+# VPS deployments (--uds-only) should resolve at step 1 or 2 and never
+# reach TCP bootstrap. Desktop/dev may use TCP during bringup.
+
 DISCOVERY_FALLBACK_COUNT=0
+DISCOVERY_UDS_COUNT=0
 DISCOVERY_DEFAULTS_TOML="${DISCOVERY_DEFAULTS_TOML:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/discovery_defaults.toml}"
 
-_resolve_default_port() {
-    local name="$1"
+_resolve_config_value() {
+    local section="$1" key="$2"
     if [[ -f "$DISCOVERY_DEFAULTS_TOML" ]]; then
         python3 -c "
 import sys
@@ -26,11 +28,53 @@ except ImportError:
     import tomli as tomllib
 with open('$DISCOVERY_DEFAULTS_TOML', 'rb') as f:
     data = tomllib.load(f)
-print(data.get('defaults', {}).get('$name', ''))
+print(data.get('$section', {}).get('$key', ''))
 " 2>/dev/null
     fi
 }
 
+# Resolve a primal's UDS socket path.
+# Returns empty string if no socket is available.
+discover_socket() {
+    local name="$1"
+
+    # 1. Explicit env: ${PRIMAL}_SOCKET
+    local env_var="${name^^}_SOCKET"
+    local env_val="${!env_var:-}"
+    if [[ -n "$env_val" && -S "$env_val" ]]; then echo "$env_val"; return; fi
+
+    # 2. Discovery socket: capability.resolve → result.socket
+    local discovery_sock="${XDG_RUNTIME_DIR:-/tmp}/ecoPrimals/discovery.sock"
+    if [[ -S "$discovery_sock" ]]; then
+        local disc_resp sock_path
+        disc_resp=$(echo "{\"jsonrpc\":\"2.0\",\"method\":\"capability.resolve\",\"params\":{\"primal\":\"$name\"},\"id\":1}" \
+            | nc -w 2 -U "$discovery_sock" 2>/dev/null) || disc_resp=""
+        sock_path=$(python3 -c "
+import sys, json
+try:
+    r = json.loads(sys.argv[1])
+    print(r.get('result',{}).get('socket',''))
+except Exception:
+    print('')
+" "$disc_resp" 2>/dev/null)
+        if [[ -n "$sock_path" && -S "$sock_path" ]]; then echo "$sock_path"; return; fi
+    fi
+
+    # 3. Config: [sockets] section with XDG expansion
+    local config_path
+    config_path=$(_resolve_config_value "sockets" "$name")
+    if [[ -n "$config_path" ]]; then
+        # Expand ${XDG_RUNTIME_DIR} in the path
+        local expanded
+        expanded=$(echo "$config_path" | sed "s|\${XDG_RUNTIME_DIR}|${XDG_RUNTIME_DIR:-/tmp}|g")
+        if [[ -S "$expanded" ]]; then echo "$expanded"; return; fi
+    fi
+
+    # No UDS available
+    echo ""
+}
+
+# Resolve a primal's TCP port (fallback when no UDS socket exists).
 discover_port() {
     local name="$1" default="${2:-}"
     local env_var="${name^^}_PORT"
@@ -54,7 +98,7 @@ except Exception:
     fi
 
     if [[ -z "$default" ]]; then
-        default=$(_resolve_default_port "$name")
+        default=$(_resolve_config_value "bootstrap_tcp" "$name")
     fi
 
     DISCOVERY_FALLBACK_COUNT=$((DISCOVERY_FALLBACK_COUNT + 1))
@@ -77,22 +121,17 @@ except ImportError:
     fi
 }
 
-# RPC host resolved at runtime — never assume localhost.
 PRIMAL_HOST="${PRIMAL_HOST:-127.0.0.1}"
 
-rpc_nestgate() {
-    printf '%s\n' "$1" | nc -w 5 "$PRIMAL_HOST" "$NESTGATE_PORT" 2>/dev/null
-}
-
-rpc_rhizocrypt() {
-    local sock="${XDG_RUNTIME_DIR:-/tmp}/ecoPrimals/rhizocrypt-${FAMILY_ID:-}.sock"
-    if [[ -S "$sock" ]]; then
-        python3 -c "
+# Generic UDS JSON-RPC call. Returns response or empty string on failure.
+_rpc_uds() {
+    local sock="$1" payload="$2"
+    python3 -c "
 import socket, sys, json
 s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
 s.settimeout(10)
-s.connect('$sock')
-s.sendall((sys.argv[1] + '\n').encode())
+s.connect(sys.argv[1])
+s.sendall((sys.argv[2] + '\n').encode())
 data = b''
 while True:
     try:
@@ -106,20 +145,56 @@ while True:
     except socket.timeout: break
 s.close()
 print(data.decode().strip())
-" "$1" 2>/dev/null
+" "$sock" "$payload" 2>/dev/null
+}
+
+rpc_nestgate() {
+    local sock
+    sock=$(discover_socket "nestgate")
+    if [[ -n "$sock" ]]; then
+        DISCOVERY_UDS_COUNT=$((DISCOVERY_UDS_COUNT + 1))
+        _rpc_uds "$sock" "$1"
+    else
+        printf '%s\n' "$1" | nc -w 5 "$PRIMAL_HOST" "$NESTGATE_PORT" 2>/dev/null
+    fi
+}
+
+rpc_rhizocrypt() {
+    # rhizoCrypt prefers family-specific socket, then generic, then TCP
+    local sock="${XDG_RUNTIME_DIR:-/tmp}/ecoPrimals/rhizocrypt-${FAMILY_ID:-}.sock"
+    if [[ ! -S "$sock" ]]; then
+        sock=$(discover_socket "rhizocrypt")
+    fi
+    if [[ -n "$sock" && -S "$sock" ]]; then
+        DISCOVERY_UDS_COUNT=$((DISCOVERY_UDS_COUNT + 1))
+        _rpc_uds "$sock" "$1"
     else
         printf '%s\n' "$1" | nc -w 5 "$PRIMAL_HOST" "$RHIZOCRYPT_PORT" 2>/dev/null
     fi
 }
 
 rpc_loamspine() {
-    curl -s -X POST "http://${PRIMAL_HOST}:${LOAMSPINE_PORT}" \
-        -H 'Content-Type: application/json' -d "$1" 2>/dev/null
+    local sock
+    sock=$(discover_socket "loamspine")
+    if [[ -n "$sock" ]]; then
+        DISCOVERY_UDS_COUNT=$((DISCOVERY_UDS_COUNT + 1))
+        _rpc_uds "$sock" "$1"
+    else
+        curl -s -X POST "http://${PRIMAL_HOST}:${LOAMSPINE_PORT}" \
+            -H 'Content-Type: application/json' -d "$1" 2>/dev/null
+    fi
 }
 
 rpc_sweetgrass() {
-    curl -s -X POST "http://${PRIMAL_HOST}:${SWEETGRASS_PORT}/jsonrpc" \
-        -H 'Content-Type: application/json' -d "$1" 2>/dev/null
+    local sock
+    sock=$(discover_socket "sweetgrass")
+    if [[ -n "$sock" ]]; then
+        DISCOVERY_UDS_COUNT=$((DISCOVERY_UDS_COUNT + 1))
+        _rpc_uds "$sock" "$1"
+    else
+        curl -s -X POST "http://${PRIMAL_HOST}:${SWEETGRASS_PORT}/jsonrpc" \
+            -H 'Content-Type: application/json' -d "$1" 2>/dev/null
+    fi
 }
 
 hash_to_byte_array() {
