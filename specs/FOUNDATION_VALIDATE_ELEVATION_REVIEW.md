@@ -1,16 +1,16 @@
 # foundation_validate.sh — Rust Elevation Feasibility Review
 
-**Date:** 2026-05-16 (updated May 27 for Wave 56 context)
+**Date:** 2026-05-16 (updated May 27 for Wave 56+ context)
 **Status:** Phase A complete, Phase B unblocked by primalSpring v0.9.30
 **Referenced by:** lithoSpore UPSTREAM_GAPS.md, primalSpring CROSS_SPRING_PARITY_SCORECARD
 
 ## Current State
 
-`deploy/foundation_validate.sh` is a ~548-line bash script (plus ~678 lines in
-5 sourced libraries: `json_rpc.sh`, `primal_ipc.sh`, `target_compare.sh`,
+`deploy/foundation_validate.sh` is a ~550-line bash script (plus ~740 lines in
+6 sourced libraries: `env.sh`, `json_rpc.sh`, `primal_ipc.sh`, `target_compare.sh`,
 `thread_registry.sh`, `report_writer.sh`) orchestrating 8 phases:
 
-1. Health-check 7 NUCLEUS primals (HTTP + JSON-RPC + UDS)
+1. Health-check NUCLEUS primals (graph-driven from `foundation_validation.toml`, UDS-first)
 2. Create provenance session (rhizoCrypt DAG + loamSpine spine)
 3. Fetch data sources (delegates to `fetch_sources.sh`)
 4. Register artifacts in NestGate with BLAKE3

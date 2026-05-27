@@ -29,10 +29,9 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 FOUNDATION_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-NUCLEUS_ROOT="${NUCLEUS_ROOT:-$(cd "$FOUNDATION_ROOT/../projectNUCLEUS" 2>/dev/null && pwd || echo "$FOUNDATION_ROOT/../projectNUCLEUS")}"
 
-ECOPRIMALS_ROOT="${ECOPRIMALS_ROOT:-$(cd "$FOUNDATION_ROOT/../.." 2>/dev/null && pwd || echo "$FOUNDATION_ROOT/../..")}"
-PLASMIDBIN_DIR="${PLASMIDBIN_DIR:-$ECOPRIMALS_ROOT/infra/plasmidBin}"
+# shellcheck source=lib/env.sh
+source "$SCRIPT_DIR/lib/env.sh"
 TOADSTOOL="${TOADSTOOL:-$PLASMIDBIN_DIR/primals/toadstool}"
 
 THREAD_FILTER="all"
@@ -67,13 +66,33 @@ source "$SCRIPT_DIR/lib/thread_registry.sh"
 # Gate name: read from env, discovery, or default
 GATE_NAME="${GATE_NAME:-${NUCLEUS_GATE:-irongate}}"
 
-BEARDOG_PORT=$(discover_port "beardog")
-SONGBIRD_PORT=$(discover_port "songbird")
-TOADSTOOL_PORT=$(discover_port "toadstool")
 NESTGATE_PORT=$(discover_port "nestgate")
 RHIZOCRYPT_PORT=$(discover_port "rhizocrypt")
 LOAMSPINE_PORT=$(discover_port "loamspine")
 SWEETGRASS_PORT=$(discover_port "sweetgrass")
+
+# Parse graph TOML for health check targets.
+# Returns lines: name|health_method|required|order
+GRAPH_TOML="${GRAPH_TOML:-$FOUNDATION_ROOT/graphs/foundation_validation.toml}"
+_graph_health_targets() {
+    python3 -c "
+import sys
+try:
+    import tomllib
+except ImportError:
+    import tomli as tomllib
+with open('$GRAPH_TOML', 'rb') as f:
+    g = tomllib.load(f)
+for n in g.get('graph', {}).get('nodes', []):
+    name = n.get('name', '')
+    if not name or name == 'biomeos_neural_api':
+        continue
+    method = n.get('health_method', 'health.liveness')
+    required = 'true' if n.get('required', False) else 'false'
+    order = n.get('order', 99)
+    print(f'{name}|{method}|{required}|{order}')
+" 2>/dev/null | sort -t'|' -k4 -n
+}
 
 log() { echo "[$(date +%H:%M:%S)] $*"; }
 
@@ -97,47 +116,38 @@ log ""
 log "── Phase 1: Health Checks ──"
 
 rpc_health() {
-    local name="$1" port="$2"
-    local resp lname
+    local name="$1" method="$2"
+    local resp port
 
-    # Normalize to lowercase for discover_socket lookup
-    lname=$(echo "$name" | tr '[:upper:]' '[:lower:]')
-
-    # UDS-first: try socket for any primal
+    # UDS-first: try socket for the primal
     local sock
-    sock=$(discover_socket "$lname")
+    sock=$(discover_socket "$name")
     if [[ -n "$sock" ]]; then
-        resp=$(_rpc_uds "$sock" '{"jsonrpc":"2.0","method":"health.liveness","params":{},"id":0}')
+        resp=$(_rpc_uds "$sock" "{\"jsonrpc\":\"2.0\",\"method\":\"$method\",\"params\":{},\"id\":0}")
         if rpc_has_result "$resp"; then
             log "  [OK] $name (UDS)"
+            DISCOVERY_UDS_COUNT=$((DISCOVERY_UDS_COUNT + 1))
             return 0
         fi
     fi
 
-    # Songbird: HTTP GET /health (no JSON-RPC health)
-    if [[ "$name" == "Songbird" ]]; then
-        resp=$(curl -sf --max-time 3 "http://${PRIMAL_HOST}:$port/health" 2>/dev/null) || resp=""
-        if [[ "$resp" == "OK" ]]; then
-            log "  [OK] $name (HTTP $port)"
+    # TCP fallback: resolve port, try curl then nc
+    port=$(discover_port "$name")
+    if [[ -n "$port" ]]; then
+        resp=$(curl -sf --max-time 3 "http://${PRIMAL_HOST}:$port" \
+            -X POST -H 'Content-Type: application/json' \
+            -d "{\"jsonrpc\":\"2.0\",\"method\":\"$method\",\"params\":{},\"id\":0}" 2>/dev/null) || resp=""
+        if rpc_has_result "$resp"; then
+            log "  [OK] $name (TCP $port)"
             return 0
         fi
-        log "  [FAIL] $name"
-        return 1
-    fi
 
-    # TCP fallback: curl HTTP POST, then raw nc
-    resp=$(curl -sf --max-time 3 "http://${PRIMAL_HOST}:$port" \
-        -X POST -H 'Content-Type: application/json' \
-        -d '{"jsonrpc":"2.0","method":"health.liveness","params":{},"id":0}' 2>/dev/null) || resp=""
-    if rpc_has_result "$resp"; then
-        log "  [OK] $name (TCP $port)"
-        return 0
-    fi
-
-    resp=$(printf '{"jsonrpc":"2.0","method":"health.liveness","params":{},"id":0}\n' | nc -w 3 "$PRIMAL_HOST" "$port" 2>/dev/null) || resp=""
-    if rpc_has_result "$resp"; then
-        log "  [OK] $name (TCP $port)"
-        return 0
+        resp=$(printf '{"jsonrpc":"2.0","method":"%s","params":{},"id":0}\n' "$method" \
+            | nc -w 3 "$PRIMAL_HOST" "$port" 2>/dev/null) || resp=""
+        if rpc_has_result "$resp"; then
+            log "  [OK] $name (TCP $port)"
+            return 0
+        fi
     fi
 
     log "  [FAIL] $name"
@@ -146,41 +156,35 @@ rpc_health() {
 
 HEALTH_FAIL=0
 HEALTH_WARN=0
-REQUIRED_PRIMALS=(NestGate rhizoCrypt loamSpine)
+HEALTH_OK=0
 
-is_required_primal() {
-    local name="$1"
-    for req in "${REQUIRED_PRIMALS[@]}"; do
-        [[ "$req" == "$name" ]] && return 0
-    done
-    return 1
-}
-
-for pair in "BearDog:$BEARDOG_PORT" "Songbird:$SONGBIRD_PORT" "ToadStool:$TOADSTOOL_PORT" "NestGate:$NESTGATE_PORT" "rhizoCrypt:$RHIZOCRYPT_PORT" "loamSpine:$LOAMSPINE_PORT" "sweetGrass:$SWEETGRASS_PORT"; do
-    name="${pair%%:*}"
-    port="${pair#*:}"
-    if ! rpc_health "$name" "$port"; then
-        if is_required_primal "$name"; then
+while IFS='|' read -r node_name health_method node_required _node_order; do
+    if ! rpc_health "$node_name" "$health_method"; then
+        if [[ "$node_required" == "true" ]]; then
             HEALTH_FAIL=$((HEALTH_FAIL + 1))
         else
             HEALTH_WARN=$((HEALTH_WARN + 1))
-            log "  [WARN] $name not available — non-critical, continuing"
+            log "  [WARN] $node_name not available — optional, continuing"
         fi
+    else
+        HEALTH_OK=$((HEALTH_OK + 1))
     fi
-done
+done < <(_graph_health_targets)
+
+log "  Health summary: $HEALTH_OK ok, $HEALTH_WARN optional skip, $HEALTH_FAIL required fail"
+if [[ $DISCOVERY_UDS_COUNT -gt 0 ]]; then
+    log "  $DISCOVERY_UDS_COUNT primal(s) using UDS transport (VPS-standard)"
+fi
 
 if [[ $HEALTH_FAIL -gt 0 ]]; then
     log ""
-    log "  $HEALTH_FAIL required primal(s) not responding (provenance trio: NestGate, rhizoCrypt, loamSpine)."
+    log "  $HEALTH_FAIL required primal(s) not responding."
     log "  Deploy NUCLEUS first:"
     log "    cd $NUCLEUS_ROOT/deploy"
     log "    bash deploy.sh --composition nest --gate $GATE_NAME"
     exit 1
 fi
 
-if [[ $DISCOVERY_UDS_COUNT -gt 0 ]]; then
-    log "  $DISCOVERY_UDS_COUNT primal(s) using UDS transport (VPS-standard)"
-fi
 if [[ $HEALTH_WARN -gt 0 ]]; then
     log "  $HEALTH_WARN optional primal(s) not available — provenance chain will be partial"
 fi

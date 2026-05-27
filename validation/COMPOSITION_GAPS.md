@@ -194,7 +194,7 @@ than no provenance at all.
 
 ## Wins
 
-1. **toadStool dispatch works end-to-end**: 30 workload TOMLs loaded, parsed, dispatched, and executed without modification to any primal binary
+1. **toadStool dispatch works end-to-end**: 29 workload TOMLs loaded, parsed, dispatched, and executed without modification to any primal binary
 2. **13,100+ Rust validation checks** across 8 springs via composition dispatch (460 methods, 56 scenarios at primalSpring v0.9.30)
 3. **Real NCBI data processed**: 11.9M paired-end reads (PRJNA488170) through Rust validators, 50K reads through Python baseline
 4. **Full provenance pipeline operational**: BLAKE3 → rhizoCrypt DAG → loamSpine ledger → sweetGrass braid, all via JSON-RPC

@@ -115,7 +115,8 @@ data/               Data source manifests and validation targets
   targets/          Per-thread validation target TOMLs (11 files, 185 targets)
 graphs/             Foundation-specific deploy graphs (references projectNUCLEUS)
 deploy/             Operational scripts
-  lib/              Sourced shell libraries (5 modules)
+  lib/              Sourced shell libraries (6 modules)
+    env.sh              Centralized env bootstrap (ECOPRIMALS_ROOT, SPRINGS_ROOT, FAMILY_ID)
     primal_ipc.sh     Primal discovery, RPC clients, blake3_hash
     json_rpc.sh       Typed JSON-RPC response parsing
     thread_registry.sh  Runtime thread metadata from THREAD_INDEX.toml

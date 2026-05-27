@@ -112,6 +112,7 @@ bash backfill_hashes.sh data/sources/thread01_wcm.toml
 
 | File | Purpose |
 |------|---------|
+| `env.sh` | Centralized env bootstrap (`ECOPRIMALS_ROOT`, `SPRINGS_ROOT`, `FAMILY_ID`) |
 | `primal_ipc.sh` | Primal discovery (env → socket → config), RPC clients, blake3_hash |
 | `json_rpc.sh` | Typed JSON-RPC response parsing (`rpc_has_result`, `rpc_has_error`, `rpc_error_message`) |
 | `thread_registry.sh` | Runtime thread metadata from `THREAD_INDEX.toml` |

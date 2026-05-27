@@ -19,6 +19,8 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 FOUNDATION_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
+# shellcheck source=lib/env.sh
+source "$SCRIPT_DIR/lib/env.sh"
 # shellcheck source=lib/thread_registry.sh
 source "$SCRIPT_DIR/lib/thread_registry.sh"
 

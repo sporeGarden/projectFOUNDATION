@@ -24,6 +24,9 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 FOUNDATION_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
+# shellcheck source=lib/env.sh
+source "$SCRIPT_DIR/lib/env.sh"
+
 THREAD_FILTER=""
 DATA_DIR="$FOUNDATION_ROOT/.data"
 REGISTER=false
@@ -64,15 +67,20 @@ if ! type blake3_hash &>/dev/null; then
         if command -v b3sum >/dev/null 2>&1; then
             b3sum "$1" | cut -d' ' -f1
         else
-            python3 -c "
+            local hash
+            hash=$(python3 -c "
 import sys
 try:
     import blake3
     print(blake3.blake3(open(sys.argv[1], 'rb').read()).hexdigest())
 except ImportError:
-    print('no-blake3-tool', file=sys.stderr)
     sys.exit(1)
-" "$1" 2>/dev/null || echo "no-hash"
+" "$1" 2>/dev/null) || hash=""
+            if [[ -z "$hash" ]]; then
+                echo "BLAKE3_UNAVAILABLE" >&2
+                return 1
+            fi
+            echo "$hash"
         fi
     }
 fi
@@ -133,13 +141,16 @@ fetch_ncbi_nucleotide() {
     local url="${NCBI_BASE}/efetch.fcgi?db=nucleotide&id=${accession}&rettype=gb&retmode=text${NCBI_PARAMS}"
 
     if fetch_with_retry "$url" "$out_file" 3 120; then
-        local hash
-        hash=$(blake3_hash "$out_file")
-        local size
+        local hash size
+        hash=$(blake3_hash "$out_file" 2>/dev/null) || hash=""
         size=$(stat -c%s "$out_file" 2>/dev/null || stat -f%z "$out_file" 2>/dev/null)
-        log "  [OK]    ncbi:$accession → blake3:${hash:0:16}… (${size}B)"
+        if [[ -n "$hash" ]]; then
+            log "  [OK]    ncbi:$accession → blake3:${hash:0:16}… (${size}B)"
+        else
+            log "  [OK]    ncbi:$accession → fetched (${size}B, no BLAKE3 tool)"
+        fi
 
-        if $REGISTER; then
+        if $REGISTER && [[ -n "$hash" ]]; then
             rpc_nestgate "{\"jsonrpc\":\"2.0\",\"method\":\"storage.store\",\"params\":{\"key\":\"ncbi:nucleotide:$accession\",\"value\":\"blake3:$hash size:$size\"},\"id\":$FETCH_COUNT}" > /dev/null 2>&1 || true
         fi
 
@@ -171,8 +182,12 @@ fetch_ncbi_assembly() {
 
     if fetch_with_retry "$url" "$out_file" 3 60; then
         local hash
-        hash=$(blake3_hash "$out_file")
-        log "  [OK]    assembly:$accession → blake3:${hash:0:16}…"
+        hash=$(blake3_hash "$out_file" 2>/dev/null) || hash=""
+        if [[ -n "$hash" ]]; then
+            log "  [OK]    assembly:$accession → blake3:${hash:0:16}…"
+        else
+            log "  [OK]    assembly:$accession → fetched (no BLAKE3 tool)"
+        fi
         FETCH_COUNT=$((FETCH_COUNT + 1))
     else
         log "  [FAIL]  assembly:$accession — download failed"
@@ -222,14 +237,19 @@ fetch_uniprot_proteome() {
         fi
 
         local hash
-        hash=$(blake3_hash "$out_file")
-        log "  [OK]    uniprot:$accession → blake3:${hash:0:16}… (${size}B)"
+        hash=$(blake3_hash "$out_file" 2>/dev/null) || hash=""
+        if [[ -n "$hash" ]]; then
+            log "  [OK]    uniprot:$accession → blake3:${hash:0:16}… (${size}B)"
+        else
+            log "  [OK]    uniprot:$accession → fetched (${size}B, no BLAKE3 tool)"
+        fi
 
-        if $REGISTER; then
+        if $REGISTER && [[ -n "$hash" ]]; then
             rpc_nestgate "{\"jsonrpc\":\"2.0\",\"method\":\"storage.store\",\"params\":{\"key\":\"uniprot:proteome:$accession\",\"value\":\"blake3:$hash size:$size\"},\"id\":$FETCH_COUNT}" > /dev/null 2>&1 || true
         fi
 
         FETCH_COUNT=$((FETCH_COUNT + 1))
+        sleep "${UNIPROT_DELAY:-0.5}"
     else
         log "  [FAIL]  uniprot:$accession — download failed"
         rm -f "$out_file"
@@ -259,8 +279,12 @@ fetch_ncbi_bioproject() {
 
     if fetch_with_retry "$url" "$out_file" 3 60; then
         local hash
-        hash=$(blake3_hash "$out_file")
-        log "  [OK]    bioproject:$accession → blake3:${hash:0:16}…"
+        hash=$(blake3_hash "$out_file" 2>/dev/null) || hash=""
+        if [[ -n "$hash" ]]; then
+            log "  [OK]    bioproject:$accession → blake3:${hash:0:16}…"
+        else
+            log "  [OK]    bioproject:$accession → fetched (no BLAKE3 tool)"
+        fi
         FETCH_COUNT=$((FETCH_COUNT + 1))
     else
         log "  [FAIL]  bioproject:$accession — download failed"
@@ -291,9 +315,14 @@ fetch_kegg_org() {
     log "  [FETCH] kegg:$org_code ..."
     if fetch_with_retry "https://rest.kegg.jp/list/pathway/$org_code" "$out_file" 3 60; then
         local hash
-        hash=$(blake3_hash "$out_file")
-        log "  [OK]    kegg:$org_code → blake3:${hash:0:16}…"
+        hash=$(blake3_hash "$out_file" 2>/dev/null) || hash=""
+        if [[ -n "$hash" ]]; then
+            log "  [OK]    kegg:$org_code → blake3:${hash:0:16}…"
+        else
+            log "  [OK]    kegg:$org_code → fetched (no BLAKE3 tool)"
+        fi
         FETCH_COUNT=$((FETCH_COUNT + 1))
+        sleep "${KEGG_DELAY:-0.5}"
     else
         log "  [FAIL]  kegg:$org_code — download failed"
         rm -f "$out_file"

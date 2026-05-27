@@ -109,15 +109,20 @@ blake3_hash() {
     if command -v b3sum >/dev/null 2>&1; then
         b3sum "$1" | cut -d' ' -f1
     else
-        python3 -c "
+        local hash
+        hash=$(python3 -c "
 import sys
 try:
     import blake3
     print(blake3.blake3(open(sys.argv[1], 'rb').read()).hexdigest())
 except ImportError:
-    print('no-blake3-tool', file=sys.stderr)
     sys.exit(1)
-" "$1" 2>/dev/null || echo "no-hash"
+" "$1" 2>/dev/null) || hash=""
+        if [[ -z "$hash" ]]; then
+            echo "BLAKE3_UNAVAILABLE" >&2
+            return 1
+        fi
+        echo "$hash"
     fi
 }
 

@@ -94,12 +94,47 @@ trusted_directories = ["${SPRINGS_ROOT}", "${ECOPRIMALS_ROOT}"]
 | `hs-sarkas-md` | Sarkas MD validation — thread-local (thread02_plasma/) |
 | `hs-chuna-validation` | Chuna MD parity — cross-cutting (hotspring/) |
 
+### Thread 3: Immunology
+
+| Workload | Validates |
+|----------|-----------|
+| `healthspring-pk-validation` | PK/PD models against published pharmacokinetic parameters |
+| `healthspring-ltee-b5` | LTEE B5 immune/symbiont modeling bridge via healthSpring |
+
+### Thread 5: LTEE
+
+| Workload | Validates |
+|----------|-----------|
+| `litho-ltee-fitness` | LTEE fitness trajectories (Wiser 2013, drift/selection statistics) |
+| `litho-ltee-mutations` | LTEE mutation accumulation (Tenaillon 2016, DFE fitting) |
+| `litho-ltee-anderson` | LTEE Anderson disorder analogy (DFE ↔ RMT eigenvalue statistics) |
+
 ### Thread 7: Anderson Mathematics
 
 | Workload | Validates |
 |----------|-----------|
 | `anderson-math-validation` | 23 Anderson math targets across groundSpring + neuralSpring |
 | `litho-anderson-integration` | lithoSpore Module 7 → Thread 7 anchoring (5/5 PASS) |
+
+### Thread 8: Health
+
+| Workload | Validates |
+|----------|-----------|
+| `healthspring-full-validation` | Full healthSpring suite — PK/PD, biosignal, microbiome health |
+
+### Thread 9: Gaming / Creative
+
+| Workload | Validates |
+|----------|-----------|
+| `ludospring-full-validation` | Full ludoSpring suite — interaction, procedural, engagement |
+| `ludospring-interaction-validation` | Gaming interaction models (Fitts' law, engagement metrics) |
+
+### Thread 10: Provenance / Economics
+
+| Workload | Validates |
+|----------|-----------|
+| `nucleus-spore-ingest` | NUCLEUS spore ingest round-trip via biomeOS CLI |
+| `primalspring-validation` | Composition health and provenance scenarios via primalSpring |
 
 ## Method Stability Tiers
 
