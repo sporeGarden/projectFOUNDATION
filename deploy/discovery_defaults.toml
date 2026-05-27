@@ -1,0 +1,26 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# Bootstrap port defaults for primal discovery.
+#
+# These are ONLY used when:
+#   1. No {PRIMAL}_PORT environment variable is set, AND
+#   2. No XDG runtime discovery socket is available.
+#
+# Production deployments should use the discovery socket or env vars.
+# This file is the single source of truth for fallback port numbers;
+# scripts read it via deploy/lib/primal_ipc.sh:discover_port().
+
+[defaults]
+beardog     = 9100
+songbird    = 9200
+toadstool   = 9400
+nestgate    = 9500
+rhizocrypt  = 9601
+loamspine   = 9700
+sweetgrass  = 9850
+
+[host]
+default = "127.0.0.1"
+
+[socket]
+discovery = "${XDG_RUNTIME_DIR}/ecoPrimals/discovery.sock"
+rhizocrypt = "${XDG_RUNTIME_DIR}/ecoPrimals/rhizocrypt-dag.sock"

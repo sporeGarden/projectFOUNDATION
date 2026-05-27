@@ -8,8 +8,8 @@ thread_name = "Agricultural Science"
 
 [execution]
 type = "native"
-command = "${AIRSPRING_ROOT}/target/release/airspring validate --scenario et0-methods"
-working_dir = "${AIRSPRING_ROOT}"
+command = "${AIRSPRING_ROOT:-${SPRINGS_ROOT:-${ECOPRIMALS_ROOT}/springs}/airSpring}/target/release/airspring validate --scenario et0-methods"
+working_dir = "${AIRSPRING_ROOT:-${SPRINGS_ROOT:-${ECOPRIMALS_ROOT}/springs}/airSpring}"
 
 [resources]
 max_memory_bytes = 4294967296
@@ -21,7 +21,7 @@ trusted_directories = ["${SPRINGS_ROOT}", "${ECOPRIMALS_ROOT}"]
 
 [skip]
 when = "binary_missing"
-binary = "${AIRSPRING_ROOT}/target/release/airspring"
+binary = "${AIRSPRING_ROOT:-${SPRINGS_ROOT:-${ECOPRIMALS_ROOT}/springs}/airSpring}/target/release/airspring"
 reason = "airspring binary only exists after spring build (cargo build --release in airSpring)"
 
 [provenance]

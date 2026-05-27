@@ -27,7 +27,11 @@ FOUNDATION_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 THREAD_FILTER=""
 DATA_DIR="$FOUNDATION_ROOT/.data"
 REGISTER=false
-NESTGATE_PORT="${NESTGATE_PORT:-9500}"
+if declare -f discover_port >/dev/null 2>&1; then
+    NESTGATE_PORT=$(discover_port "nestgate")
+else
+    NESTGATE_PORT="${NESTGATE_PORT:-9500}"
+fi
 
 while [[ $# -gt 0 ]]; do
     case "$1" in
@@ -53,12 +57,14 @@ if [[ -f "$SCRIPT_DIR/lib/primal_ipc.sh" ]]; then
     source "$SCRIPT_DIR/lib/primal_ipc.sh"
 fi
 
-# blake3_hash with Python fallback (extends primal_ipc.sh's b3sum-only version)
-blake3_hash() {
-    if command -v b3sum >/dev/null 2>&1; then
-        b3sum "$1" | cut -d' ' -f1
-    else
-        python3 -c "
+# blake3_hash — use primal_ipc.sh's unified version if sourced,
+# otherwise provide standalone fallback for independent execution.
+if ! type blake3_hash &>/dev/null; then
+    blake3_hash() {
+        if command -v b3sum >/dev/null 2>&1; then
+            b3sum "$1" | cut -d' ' -f1
+        else
+            python3 -c "
 import sys
 try:
     import blake3
@@ -67,8 +73,9 @@ except ImportError:
     print('no-blake3-tool', file=sys.stderr)
     sys.exit(1)
 " "$1" 2>/dev/null || echo "no-hash"
-    fi
-}
+        fi
+    }
+fi
 
 fetch_with_retry() {
     local url="$1" out="$2" max_retries="${3:-3}" timeout="${4:-120}"
@@ -86,7 +93,7 @@ fetch_with_retry() {
 # Use primal_ipc.sh rpc_nestgate when sourced; local fallback for standalone use
 if ! declare -f rpc_nestgate >/dev/null 2>&1; then
     rpc_nestgate() {
-        printf '%s\n' "$1" | nc -w 5 "${PRIMAL_HOST:-127.0.0.1}" "${NESTGATE_PORT:-9500}" 2>/dev/null
+        printf '%s\n' "$1" | nc -w 5 "${PRIMAL_HOST:-127.0.0.1}" "${NESTGATE_PORT}" 2>/dev/null
     }
 fi
 
@@ -352,7 +359,7 @@ dispatch_manifest_entry() {
             if [[ "$accession" == PRJNA* || "$accession" == PRJEB* ]]; then
                 fetch_ncbi_bioproject "$accession"
             else
-                log "  [SKIP] $sid: SRA accession $accession needs SRA toolkit"
+                log "  [SKIP] $sid: SRA accession $accession — no fetcher (requires sra-tools: fasterq-dump)"
                 SKIP_COUNT=$((SKIP_COUNT + 1))
             fi ;;
         *)

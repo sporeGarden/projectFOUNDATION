@@ -23,6 +23,7 @@ jobs:
           shellcheck deploy/lib/target_compare.sh
           shellcheck deploy/lib/json_rpc.sh
           shellcheck deploy/lib/thread_registry.sh
+          shellcheck deploy/lib/report_writer.sh
 
       - name: Install TOML parser for Python 3.11+
         run: pip install tomli
@@ -448,6 +449,48 @@ jobs:
               sys.exit(1)
           print(f'Thread index consistent: {actual} threads, all shorts unique')
           "
+
+      - name: Shell library fixture tests
+        run: |
+          export FOUNDATION_ROOT="$PWD"
+
+          # json_rpc.sh — test rpc_has_result, rpc_has_error, rpc_error_message
+          source deploy/lib/json_rpc.sh
+
+          GOOD='{"jsonrpc":"2.0","result":{"ok":true},"id":1}'
+          ERR_RESP='{"jsonrpc":"2.0","error":{"code":-32600,"message":"bad request"},"id":1}'
+          EMPTY_RESP=''
+
+          rpc_has_result "$GOOD" || { echo "FAIL: rpc_has_result should pass on valid result"; exit 1; }
+          ! rpc_has_result "$ERR_RESP" || { echo "FAIL: rpc_has_result should fail on error response"; exit 1; }
+          ! rpc_has_result "$EMPTY_RESP" || { echo "FAIL: rpc_has_result should fail on empty response"; exit 1; }
+
+          rpc_has_error "$ERR_RESP" || { echo "FAIL: rpc_has_error should pass on error response"; exit 1; }
+          rpc_has_error "$EMPTY_RESP" || { echo "FAIL: rpc_has_error should pass on empty response"; exit 1; }
+          ! rpc_has_error "$GOOD" || { echo "FAIL: rpc_has_error should fail on valid result"; exit 1; }
+
+          MSG=$(rpc_error_message "$ERR_RESP")
+          [[ "$MSG" == "bad request" ]] || { echo "FAIL: rpc_error_message expected 'bad request', got '$MSG'"; exit 1; }
+
+          FIELD=$(rpc_extract_field "$GOOD" "ok")
+          [[ "$FIELD" == "True" ]] || [[ "$FIELD" == "true" ]] || { echo "FAIL: rpc_extract_field expected true, got '$FIELD'"; exit 1; }
+
+          echo "json_rpc.sh: all tests passed"
+
+          # thread_registry.sh — test list_thread_shorts, resolve_thread_dir
+          source deploy/lib/thread_registry.sh
+
+          SHORTS=$(list_thread_shorts)
+          echo "$SHORTS" | grep -q "wcm" || { echo "FAIL: list_thread_shorts missing 'wcm'"; exit 1; }
+          echo "$SHORTS" | grep -q "ltee" || { echo "FAIL: list_thread_shorts missing 'ltee'"; exit 1; }
+
+          DIR=$(resolve_thread_dir "wcm")
+          [[ "$DIR" == "thread01" ]] || { echo "FAIL: resolve_thread_dir 'wcm' expected 'thread01', got '$DIR'"; exit 1; }
+
+          DIR=$(resolve_thread_dir "enviro")
+          [[ "$DIR" == "thread04" ]] || { echo "FAIL: resolve_thread_dir 'enviro' expected 'thread04', got '$DIR'"; exit 1; }
+
+          echo "thread_registry.sh: all tests passed"
 
       - name: Gate naming consistency
         run: |

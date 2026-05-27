@@ -13,8 +13,26 @@
 # discovery socket isn't running yet. In production, all resolution should
 # go through the discovery socket or environment variables.
 DISCOVERY_FALLBACK_COUNT=0
+DISCOVERY_DEFAULTS_TOML="${DISCOVERY_DEFAULTS_TOML:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/discovery_defaults.toml}"
+
+_resolve_default_port() {
+    local name="$1"
+    if [[ -f "$DISCOVERY_DEFAULTS_TOML" ]]; then
+        python3 -c "
+import sys
+try:
+    import tomllib
+except ImportError:
+    import tomli as tomllib
+with open('$DISCOVERY_DEFAULTS_TOML', 'rb') as f:
+    data = tomllib.load(f)
+print(data.get('defaults', {}).get('$name', ''))
+" 2>/dev/null
+    fi
+}
+
 discover_port() {
-    local name="$1" default="$2"
+    local name="$1" default="${2:-}"
     local env_var="${name^^}_PORT"
     local env_val="${!env_var:-}"
     if [[ -n "$env_val" ]]; then echo "$env_val"; return; fi
@@ -35,11 +53,29 @@ except Exception:
         if [[ -n "$port" ]]; then echo "$port"; return; fi
     fi
 
+    if [[ -z "$default" ]]; then
+        default=$(_resolve_default_port "$name")
+    fi
+
     DISCOVERY_FALLBACK_COUNT=$((DISCOVERY_FALLBACK_COUNT + 1))
     echo "$default"
 }
 
-blake3_hash() { b3sum "$1" | cut -d' ' -f1; }
+blake3_hash() {
+    if command -v b3sum >/dev/null 2>&1; then
+        b3sum "$1" | cut -d' ' -f1
+    else
+        python3 -c "
+import sys
+try:
+    import blake3
+    print(blake3.blake3(open(sys.argv[1], 'rb').read()).hexdigest())
+except ImportError:
+    print('no-blake3-tool', file=sys.stderr)
+    sys.exit(1)
+" "$1" 2>/dev/null || echo "no-hash"
+    fi
+}
 
 # RPC host resolved at runtime — never assume localhost.
 PRIMAL_HOST="${PRIMAL_HOST:-127.0.0.1}"

@@ -67,13 +67,13 @@ source "$SCRIPT_DIR/lib/thread_registry.sh"
 # Gate name: read from env, discovery, or default
 GATE_NAME="${GATE_NAME:-${NUCLEUS_GATE:-irongate}}"
 
-BEARDOG_PORT=$(discover_port "beardog" "9100")
-SONGBIRD_PORT=$(discover_port "songbird" "9200")
-TOADSTOOL_PORT=$(discover_port "toadstool" "9400")
-NESTGATE_PORT=$(discover_port "nestgate" "9500")
-RHIZOCRYPT_PORT=$(discover_port "rhizocrypt" "9601")
-LOAMSPINE_PORT=$(discover_port "loamspine" "9700")
-SWEETGRASS_PORT=$(discover_port "sweetgrass" "9850")
+BEARDOG_PORT=$(discover_port "beardog")
+SONGBIRD_PORT=$(discover_port "songbird")
+TOADSTOOL_PORT=$(discover_port "toadstool")
+NESTGATE_PORT=$(discover_port "nestgate")
+RHIZOCRYPT_PORT=$(discover_port "rhizocrypt")
+LOAMSPINE_PORT=$(discover_port "loamspine")
+SWEETGRASS_PORT=$(discover_port "sweetgrass")
 
 log() { echo "[$(date +%H:%M:%S)] $*"; }
 
@@ -417,7 +417,10 @@ for x in json.load(sys.stdin):
 }
 
 if [[ "$THREAD_FILTER" == "all" ]]; then
-    SCAN_DIRS=("$WORKLOAD_DIR"/thread* "$WORKLOAD_DIR"/groundspring "$WORKLOAD_DIR"/hotspring)
+    SCAN_DIRS=()
+    for wdir in "$WORKLOAD_DIR"/*/; do
+        [[ -d "$wdir" ]] && SCAN_DIRS+=("$wdir")
+    done
 else
     local_prefix=$(resolve_thread_dir "$THREAD_FILTER")
     if [[ -n "$local_prefix" && -d "$WORKLOAD_DIR/${local_prefix}_${THREAD_FILTER}" ]]; then
@@ -474,7 +477,11 @@ MERKLE_ROOT=$(rpc_extract_field "$COMPLETE_RESP" "merkle_root")
 if [[ -n "$MERKLE_ROOT" && "$MERKLE_ROOT" != "unknown" ]]; then
     log "  [OK] DAG Merkle root: $MERKLE_ROOT"
 else
-    log "  [WARN] DAG session.complete returned no Merkle root: $COMPLETE_RESP"
+    if rpc_has_error "$COMPLETE_RESP"; then
+        log "  [WARN] DAG session.complete error: $(rpc_error_message "$COMPLETE_RESP")"
+    else
+        log "  [WARN] DAG session.complete returned no Merkle root"
+    fi
     MERKLE_ROOT="unknown"
     PROVENANCE_WARN=$((PROVENANCE_WARN + 1))
 fi
@@ -484,7 +491,11 @@ COMMIT_RESP=$(rpc_loamspine "{\"jsonrpc\":\"2.0\",\"method\":\"entry.append\",\"
 if rpc_has_result "$COMMIT_RESP"; then
     log "  [OK] loamSpine committed"
 else
-    log "  [WARN] loamSpine commit may have failed: $COMMIT_RESP"
+    if rpc_has_error "$COMMIT_RESP"; then
+        log "  [WARN] loamSpine commit error: $(rpc_error_message "$COMMIT_RESP")"
+    else
+        log "  [WARN] loamSpine commit returned no result"
+    fi
     PROVENANCE_WARN=$((PROVENANCE_WARN + 1))
 fi
 
@@ -494,7 +505,11 @@ BRAID_URN=$(rpc_extract_field "$BRAID_RESP" "urn")
 if [[ -n "$BRAID_URN" && "$BRAID_URN" != "unknown" ]]; then
     log "  [OK] sweetGrass braid: $BRAID_URN"
 else
-    log "  [WARN] sweetGrass braid creation returned no URN: $BRAID_RESP"
+    if rpc_has_error "$BRAID_RESP"; then
+        log "  [WARN] sweetGrass braid error: $(rpc_error_message "$BRAID_RESP")"
+    else
+        log "  [WARN] sweetGrass braid creation returned no URN"
+    fi
     BRAID_URN="unknown"
     PROVENANCE_WARN=$((PROVENANCE_WARN + 1))
 fi
@@ -511,192 +526,13 @@ echo "$BRAID_RESP" > "$RESULTS_DIR/braid.json"
 log ""
 log "── Phase 8: Write Report ──"
 
-TRIO_STATE=$(compute_trio_state "$SESSION_ID" "$SPINE_ID" "$BRAID_URN")
+# shellcheck source=lib/report_writer.sh
+source "$SCRIPT_DIR/lib/report_writer.sh"
 
-cat > "$RESULTS_DIR/VALIDATION_REPORT.md" << REPORT
-# Foundation Validation Report
-
-**Session**: $SESSION_NAME
-**Thread**: $THREAD_FILTER
-**Date**: $(date -Iseconds)
-**NUCLEUS Gate**: $GATE_NAME
-
-## Provenance Chain
-
-| Component | Value |
-|-----------|-------|
-| DAG Session | $SESSION_ID |
-| Merkle Root | $MERKLE_ROOT |
-| loamSpine Spine | $SPINE_ID |
-| sweetGrass Braid | $BRAID_URN |
-| Total Events | $EVENT_IDX |
-
-## Data Artifacts
-
-| Key | BLAKE3 | Size |
-|-----|--------|------|
-$(echo -e "$ARTIFACT_TABLE")
-
-## Workload Results
-
-| Workload | OK | FAIL | SKIP | Time | Status |
-|----------|---:|-----:|-----:|-----:|--------|
-$(echo -e "$WORKLOAD_TABLE")
-
-**Total**: $TOTAL_OK OK / $TOTAL_FAIL FAIL / $TOTAL_SKIP SKIP
-
-## Target Comparison
-
-| Metric | Count |
-|--------|------:|
-| Targets hit | $TARGET_HITS |
-| Targets missed | $TARGET_MISS |
-
-## Degradation State
-
-| Aspect | Value |
-|--------|-------|
-| Discovery fallbacks | $DISCOVERY_FALLBACK_COUNT |
-| Provenance warnings | $PROVENANCE_WARN |
-| Trio state | $(trio_state_label "$(compute_trio_state "$SESSION_ID" "$SPINE_ID" "$BRAID_URN")") |
-
-> Science is never gated behind primal availability. Partial provenance
-> is valid provenance. See \`docs/DEGRADATION_BEHAVIOR.md\`.
-
-## Sediment Layer
-
-This validation run is now a permanent layer in the foundation's
-geological record. The Merkle root anchors the complete provenance
-chain: data sources → computation → results → attribution.
-
-Springs that absorb these patterns will strengthen the layer by adding
-their own validation results, which flow back here as new sediment.
-REPORT
-
-log "  [OK] Report: $RESULTS_DIR/VALIDATION_REPORT.md"
-
-cat > "$RESULTS_DIR/provenance.toml" << PROVTOML
-[run]
-session = "$SESSION_NAME"
-thread = "$THREAD_FILTER"
-date = "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
-gate = "$GATE_NAME"
-composition = "nest"
-
-[results]
-total_ok = $TOTAL_OK
-total_fail = $TOTAL_FAIL
-total_skip = $TOTAL_SKIP
-target_hits = $TARGET_HITS
-target_misses = $TARGET_MISS
-events = $EVENT_IDX
-
-[provenance]
-dag_session_id = "$SESSION_ID"
-merkle_root = "$MERKLE_ROOT"
-spine_id = "$SPINE_ID"
-braid_urn = "$BRAID_URN"
-provenance_warnings = $PROVENANCE_WARN
-
-[degradation]
-discovery_fallbacks = $DISCOVERY_FALLBACK_COUNT
-provenance_partial = $PROVENANCE_WARN
-trio_state = "$TRIO_STATE"
-PROVTOML
-
-log "  [OK] Provenance: $RESULTS_DIR/provenance.toml"
-
-python3 -c "
-import json, sys
-results = {
-    'schema': 'foundation-validation-result/v1',
-    'session': '$SESSION_NAME',
-    'thread': '$THREAD_FILTER',
-    'date': '$(date -u +%Y-%m-%dT%H:%M:%SZ)',
-    'gate': '$GATE_NAME',
-    'composition': 'nest',
-    'results': {
-        'ok': $TOTAL_OK,
-        'fail': $TOTAL_FAIL,
-        'skip': $TOTAL_SKIP,
-        'target_hits': $TARGET_HITS,
-        'target_misses': $TARGET_MISS,
-        'events': $EVENT_IDX,
-    },
-    'provenance': {
-        'dag_session_id': '$SESSION_ID',
-        'merkle_root': '$MERKLE_ROOT',
-        'spine_id': '$SPINE_ID',
-        'braid_urn': '$BRAID_URN',
-    },
-    'degradation': {
-        'discovery_fallbacks': $DISCOVERY_FALLBACK_COUNT,
-        'provenance_warnings': $PROVENANCE_WARN,
-        'trio_state': '$TRIO_STATE',
-    },
-}
-with open('$RESULTS_DIR/results.json', 'w') as f:
-    json.dump(results, f, indent=2)
-" 2>/dev/null
-log "  [OK] Results JSON: $RESULTS_DIR/results.json"
-
-# Copy results into spring-oriented dated folders per PROVENANCE_FOLDER_CONVENTION
-VALIDATION_BASE="$FOUNDATION_ROOT/validation"
-RUN_DATE=$(date +%Y-%m-%d)
-
-# Build workload-to-spring mapping from workload metadata
-copy_to_spring_folder() {
-    local spring="$1"
-    local dated_dir="$VALIDATION_BASE/$spring/$RUN_DATE"
-    mkdir -p "$dated_dir"
-    cp "$RESULTS_DIR/provenance.toml" "$dated_dir/" 2>/dev/null || true
-    cp "$RESULTS_DIR/results.json" "$dated_dir/" 2>/dev/null || true
-    cp "$RESULTS_DIR/braid.json" "$dated_dir/" 2>/dev/null || true
-}
-
-resolve_workload_spring() {
-    local workload_name="$1"
-    # Try reading spring from workload TOML metadata
-    local toml_match
-    toml_match=$(find "$FOUNDATION_ROOT/workloads" -name "${workload_name}.toml" -print -quit 2>/dev/null)
-    if [[ -n "$toml_match" && -f "$toml_match" ]]; then
-        local spring
-        spring=$(python3 -c "
-import sys
-try:
-    import tomllib
-except ImportError:
-    import tomli as tomllib
-with open('$toml_match', 'rb') as f:
-    data = tomllib.load(f)
-prov = data.get('provenance', {})
-meta = data.get('metadata', {})
-print(prov.get('upstream_spring', meta.get('spring_upstream', '')))
-" 2>/dev/null) || spring=""
-        if [[ -n "$spring" ]]; then echo "$spring"; return; fi
-    fi
-    # Prefix-based fallback for workloads named after springs
-    case "$workload_name" in
-        hs-*|hotspring*)      echo "hotSpring" ;;
-        gs-*|groundspring*)   echo "groundSpring" ;;
-        ws-*|wetspring*)      echo "wetSpring" ;;
-        ns-*|neuralspring*)   echo "neuralSpring" ;;
-        airspring*)           echo "airSpring" ;;
-        healthspring*)        echo "healthSpring" ;;
-        ludospring*)          echo "ludoSpring" ;;
-        primalspring*)        echo "primalSpring" ;;
-    esac
-}
-
-for stdout_file in "$RESULTS_DIR"/*.stdout; do
-    [[ -f "$stdout_file" ]] || continue
-    local_name=$(basename "$stdout_file" .stdout)
-    target_spring=$(resolve_workload_spring "$local_name")
-    if [[ -n "$target_spring" ]]; then
-        copy_to_spring_folder "$target_spring"
-        cp "$stdout_file" "$VALIDATION_BASE/$target_spring/$RUN_DATE/" 2>/dev/null || true
-    fi
-done
+write_validation_report
+write_provenance_toml
+write_results_json
+distribute_to_spring_folders
 
 log ""
 log "═══════════════════════════════════════════════════════════"

@@ -19,6 +19,9 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 FOUNDATION_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
+# shellcheck source=lib/thread_registry.sh
+source "$SCRIPT_DIR/lib/thread_registry.sh"
+
 THREAD_FILTER=""
 DATA_DIR="$FOUNDATION_ROOT/.data"
 DRY_RUN=false
@@ -30,6 +33,7 @@ while [[ $# -gt 0 ]]; do
         --dry-run)   DRY_RUN=true; shift ;;
         -h|--help)
             echo "Usage: $0 [--thread THREAD] [--data-dir DIR] [--dry-run]"
+            thread_help_text
             exit 0 ;;
         *)           echo "Unknown option: $1"; exit 1 ;;
     esac
@@ -80,8 +84,21 @@ backfill_source_toml() {
     local thread_name
     thread_name=$(basename "$toml_file" .toml)
 
-    if [[ -n "$THREAD_FILTER" && "$thread_name" != *"$THREAD_FILTER"* ]]; then
-        return
+    if [[ -n "$THREAD_FILTER" ]]; then
+        local expected_files
+        expected_files=$(resolve_thread_manifests "$THREAD_FILTER" 2>/dev/null)
+        if [[ -n "$expected_files" ]]; then
+            local abs_toml
+            abs_toml=$(cd "$(dirname "$toml_file")" && echo "$(pwd)/$(basename "$toml_file")")
+            if ! echo "$expected_files" | grep -qF "$abs_toml"; then
+                return
+            fi
+        else
+            # Fallback: substring match for unregistered thread shorts
+            if [[ "$thread_name" != *"$THREAD_FILTER"* ]]; then
+                return
+            fi
+        fi
     fi
 
     local empty_count
