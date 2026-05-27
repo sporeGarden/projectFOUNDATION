@@ -5,7 +5,7 @@
 
 [meta]
 version = "1.1.0"
-generated = "2026-05-07"
+generated = "2026-05-27"
 total_threads = 10
 total_basecamp_papers = 28  # 23 mapped in BASECAMP_PAPER_MAP.toml + 5 meta/multi-part (10a, 10b, 14, 24a, 24b)
 total_springs = 8

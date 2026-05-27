@@ -6,7 +6,7 @@ domain thread maps — so that projectNUCLEUS can grow on top and products
 can focus on what matters to their audiences.
 
 **Organization**: sporeGarden (products built on ecoPrimals)
-**Generation**: gen4 — composition and deployment (Wave 21 absorbed)
+**Generation**: gen4 — composition and deployment (Wave 55, primalSpring v0.9.30)
 **License**: AGPL-3.0-or-later (code), ORC (system mechanics), CC-BY-SA 4.0 (docs)
 
 ## What This Is
@@ -115,11 +115,18 @@ data/               Data source manifests and validation targets
   targets/          Per-thread validation target TOMLs (11 files, 185 targets)
 graphs/             Foundation-specific deploy graphs (references projectNUCLEUS)
 deploy/             Operational scripts
-  lib/              Sourced shell libraries (primal_ipc, json_rpc, thread_registry, target_compare)
+  lib/              Sourced shell libraries (5 modules)
+    primal_ipc.sh     Primal discovery, RPC clients, blake3_hash
+    json_rpc.sh       Typed JSON-RPC response parsing
+    thread_registry.sh  Runtime thread metadata from THREAD_INDEX.toml
+    target_compare.sh   Phase 6 target comparison logic
+    report_writer.sh    Phase 8 report generation and spring distribution
+  discovery_defaults.toml  Bootstrap port defaults (single source of truth)
   fetch_sources.sh  Fetch NCBI/UniProt/KEGG data, compute BLAKE3 hashes
   backfill_hashes.sh  Compute BLAKE3 hashes and update source TOMLs
   foundation_validate.sh  Full validation pipeline with provenance wrapping
-workloads/          toadStool-executable workload definitions (30 workloads, 10 threads)
+sporeprint/         Tier 2 content for sporePrint publishing (validation-summary.md)
+workloads/          toadStool-executable workload definitions (29 workloads, 10 threads)
 benchmarks/         barraCuda CPU parity baselines (6 scripts, 32 test cases)
 specs/              Contracts and authoring guides
 validation/         Validation results, provenance manifests, gap reports

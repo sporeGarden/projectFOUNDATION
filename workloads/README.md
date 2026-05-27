@@ -93,7 +93,6 @@ trusted_directories = ["${SPRINGS_ROOT}", "${ECOPRIMALS_ROOT}"]
 |----------|-----------|
 | `hs-sarkas-md` | Sarkas MD validation — thread-local (thread02_plasma/) |
 | `hs-chuna-validation` | Chuna MD parity — cross-cutting (hotspring/) |
-| `hs-sarkas-md-validation` | Sarkas MD validation — cross-cutting (hotspring/) |
 
 ### Thread 7: Anderson Mathematics
 

@@ -4,7 +4,7 @@
 
 # Validation run results (committed selectively, not bulk)
 # Individual runs may be committed after review.
-# validation/run-*/
+validation/run-*/
 
 # Editor and OS debris
 *.swp

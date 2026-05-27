@@ -112,10 +112,16 @@ bash backfill_hashes.sh data/sources/thread01_wcm.toml
 
 | File | Purpose |
 |------|---------|
-| `primal_ipc.sh` | Primal discovery, RPC clients, hashing |
-| `json_rpc.sh` | Typed JSON-RPC response parsing (replaces grep) |
+| `primal_ipc.sh` | Primal discovery (env → socket → config), RPC clients, blake3_hash |
+| `json_rpc.sh` | Typed JSON-RPC response parsing (`rpc_has_result`, `rpc_has_error`, `rpc_error_message`) |
 | `thread_registry.sh` | Runtime thread metadata from `THREAD_INDEX.toml` |
 | `target_compare.sh` | Phase 6 target comparison logic |
+| `report_writer.sh` | Phase 8 report generation, provenance TOML/JSON, spring folder distribution |
+
+## Discovery Config
+
+`discovery_defaults.toml` — single source of truth for bootstrap port defaults.
+Port resolution: env `{PRIMAL}_PORT` → XDG discovery socket → config file.
 
 ## Prerequisites
 

@@ -115,7 +115,7 @@ GPU-dependent binaries build successfully with `--features gpu`.
 
 **Primal**: toadStool
 **Severity**: Medium (requires hardcoded absolute paths)
-**Observed**: Shell variables like `${WETSPRING_DIR}` and `${PYTHON_BIN}` in workload TOML `command` and `args` fields are passed literally, not expanded. All 11 wetSpring workload TOMLs (May 4 run) had to be updated with absolute paths. (30 total workloads as of Wave 55.)
+**Observed**: Shell variables like `${WETSPRING_DIR}` and `${PYTHON_BIN}` in workload TOML `command` and `args` fields are passed literally, not expanded. All 11 wetSpring workload TOMLs (May 4 run) had to be updated with absolute paths. (29 total workloads as of Wave 55B — Sarkas duplicate removed.)
 
 **Impact**:
 - Workload TOMLs are not portable across machines without editing

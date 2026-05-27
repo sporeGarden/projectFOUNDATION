@@ -22,7 +22,7 @@ science, and more.
 | Data sources | 165 (across 11 manifests) |
 | BLAKE3-anchored sources | 10 |
 | Validation targets | 185 (across 11 manifests) |
-| Workloads | 30 |
+| Workloads | 29 |
 | CPU parity benchmarks | 6 |
 
 ## Thread Status

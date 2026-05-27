@@ -34,7 +34,7 @@ As thread expressions mature, thread-specific validation graphs may be
 added (e.g. `thread01_wcm_validation.toml` for whole-cell modeling runs
 requiring full Node Atomic with GPU dispatch).
 
-## Alignment Notes (Wave 46, primalSpring v0.9.27)
+## Alignment Notes (Wave 55, primalSpring v0.9.30)
 
 The local graph is a **validation superset** of the primalSpring canonical
 `compositions/foundation_validation.toml`. Known intentional deltas:

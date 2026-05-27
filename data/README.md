@@ -29,7 +29,7 @@ data/
     thread07_anderson_targets.toml            Anderson mathematics (23 targets)
     thread08_health_targets.toml              Human health (11 targets)
     thread09_gaming_targets.toml              Gaming / creative (13 targets)
-    thread10_provenance_targets.toml          Provenance / economics (8 targets)
+    thread10_provenance_targets.toml          Provenance / economics (9 targets)
 ```
 
 ## Public Data Repository Anchors

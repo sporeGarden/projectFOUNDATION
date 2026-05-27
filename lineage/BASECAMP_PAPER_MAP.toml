@@ -10,7 +10,7 @@
 
 [meta]
 total_papers = 26
-last_updated = "2026-05-06"
+last_updated = "2026-05-27"
 source = "whitePaper/gen3/baseCamp/README.md"
 notes = "Papers numbered 01-26 (14, 23, 24 are in baseCamp README but not listed as separate companion papers here — 14 covers sovereign compute hardware, 23 covers primal coordination, 24 covers all-silicon science)."
 
