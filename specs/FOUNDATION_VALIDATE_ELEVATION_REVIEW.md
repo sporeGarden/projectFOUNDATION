@@ -1,7 +1,7 @@
 # foundation_validate.sh — Rust Elevation Feasibility Review
 
-**Date:** 2026-05-16 (updated May 23 for Wave 46 context)
-**Status:** Phase A complete, Phase B unblocked by primalSpring v0.9.27
+**Date:** 2026-05-16 (updated May 27 for Wave 55 context)
+**Status:** Phase A complete, Phase B unblocked by primalSpring v0.9.30
 **Referenced by:** lithoSpore UPSTREAM_GAPS.md, primalSpring CROSS_SPRING_PARITY_SCORECARD
 
 ## Current State
@@ -184,7 +184,7 @@ current 4-call pattern with response validation is the correct interim.
 This progression lets the bash script keep working while Rust phases land
 incrementally. Each phase is independently useful and testable.
 
-### Wave 46 Absorption Context (primalSpring v0.9.27)
+### Wave 55 Context (primalSpring v0.9.30)
 
 The primal/spring layer is at zero gate debt. Key upstream APIs for Phase B:
 
@@ -197,6 +197,29 @@ The primal/spring layer is at zero gate debt. Key upstream APIs for Phase B:
 | `DispatchError` | `composition/neural_dispatch.rs` | Replace `\|\| true` silent failures |
 | `PhasedIpcError` | `ipc/error.rs` | Typed IPC error chains |
 | `primal.announce` | IPC standard | Single-call registration (12/12 compliant) |
+| `nucleus.ingest_spore` | capability_registry.toml | New Wave 55 — spore gateway (NC-1) |
+| `nucleus.emit_spore` | capability_registry.toml | New Wave 55 — spore retrieval (NC-1) |
 
-The 458-method registry and 49-scenario test suite validates the surface
+The 460-method registry and 56-scenario test suite validates the surface
 foundation-ipc will consume.
+
+### postPrimordial Spore Flow (NC-1 / NC-5)
+
+Wave 55 introduces the three-era provenance model and NC-5 emission contract.
+Foundation Thread 10 is the natural touchpoint:
+
+**Era model**: Era 1 (ad-hoc) → Era 2 (pipeline, v1.6.1) → Era 3 (NUCLEUS
+Nest deploy, filled trio braid). Foundation validation runs produce Era 2
+provenance today; the `nucleus-spore-ingest` workload targets Era 3.
+
+**Signal composition**: `nest_ingest_spore` composes existing primal capabilities
+(NestGate store → rhizoCrypt DAG → loamSpine ledger → sweetGrass braid →
+BearDog sign) via a 6-step signal graph. No new primal methods needed — only
+biomeOS orchestration (v3.77+ CLI).
+
+**Spore ownership split**: domain science (springs), envelope (`pseudospore-core`
+/ lithoSpore), gateway (`biomeos nucleus ingest/emit`). Foundation defines the
+science; lithoSpore packages it; biomeOS routes it through NUCLEUS.
+
+Phase B can share types with lithoSpore's `pseudospore-core` for the
+receipt/checksum layer, accelerating convergence.

@@ -27,7 +27,7 @@ cd ../../projectNUCLEUS/deploy
 bash deploy.sh --composition nest --gate irongate
 
 # Execute foundation validation through toadStool
-toadstool execute graphs/foundation_validation.toml
+toadstool validate graphs/foundation_validation.toml
 ```
 
 As thread expressions mature, thread-specific validation graphs may be

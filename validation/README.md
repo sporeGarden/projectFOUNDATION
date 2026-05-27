@@ -84,7 +84,7 @@ need to evolve:
 | 7 — Anderson Mathematics | 2026-05-11 | groundSpring V142 | 23/23 PASS | Validated (18→23 after target expansion) |
 | 8 — Human Health | — | healthSpring | 11/11 PASS | Spring-validated (targets `validated = true`) |
 | 9 — Gaming / Creative | — | ludoSpring | 13/13 PASS | Spring-validated (targets `validated = true`) |
-| 10 — Provenance | — | primalSpring, ludoSpring | 5/8 partial | 5 spring-validated, 3 pending |
+| 10 — Provenance | — | primalSpring, ludoSpring | 5/9 partial | 5 spring-validated, 4 pending (includes NC-1 spore ingest) |
 
 Legacy runs: `wcm-20260509/`, `plasma-20260511/`, `ag-20260511/`, `anderson-20260511/`.
 Future runs: `<spring>/<YYYY-MM-DD>/` per `PROVENANCE_FOLDER_CONVENTION.md`.

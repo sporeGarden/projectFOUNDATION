@@ -18,7 +18,7 @@ data/
     thread08_health.toml                      Human Health & Clinical Translation (13 sources)
     thread09_gaming.toml                      Gaming / Creative (14 sources)
     thread10_provenance.toml                  Provenance / Economics (6 sources)
-  targets/                                    184 targets across 11 files
+  targets/                                    185 targets across 11 files
     thread01_wcm_targets.toml                 Whole-Cell Modeling (27 targets across Papers A-G)
     thread02_plasma_targets.toml              Plasma Physics & Lattice QCD (12 targets)
     thread03_immuno_targets.toml              Immunology & Drug Discovery (12 targets)

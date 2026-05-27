@@ -1,0 +1,46 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# Thread 10: Provenance Economics — NUCLEUS Spore Ingest Round-Trip
+#
+# Validates postPrimordial spore flow: biomeos nucleus ingest → NestGate
+# store → rhizoCrypt DAG → loamSpine ledger → sweetGrass braid → BearDog
+# sign → receipts/nucleus_ingest.toml. This is the NC-1 evidence that
+# the postPrimordial pipeline works end-to-end.
+#
+# Requires: biomeOS v3.77+, live Nest Atomic composition on the gate,
+# a pseudoSpore artifact (e.g. hotSpring v1.6.1 or groundSpring).
+
+[metadata]
+name = "nucleus-spore-ingest"
+description = "Validate NUCLEUS spore ingest round-trip via biomeOS CLI"
+version = "0.1.0"
+thread = "10"
+thread_name = "Provenance Economics"
+spring = "primalSpring"
+upstream_spring = "primalSpring"
+
+[execution]
+type = "native"
+command = "${BIOMEOS_ROOT:-${ECOPRIMALS_ROOT}/primals/biomeOS}/target/release/biomeos"
+args = ["nucleus", "ingest", "${PSEUDOSPORE_DIR:-/tmp/ecoPrimals/pseudospore}"]
+working_dir = "${FOUNDATION_ROOT:-.}"
+
+[resources]
+max_memory_bytes = 2147483648
+max_cpu_percent = 50.0
+
+[security]
+isolation_level = "Standard"
+trusted_directories = ["${BIOMEOS_ROOT}", "${ECOPRIMALS_ROOT}"]
+
+[skip]
+when = "binary_missing"
+binary = "${BIOMEOS_ROOT:-${ECOPRIMALS_ROOT}/primals/biomeOS}/target/release/biomeos"
+reason = "biomeOS binary requires: cargo build --release in primals/biomeOS (v3.77+). Also needs live Nest Atomic."
+
+[provenance]
+chain = "rhizoCrypt"
+attestation = "sweetGrass"
+spine = "loamSpine"
+requires_trio = true
+method_stability = "evolving"
+methods_consumed = ["storage.store", "session.create", "event.append", "session.complete", "entry.append", "braid.create", "crypto.sign"]

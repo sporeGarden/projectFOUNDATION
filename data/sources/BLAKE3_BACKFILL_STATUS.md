@@ -1,6 +1,6 @@
 # BLAKE3 Backfill Status
 
-**Updated**: May 19, 2026
+**Updated**: May 27, 2026 (Wave 55 context)
 **Standard**: All `data/sources/*.toml` entries should have populated
 `blake3` fields for content-addressed data integrity.
 
@@ -68,8 +68,22 @@ bash deploy/fetch_sources.sh --thread wcm
 bash deploy/backfill_hashes.sh --thread wcm
 ```
 
-## Next Steps
+## Wave 55 Priority (Pre-Stadial)
 
-- Backfill Threads 3, 4, 5, 8 (all have fetchable NCBI sources)
+FN-1 is the sovereign audit trail — every source should be BLAKE3-anchored
+before stadial evaluation. Priority threads for backfill:
+
+1. **Thread 4 (enviro)** — 20 sources, all fetchable via NCBI BioProject
+2. **Thread 5 (LTEE)** — 11 sources, fetchable via NCBI + Dryad
+3. **Thread 1 remaining** — 15 need manual fetch (BRENDA, EcoCyc, etc.)
+4. **Thread 3 (immuno)** — 17 sources, fetchable via BioProject metadata
+5. **Thread 8 (health)** — 13 sources, partially fetchable
+
+Requires: `b3sum` installed, `.data/` populated via `fetch_sources.sh`.
+
+## Other Next Steps
+
 - Investigate alternate UniProt endpoint for UP000018174
 - Pin GitHub repo commits for source reproducibility
+- Thread 10 provenance sources are internal test vectors — hash when
+  the trio pipeline runs live on a gate with Nest Atomic

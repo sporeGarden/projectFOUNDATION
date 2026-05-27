@@ -21,8 +21,8 @@ science, and more.
 | Domain threads | 10 |
 | Data sources | 165 (across 11 manifests) |
 | BLAKE3-anchored sources | 10 |
-| Validation targets | 184 (across 11 manifests) |
-| Workloads | 29 |
+| Validation targets | 185 (across 11 manifests) |
+| Workloads | 30 |
 | CPU parity benchmarks | 6 |
 
 ## Thread Status
@@ -38,7 +38,7 @@ science, and more.
 | 7 — Anderson Mathematics | 23 | Validated (groundSpring) |
 | 8 — Human Health | 11 | 11/11 spring-validated |
 | 9 — Gaming / Creative | 13 | 13/13 spring-validated |
-| 10 — Provenance | 8 | 5/8 partial |
+| 10 — Provenance | 9 | 5/9 partial (NC-1 spore ingest added) |
 
 ## Pipeline
 

@@ -8,8 +8,8 @@
 thread = 10
 thread_name = "Provenance / Economics"
 expression = ""
-last_updated = "2026-05-11"
-total_targets = 8
+last_updated = "2026-05-27"
+total_targets = 9
 
 # =============================================================================
 # rhizoCrypt DAG (Paper 20)
@@ -117,6 +117,19 @@ spring = "primalSpring"
 blake3 = ""
 validated = true
 notes = "First live validation of the provenance chain."
+
+[[targets]]
+id = "nucleus_spore_ingest_e2e"
+paper = "20"
+description = "biomeOS nucleus ingest round-trip: pseudoSpore → NestGate → trio → receipt"
+expected_value = 1.0
+unit = "binary (1=true)"
+tolerance = 0.0
+source = "NUCLEUS spore gateway validation (NC-1)"
+spring = "primalSpring"
+blake3 = ""
+validated = false
+notes = "Blocked on NC-1: biomeOS v3.77 scaffolded, live Nest Atomic deployment needed."
 
 [[targets]]
 id = "game_session_provenance"
