@@ -46,7 +46,6 @@ impl JsonRpcRequest {
 #[derive(Debug, Clone, Deserialize)]
 pub struct JsonRpcResponse {
     /// Protocol version.
-    #[allow(dead_code)]
     pub jsonrpc: String,
     /// Successful result (mutually exclusive with `error`).
     pub result: Option<Value>,

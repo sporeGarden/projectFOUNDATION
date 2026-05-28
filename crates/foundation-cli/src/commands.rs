@@ -43,7 +43,10 @@ pub async fn validate(
 }
 
 /// Fetch data sources from manifests.
-#[allow(clippy::unused_async)]
+#[expect(
+    clippy::unused_async,
+    reason = "will await HTTP fetches once SourceFetcher is wired"
+)]
 pub async fn fetch(
     root: PathBuf,
     thread: Option<String>,
@@ -88,7 +91,10 @@ pub async fn fetch(
 }
 
 /// Check health triad of NUCLEUS primals.
-#[allow(clippy::unused_async)]
+#[expect(
+    clippy::unused_async,
+    reason = "will await health RPC calls when IPC is live"
+)]
 pub async fn health(root: PathBuf, verbose: bool) -> CmdResult {
     let config_path = root.join("deploy/discovery_defaults.toml");
     let config = DiscoveryConfig::from_file(&config_path)?;
@@ -124,7 +130,10 @@ pub async fn health(root: PathBuf, verbose: bool) -> CmdResult {
 }
 
 /// Inspect and verify target manifests.
-#[allow(clippy::unused_async)]
+#[expect(
+    clippy::unused_async,
+    reason = "will await RPC for live target comparison in Phase C"
+)]
 pub async fn targets(root: PathBuf, thread: Option<String>, check: bool) -> CmdResult {
     let index = ThreadIndex::from_file(&root.join("lineage/THREAD_INDEX.toml"))?;
 
@@ -169,7 +178,10 @@ pub async fn targets(root: PathBuf, thread: Option<String>, check: bool) -> CmdR
 }
 
 /// Populate BLAKE3 hashes in source manifests.
-#[allow(clippy::unused_async)]
+#[expect(
+    clippy::unused_async,
+    reason = "will await NestGate registration after hash computation"
+)]
 pub async fn backfill(root: PathBuf, data_dir: Option<PathBuf>, dry_run: bool) -> CmdResult {
     let index = ThreadIndex::from_file(&root.join("lineage/THREAD_INDEX.toml"))?;
     let fetch_dir = data_dir.unwrap_or_else(|| root.join("data/fetched"));

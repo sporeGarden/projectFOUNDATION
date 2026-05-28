@@ -14,7 +14,7 @@ pub mod provenance;
 pub mod transport;
 
 pub use client::PrimalClient;
-pub use error::IpcError;
+pub use error::{DegradationLevel, IpcError, IpcPhase, PhasedIpcError};
 pub use health::{HealthStatus, HealthTriad};
 pub use provenance::ProvenanceSession;
 pub use transport::TransportLayer;

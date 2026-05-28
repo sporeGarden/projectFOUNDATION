@@ -23,7 +23,10 @@ pub struct ComparisonReport {
 impl ComparisonReport {
     /// Overall pass rate as a fraction [0.0, 1.0].
     #[must_use]
-    #[allow(clippy::cast_precision_loss)]
+    #[expect(
+        clippy::cast_precision_loss,
+        reason = "tolerance percentages are approximate by nature"
+    )]
     pub fn pass_rate(&self) -> f64 {
         let evaluated = self.passed + self.failed;
         if evaluated == 0 {

@@ -120,7 +120,11 @@ impl DiscoveryConfig {
         if let Some(tcp) = &self.bootstrap_tcp {
             if let Some(port_val) = tcp.ports.get(primal) {
                 if let Some(port) = port_val.as_integer() {
-                    #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
+                    #[expect(
+                        clippy::cast_possible_truncation,
+                        clippy::cast_sign_loss,
+                        reason = "TOML ports are always u16-range integers"
+                    )]
                     let port = port as u16;
                     return Some(Transport::Tcp {
                         host: tcp.host.clone(),

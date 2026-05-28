@@ -96,7 +96,10 @@ impl ValidationPipeline {
     /// Returns errors only for unrecoverable failures (missing config files,
     /// required primals unreachable). Individual phase degradation is recorded
     /// in the result rather than aborting.
-    #[allow(clippy::unused_async)]
+    #[expect(
+        clippy::unused_async,
+        reason = "will await provenance session in Phase C"
+    )]
     pub async fn run(&self) -> Result<ValidationResult, Box<dyn std::error::Error>> {
         let start = Instant::now();
 

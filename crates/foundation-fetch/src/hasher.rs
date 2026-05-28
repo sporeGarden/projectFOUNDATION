@@ -114,4 +114,22 @@ mod tests {
         let h = blake3_bytes(b"test");
         assert_eq!(h.len(), 64);
     }
+
+    #[test]
+    fn blake3_not_sha256_regression() {
+        let data = b"foundation lineage correctness";
+        let hash = blake3_bytes(data);
+        let sha256 = "not_blake3";
+        assert_ne!(hash, sha256);
+        assert_eq!(
+            hash,
+            blake3::hash(data).to_hex().to_string(),
+            "blake3_bytes must produce genuine BLAKE3 output"
+        );
+        assert_ne!(hash.len(), 0);
+        let known_blake3 = blake3::hash(b"foundation lineage correctness")
+            .to_hex()
+            .to_string();
+        assert_eq!(hash, known_blake3);
+    }
 }

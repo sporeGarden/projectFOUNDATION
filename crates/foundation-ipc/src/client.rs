@@ -190,6 +190,35 @@ impl PrimalClient {
     }
 }
 
+/// Resolve `FAMILY_ID` via the biomeOS discovery socket using `family.id` RPC.
+///
+/// Falls back to env vars if the socket is unavailable (graceful degradation).
+/// This is the Rust equivalent of `deploy/lib/env.sh` `FAMILY_ID` resolution.
+///
+/// # Errors
+///
+/// Returns [`IpcError`] if the discovery socket exists but the RPC call fails.
+pub async fn resolve_family_id_rpc(
+    config: &foundation_core::config::DiscoveryConfig,
+) -> Result<String, IpcError> {
+    use foundation_core::env_keys;
+
+    let env_id = env_keys::resolve_family_id();
+    if !env_id.is_empty() {
+        return Ok(env_id);
+    }
+
+    let client = PrimalClient::discover("discovery", config)?;
+    let result = client
+        .call_raw("family.id", Some(serde_json::json!({})))
+        .await?;
+    Ok(result
+        .get("family_id")
+        .and_then(|v| v.as_str())
+        .unwrap_or_default()
+        .to_owned())
+}
+
 /// Ecosystem convention table for semantic domain prefixes.
 ///
 /// This maps primal names to their JSON-RPC method prefix as established

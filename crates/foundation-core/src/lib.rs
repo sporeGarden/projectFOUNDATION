@@ -7,7 +7,9 @@
 //! from the TOML manifests in `data/`, `workloads/`, and `deploy/`.
 
 pub mod config;
+pub mod env_keys;
 pub mod error;
+pub mod primal_names;
 pub mod source;
 pub mod target;
 pub mod thread;
