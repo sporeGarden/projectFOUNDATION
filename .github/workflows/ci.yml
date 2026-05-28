@@ -558,13 +558,12 @@ s.close()
 
           echo "primal_ipc.sh: all tests passed"
 
-          # target_compare.sh — test tolerance comparison
+          # target_compare.sh — verify it sources correctly and defines compare_targets
           source deploy/lib/target_compare.sh
-          if type compare_within_tolerance &>/dev/null; then
-            RESULT=$(compare_within_tolerance 100.0 100.5 1.0 2>/dev/null) || true
-            echo "target_compare.sh: basic load test passed"
+          if type compare_targets &>/dev/null && type resolve_target_file &>/dev/null; then
+            echo "target_compare.sh: functions defined (compare_targets, resolve_target_file)"
           else
-            echo "target_compare.sh: function not exported (OK, tested via sourcing)"
+            echo "FAIL: target_compare.sh did not define expected functions"; exit 1
           fi
 
           echo "All shell library fixture tests passed"

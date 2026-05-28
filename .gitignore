@@ -1,10 +1,15 @@
-# Fetched data cache (populated by deploy/fetch_sources.sh)
+# Fetched data cache (populated by deploy/fetch_sources.sh and foundation fetch)
 # These are public data downloads — reproducible from manifests.
 .data/
+data/fetched/
+
+# Rust build artifacts (cargo)
+target/
 
 # Validation run results (committed selectively, not bulk)
 # Individual runs may be committed after review.
 validation/run-*/
+validation/validation_report.md
 
 # Editor and OS debris
 *.swp

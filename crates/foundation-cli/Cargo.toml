@@ -1,0 +1,26 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+[package]
+name = "foundation-cli"
+version = "0.1.0"
+description = "foundation UniBin — CLI entry point for projectFOUNDATION"
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+
+[[bin]]
+name = "foundation"
+path = "src/main.rs"
+
+[dependencies]
+clap.workspace = true
+foundation-core.workspace = true
+foundation-fetch.workspace = true
+foundation-ipc.workspace = true
+foundation-validate.workspace = true
+tokio.workspace = true
+tracing.workspace = true
+tracing-subscriber.workspace = true
+
+[lints]
+workspace = true

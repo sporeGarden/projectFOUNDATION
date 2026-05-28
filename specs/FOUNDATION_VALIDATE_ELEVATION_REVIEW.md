@@ -1,7 +1,7 @@
 # foundation_validate.sh — Rust Elevation Feasibility Review
 
-**Date:** 2026-05-16 (updated May 27 for Wave 56+ context)
-**Status:** Phase A complete, Phase B unblocked by primalSpring v0.9.30
+**Date:** 2026-05-16 (updated May 28 for Wave 57 — Phase B landed)
+**Status:** Phase A complete, Phase B substantially landed (5,076 lines, 93 tests, ecoBin compliant)
 **Referenced by:** lithoSpore UPSTREAM_GAPS.md, primalSpring CROSS_SPRING_PARITY_SCORECARD
 
 ## Current State

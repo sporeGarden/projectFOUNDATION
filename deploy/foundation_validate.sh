@@ -32,7 +32,37 @@ FOUNDATION_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 # shellcheck source=lib/env.sh
 source "$SCRIPT_DIR/lib/env.sh"
+
+# RPC with degradation logging — replaces silent `|| true` swallowing.
+# Usage: rpc_degraded PRIMAL_NAME RPC_FUNC PAYLOAD CONTEXT
+# Logs [WARN] on failure rather than aborting or silencing.
+DEGRADED_CALLS=0
+rpc_degraded() {
+    local primal="$1" rpc_func="$2" payload="$3" context="${4:-}"
+    local response
+    if response=$($rpc_func "$payload" 2>&1); then
+        if rpc_has_error "$response" 2>/dev/null; then
+            local msg
+            msg=$(rpc_error_message "$response" 2>/dev/null)
+            log "  [WARN] $primal RPC error${context:+ ($context)}: $msg"
+            DEGRADED_CALLS=$((DEGRADED_CALLS + 1))
+            return 1
+        fi
+        return 0
+    else
+        log "  [WARN] $primal unreachable${context:+ ($context)} — degraded provenance"
+        DEGRADED_CALLS=$((DEGRADED_CALLS + 1))
+        return 1
+    fi
+}
 TOADSTOOL="${TOADSTOOL:-$PLASMIDBIN_DIR/primals/toadstool}"
+
+# Named constants — extracted from inline magic numbers.
+WORKLOAD_TIMEOUT_SECS="${WORKLOAD_TIMEOUT_SECS:-300}"
+MIN_SOURCE_FILE_SIZE="${MIN_SOURCE_FILE_SIZE:-100}"
+FETCH_MAX_RETRIES="${FETCH_MAX_RETRIES:-3}"
+FETCH_TIMEOUT_SECS="${FETCH_TIMEOUT_SECS:-120}"
+HASH_REGRESSION_THRESHOLD="${HASH_REGRESSION_THRESHOLD:-10}"
 
 THREAD_FILTER="all"
 SKIP_FETCH=false
@@ -251,11 +281,17 @@ register_data_file() {
     local hash_bytes
     hash_bytes=$(hash_to_byte_array "$hash")
 
-    rpc_nestgate "{\"jsonrpc\":\"2.0\",\"method\":\"storage.store\",\"params\":{\"key\":\"$key\",\"value\":\"blake3:$hash size:$size\"},\"id\":$((EVENT_IDX+100))}" > /dev/null 2>&1 || true
+    rpc_degraded "nestgate" rpc_nestgate \
+        "{\"jsonrpc\":\"2.0\",\"method\":\"storage.store\",\"params\":{\"key\":\"$key\",\"value\":\"blake3:$hash size:$size\"},\"id\":$((EVENT_IDX+100))}" \
+        "Phase 4 artifact registration" || true
 
-    rpc_rhizocrypt "{\"jsonrpc\":\"2.0\",\"method\":\"dag.event.append\",\"params\":{\"session_id\":\"$SESSION_ID\",\"event_type\":{\"DataCreate\":{}},\"data\":{\"key\":\"$key\",\"blake3\":\"$hash\",\"size\":$size}},\"id\":$((EVENT_IDX+200))}" > /dev/null 2>&1 || true
+    rpc_degraded "rhizocrypt" rpc_rhizocrypt \
+        "{\"jsonrpc\":\"2.0\",\"method\":\"dag.event.append\",\"params\":{\"session_id\":\"$SESSION_ID\",\"event_type\":{\"DataCreate\":{}},\"data\":{\"key\":\"$key\",\"blake3\":\"$hash\",\"size\":$size}},\"id\":$((EVENT_IDX+200))}" \
+        "Phase 4 DAG event" || true
 
-    rpc_loamspine "{\"jsonrpc\":\"2.0\",\"method\":\"entry.append\",\"params\":{\"spine_id\":\"$SPINE_ID\",\"entry_type\":{\"DataAnchor\":{\"data_hash\":$hash_bytes,\"source\":\"foundation\",\"size\":$size}},\"committer\":\"did:primal:foundation\",\"data\":{\"key\":\"$key\",\"blake3\":\"$hash\"}},\"id\":$((EVENT_IDX+300))}" > /dev/null 2>&1 || true
+    rpc_degraded "loamspine" rpc_loamspine \
+        "{\"jsonrpc\":\"2.0\",\"method\":\"entry.append\",\"params\":{\"spine_id\":\"$SPINE_ID\",\"entry_type\":{\"DataAnchor\":{\"data_hash\":$hash_bytes,\"source\":\"foundation\",\"size\":$size}},\"committer\":\"did:primal:foundation\",\"data\":{\"key\":\"$key\",\"blake3\":\"$hash\"}},\"id\":$((EVENT_IDX+300))}" \
+        "Phase 4 spine anchor" || true
 
     EVENT_IDX=$((EVENT_IDX + 1))
     ARTIFACT_TABLE+="| $key | ${hash:0:16}… | ${size}B |\n"

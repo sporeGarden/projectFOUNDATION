@@ -6,7 +6,7 @@ domain thread maps — so that projectNUCLEUS can grow on top and products
 can focus on what matters to their audiences.
 
 **Organization**: sporeGarden (products built on ecoPrimals)
-**Generation**: gen4 — composition and deployment (Wave 56, primalSpring v0.9.30)
+**Generation**: gen4 — composition and deployment (Wave 57, primalSpring v0.9.30)
 **License**: AGPL-3.0-or-later (code), ORC (system mechanics), CC-BY-SA 4.0 (docs)
 
 ## What This Is
@@ -84,6 +84,24 @@ and presents them for a particular audience.
 
 ## Launch a Validation Run
 
+### Rust UniBin (foundation — Phase B)
+
+```bash
+# Build the foundation binary (pure Rust, ecoBin-compliant, zero C deps)
+cargo build --release
+
+# Run the full validation pipeline (skip-fetch for local-only)
+target/release/foundation validate --skip-fetch
+
+# Check all targets against manifests
+target/release/foundation targets --check
+
+# Inspect health of discovered primals
+target/release/foundation health
+```
+
+### Bash pipeline (canonical — production)
+
 ```bash
 # 1. Deploy NUCLEUS composition (via projectNUCLEUS)
 cd "${NUCLEUS_ROOT:-${ECOPRIMALS_ROOT}/projectNUCLEUS}/deploy"
@@ -104,6 +122,13 @@ See `deploy/README.md` for full options and the sediment layer model.
 ## Repo Structure
 
 ```
+crates/             Rust workspace — foundation UniBin (ecoBin-compliant)
+  foundation-core/    Types, TOML parsing, config discovery, env expansion
+  foundation-ipc/     JSON-RPC 2.0 clients, health triad, provenance sessions
+  foundation-fetch/   Manifest-driven fetch, BLAKE3 content addressing, registry
+  foundation-validate/ 8-phase pipeline, comparison, execution, reporting
+  foundation-cli/     UniBin entry point: validate, fetch, health, targets, backfill
+Cargo.toml          Workspace root (edition 2024, AGPL-3.0, clippy pedantic+nursery)
 lineage/            The unified lineage — master map and thread index
   THE_UNIFIED_LINEAGE.md    Master document: 10 threads, all papers/springs/contacts
   THREAD_INDEX.toml         Machine-readable inventory for tooling
@@ -114,7 +139,7 @@ data/               Data source manifests and validation targets
   sources/          Per-thread data source TOMLs (11 files, 165 sources, 10 BLAKE3-anchored)
   targets/          Per-thread validation target TOMLs (11 files, 185 targets)
 graphs/             Foundation-specific deploy graphs (references projectNUCLEUS)
-deploy/             Operational scripts
+deploy/             Operational scripts (production — Phase C target: replace with UniBin)
   lib/              Sourced shell libraries (6 modules)
     env.sh              Centralized env bootstrap (ECOPRIMALS_ROOT, SPRINGS_ROOT, FAMILY_ID)
     primal_ipc.sh     Primal discovery, RPC clients, blake3_hash
