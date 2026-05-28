@@ -6,7 +6,7 @@ domain thread maps — so that projectNUCLEUS can grow on top and products
 can focus on what matters to their audiences.
 
 **Organization**: sporeGarden (products built on ecoPrimals)
-**Generation**: gen4 — composition and deployment (Wave 55, primalSpring v0.9.30)
+**Generation**: gen4 — composition and deployment (Wave 56, primalSpring v0.9.30)
 **License**: AGPL-3.0-or-later (code), ORC (system mechanics), CC-BY-SA 4.0 (docs)
 
 ## What This Is
@@ -136,6 +136,7 @@ validation/         Validation results, provenance manifests, gap reports
   handbacks/        Geological record from projectNUCLEUS deployment validation
   COMPOSITION_GAPS.md  Composition-level capability mismatches (Wave 20 resolutions marked)
 docs/               External-facing primers and guides
+  FOUNDATION_PRIMER.md  projectFOUNDATION orientation and thread map
   BONDING_MODELS.md Atomic bonding architecture (covalent/ionic/metallic)
   DEGRADATION_BEHAVIOR.md  Pipeline degradation matrix (per ecosystem standard)
   NUCLEUS_PRIMER.md Ecosystem primer — orientation for new contributors

@@ -33,7 +33,7 @@ not a defect, but a known surface area where the next cycle of work lands.
 **Primal**: toadStool
 **Status**: RESOLVED (2026-05-16)
 **Resolution**: toadStool now supports `trusted_directories` in the
-`[security]` section. All 30 projectFOUNDATION workloads use
+`[security]` section. All 29 projectFOUNDATION workloads use
 `isolation_level = "Standard"` with explicit trusted directories:
 
 ```toml
@@ -43,7 +43,7 @@ trusted_directories = ["${SPRINGS_ROOT}", "${ECOPRIMALS_ROOT}"]
 ```
 
 The `isolation_level = "None"` workaround has been fully eliminated.
-See `PROJECTFOUNDATION_DEEP_DEBT_EVOLUTION_HANDOFF_MAY16_2026.md`.
+See `wateringHole/handoffs/archive/` for the original handoff.
 
 ---
 

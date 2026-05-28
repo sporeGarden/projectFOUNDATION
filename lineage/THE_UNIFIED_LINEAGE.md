@@ -2,7 +2,7 @@
 
 **One Foundation, Many Expressions: The Complete Validated Scientific Lineage**
 
-**Date**: May 6, 2026
+**Date**: May 27, 2026
 **Status**: Active — mapping and expression authoring
 **License**: scyBorg triple — AGPL-3.0-or-later (code), ORC (system mechanics), CC-BY-SA 4.0 (this document)
 

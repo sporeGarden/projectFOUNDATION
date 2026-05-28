@@ -58,7 +58,7 @@ Each module crate would:
 
 ## Data Manifest (data.toml)
 
-The `data/sources/thread06_ag.toml` manifest lists 18 sources across:
+The `data/sources/thread06_ag.toml` manifest lists 16 sources across:
 - NOAA GHCN-Daily weather stations
 - FAO-56 reference tables
 - ERA5 reanalysis data

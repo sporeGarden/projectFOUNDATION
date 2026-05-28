@@ -1,6 +1,6 @@
 # BLAKE3 Backfill Status
 
-**Updated**: May 27, 2026 (Wave 55 context)
+**Updated**: May 27, 2026 (Wave 56 context)
 **Standard**: All `data/sources/*.toml` entries should have populated
 `blake3` fields for content-addressed data integrity.
 

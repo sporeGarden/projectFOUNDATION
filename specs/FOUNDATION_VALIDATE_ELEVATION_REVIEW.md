@@ -6,7 +6,7 @@
 
 ## Current State
 
-`deploy/foundation_validate.sh` is a ~550-line bash script (plus ~740 lines in
+`deploy/foundation_validate.sh` is a ~556-line bash script (plus ~863 lines in
 6 sourced libraries: `env.sh`, `json_rpc.sh`, `primal_ipc.sh`, `target_compare.sh`,
 `thread_registry.sh`, `report_writer.sh`) orchestrating 8 phases:
 

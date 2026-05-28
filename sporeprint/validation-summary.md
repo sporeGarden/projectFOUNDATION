@@ -1,6 +1,6 @@
 +++
 title = "projectFOUNDATION Validation Summary"
-date = 2026-05-20
+date = 2026-05-27
 template = "page.html"
 [extra]
 entity = "projectfoundation"
@@ -45,7 +45,7 @@ science, and more.
 Foundation validation runs through an 8-phase pipeline orchestrated by
 `foundation_validate.sh`:
 
-1. Health-check NUCLEUS primals (7 primals, 3 required)
+1. Health-check NUCLEUS primals (graph-driven, UDS-first)
 2. Create provenance session (rhizoCrypt DAG + loamSpine spine)
 3. Fetch data sources (manifest-driven from `data/sources/*.toml`)
 4. Register artifacts in NestGate with BLAKE3
