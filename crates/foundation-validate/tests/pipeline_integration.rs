@@ -1,10 +1,9 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 //! Integration tests for the validation pipeline with fixture data.
 
-use std::path::PathBuf;
-
 use foundation_validate::pipeline::{PipelineConfig, ValidationPipeline};
 
+#[allow(clippy::too_many_lines)]
 fn create_fixture_project(dir: &std::path::Path) {
     let deploy = dir.join("deploy");
     std::fs::create_dir_all(&deploy).unwrap();
@@ -79,7 +78,7 @@ validated = false
     )
     .unwrap();
 
-    let workloads_dir = dir.join("workloads/test_thread");
+    let workloads_dir = dir.join("workloads/thread01_test_thread");
     std::fs::create_dir_all(&workloads_dir).unwrap();
     std::fs::write(
         workloads_dir.join("echo_workload.toml"),

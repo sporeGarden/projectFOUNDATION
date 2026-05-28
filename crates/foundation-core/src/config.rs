@@ -150,8 +150,8 @@ impl DiscoveryConfig {
 /// Expand `${XDG_RUNTIME_DIR}` in a socket path template.
 fn expand_xdg(template: &str) -> String {
     if template.contains("${XDG_RUNTIME_DIR}") {
-        let xdg =
-            std::env::var("XDG_RUNTIME_DIR").unwrap_or_else(|_| format!("/run/user/{}", nix_uid()));
+        let xdg = std::env::var(crate::env_keys::XDG_RUNTIME_DIR)
+            .unwrap_or_else(|_| format!("/run/user/{}", nix_uid()));
         template.replace("${XDG_RUNTIME_DIR}", &xdg)
     } else {
         template.to_owned()

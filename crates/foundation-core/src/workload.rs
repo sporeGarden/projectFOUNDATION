@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 //! Workload definitions for toadStool dispatch.
 
+use std::borrow::Cow;
 use std::path::Path;
 
 use serde::{Deserialize, Serialize};
@@ -49,12 +50,24 @@ pub struct WorkloadMetadata {
     pub spring: Option<String>,
 }
 
+/// Execution dispatch strategy.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum ExecType {
+    /// Run as a native subprocess.
+    Native,
+    /// Run in WASM sandbox.
+    Wasm,
+    /// Run in a container.
+    Container,
+}
+
 /// How the workload is executed.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct WorkloadExecution {
-    /// Execution type: "native", "wasm", "container".
+    /// Dispatch strategy for this workload.
     #[serde(rename = "type")]
-    pub exec_type: String,
+    pub exec_type: ExecType,
     /// Command path (may contain env var placeholders).
     pub command: String,
     /// Command arguments.
@@ -76,27 +89,47 @@ pub struct WorkloadResources {
     pub max_cpu_percent: Option<f64>,
 }
 
+/// Security isolation level.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
+pub enum IsolationLevel {
+    /// No isolation — runs in the same environment.
+    None,
+    /// Standard process-level isolation.
+    #[default]
+    Standard,
+    /// Strict sandboxing (container/namespace).
+    Strict,
+}
+
 /// Security isolation settings.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct WorkloadSecurity {
-    /// Isolation level: "None", "Standard", "Strict".
-    #[serde(default = "default_isolation")]
-    pub isolation_level: String,
+    /// Isolation level for this workload.
+    #[serde(default)]
+    pub isolation_level: IsolationLevel,
     /// Directories the workload may access.
     #[serde(default)]
     pub trusted_directories: Vec<String>,
 }
 
-fn default_isolation() -> String {
-    String::from("Standard")
+/// Condition under which a workload should be skipped.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum SkipCondition {
+    /// Skip when the binary at the configured path does not exist.
+    BinaryMissing,
+    /// Skip when the data source has not been fetched.
+    DataMissing,
+    /// Always skip (used for disabled workloads).
+    Always,
 }
 
 /// Conditions under which the workload should be skipped.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct WorkloadSkip {
-    /// Skip condition type (e.g. `binary_missing`).
-    pub when: String,
-    /// Path to the binary to check.
+    /// Skip condition type.
+    pub when: SkipCondition,
+    /// Path to the binary to check (for `BinaryMissing`).
     #[serde(default)]
     pub binary: Option<String>,
     /// Human-readable skip reason.
@@ -142,19 +175,23 @@ impl Workload {
             return false;
         };
 
-        match skip.when.as_str() {
-            "binary_missing" => skip
+        match skip.when {
+            SkipCondition::BinaryMissing => skip
                 .binary
                 .as_ref()
-                .is_some_and(|binary| !Path::new(&expand_env_placeholder(binary)).exists()),
-            _ => false,
+                .is_some_and(|binary| !Path::new(expand_env_placeholder(binary).as_ref()).exists()),
+            SkipCondition::DataMissing => skip
+                .binary
+                .as_ref()
+                .is_some_and(|path| !Path::new(expand_env_placeholder(path).as_ref()).exists()),
+            SkipCondition::Always => true,
         }
     }
 
     /// Expand environment variable placeholders in the command path.
     #[must_use]
     pub fn resolved_command(&self) -> String {
-        expand_env_placeholder(&self.execution.command)
+        expand_env_placeholder(&self.execution.command).into_owned()
     }
 
     /// Expand environment variable placeholders in arguments.
@@ -163,16 +200,24 @@ impl Workload {
         self.execution
             .args
             .iter()
-            .map(|a| expand_env_placeholder(a))
+            .map(|a| expand_env_placeholder(a).into_owned())
             .collect()
     }
 }
 
 /// Expand `${VAR}` and `${VAR:-default}` patterns using the process environment.
 ///
+/// Returns `Cow::Borrowed` when no placeholders are present (zero-copy fast path).
 /// Handles nested defaults like `${A:-${B:-fallback}}` via brace-depth counting.
 #[must_use]
-pub fn expand_env_placeholder(input: &str) -> String {
+pub fn expand_env_placeholder(input: &str) -> Cow<'_, str> {
+    if !input.contains("${") {
+        return Cow::Borrowed(input);
+    }
+    Cow::Owned(expand_env_inner(input))
+}
+
+fn expand_env_inner(input: &str) -> String {
     let mut result = String::with_capacity(input.len());
     let mut chars = input.chars().peekable();
 
@@ -279,7 +324,54 @@ requires_trio = true
 "#;
         let wl: Workload = toml::from_str(toml_str).unwrap();
         assert_eq!(wl.metadata.name, "hs-sarkas-md");
-        assert_eq!(wl.execution.exec_type, "native");
+        assert_eq!(wl.execution.exec_type, ExecType::Native);
         assert!(wl.provenance.as_ref().is_some_and(|p| p.requires_trio));
+        assert_eq!(
+            wl.security.as_ref().unwrap().isolation_level,
+            IsolationLevel::Standard
+        );
+        assert_eq!(wl.skip.as_ref().unwrap().when, SkipCondition::BinaryMissing);
+    }
+
+    #[test]
+    fn expand_no_placeholder_returns_borrowed() {
+        let input = "/opt/hotspring/bin/validate";
+        let result = expand_env_placeholder(input);
+        assert!(matches!(result, Cow::Borrowed(_)));
+        assert_eq!(result.as_ref(), input);
+    }
+
+    #[test]
+    fn exec_type_serde_roundtrip() {
+        let types = [ExecType::Native, ExecType::Wasm, ExecType::Container];
+        for t in types {
+            let json = serde_json::to_string(&t).unwrap();
+            let back: ExecType = serde_json::from_str(&json).unwrap();
+            assert_eq!(t, back);
+        }
+    }
+
+    #[test]
+    fn isolation_level_default() {
+        assert_eq!(IsolationLevel::default(), IsolationLevel::Standard);
+    }
+
+    #[test]
+    fn skip_condition_always() {
+        let toml_str = r#"
+[metadata]
+name = "disabled-wl"
+thread = "01"
+
+[execution]
+type = "native"
+command = "echo"
+
+[skip]
+when = "always"
+reason = "permanently disabled"
+"#;
+        let wl: Workload = toml::from_str(toml_str).unwrap();
+        assert!(wl.should_skip());
     }
 }

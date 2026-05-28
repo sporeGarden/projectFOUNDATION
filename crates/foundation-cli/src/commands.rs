@@ -96,23 +96,16 @@ pub async fn fetch(
     reason = "will await health RPC calls when IPC is live"
 )]
 pub async fn health(root: PathBuf, verbose: bool) -> CmdResult {
+    use foundation_core::primal_names;
+
     let config_path = root.join("deploy/discovery_defaults.toml");
     let config = DiscoveryConfig::from_file(&config_path)?;
 
-    let primals = [
-        "beardog",
-        "toadstool",
-        "nestgate",
-        "rhizocrypt",
-        "loamspine",
-        "sweetgrass",
-    ];
-
-    for primal in primals {
+    for &primal in primal_names::VALIDATION_PRIMALS {
         match foundation_ipc::PrimalClient::discover(primal, &config) {
             Ok(client) => {
                 if verbose {
-                    info!(primal, transport = %"discovered", "reachable");
+                    info!(primal, transport = "discovered", "reachable");
                 }
                 let _ = client;
             }

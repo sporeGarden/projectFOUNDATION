@@ -10,6 +10,19 @@ use tracing::{debug, info, warn};
 
 use crate::hasher;
 
+/// Rate limit for NCBI Entrez API (per their terms of service).
+const DEFAULT_NCBI_DELAY: Duration = Duration::from_millis(400);
+/// Rate limit for `UniProt` REST API.
+const DEFAULT_UNIPROT_DELAY: Duration = Duration::from_millis(500);
+/// Default per-request HTTP timeout.
+const DEFAULT_REQUEST_TIMEOUT: Duration = Duration::from_secs(120);
+/// Maximum retries before declaring a source unreachable.
+const DEFAULT_MAX_RETRIES: u32 = 3;
+/// Minimum bytes to accept as a valid download (protects against error pages).
+const DEFAULT_MIN_FILE_SIZE: u64 = 100;
+/// Default delay for APIs without specific rate limits.
+const DEFAULT_GENERIC_DELAY: Duration = Duration::from_millis(200);
+
 /// Configuration for the fetch operation.
 #[derive(Debug, Clone)]
 pub struct FetchConfig {
@@ -33,11 +46,11 @@ impl Default for FetchConfig {
     fn default() -> Self {
         Self {
             data_dir: PathBuf::from("data/fetched"),
-            ncbi_delay: Duration::from_millis(400),
-            uniprot_delay: Duration::from_millis(500),
-            max_retries: 3,
-            request_timeout: Duration::from_secs(120),
-            min_file_size: 100,
+            ncbi_delay: DEFAULT_NCBI_DELAY,
+            uniprot_delay: DEFAULT_UNIPROT_DELAY,
+            max_retries: DEFAULT_MAX_RETRIES,
+            request_timeout: DEFAULT_REQUEST_TIMEOUT,
+            min_file_size: DEFAULT_MIN_FILE_SIZE,
             skip_existing: true,
         }
     }
@@ -183,16 +196,20 @@ impl SourceFetcher {
             }
         }
 
-        Err(String::from("unreachable"))
+        unreachable!("loop always returns on max_retries")
     }
 
     /// Perform a single HTTP GET and write to a file.
     fn do_fetch(&self, url: &str, output: &Path) -> Result<(), String> {
-        let response = ureq::get(url)
-            .header(
-                "User-Agent",
-                "projectFOUNDATION/0.1 (scientific-validation)",
-            )
+        let agent = ureq::Agent::new_with_config(
+            ureq::config::Config::builder()
+                .timeout_global(Some(self.config.request_timeout))
+                .user_agent("projectFOUNDATION/0.1 (scientific-validation)")
+                .build(),
+        );
+
+        let response = agent
+            .get(url)
             .call()
             .map_err(|e| format!("HTTP request failed: {e}"))?;
 
@@ -221,7 +238,7 @@ impl SourceFetcher {
         } else if url.contains("uniprot.org") {
             self.config.uniprot_delay
         } else {
-            Duration::from_millis(200)
+            DEFAULT_GENERIC_DELAY
         }
     }
 

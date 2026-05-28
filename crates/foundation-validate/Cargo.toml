@@ -9,7 +9,6 @@ repository.workspace = true
 rust-version.workspace = true
 
 [dependencies]
-chrono.workspace = true
 foundation-core.workspace = true
 foundation-fetch.workspace = true
 foundation-ipc.workspace = true

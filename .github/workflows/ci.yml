@@ -614,7 +614,9 @@ s.close()
         run: cargo fmt --check
 
       - name: Clippy (pedantic + nursery, deny warnings)
-        run: cargo clippy --workspace --all-targets -- -D warnings
+        run: |
+          cargo clippy --workspace -- -D warnings
+          cargo clippy --workspace --tests -- -D warnings -A clippy::unwrap_used -A clippy::expect_used
 
       - name: Build release
         run: cargo build --release

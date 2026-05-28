@@ -113,31 +113,55 @@ pub fn execute_workload(workload: &Workload, timeout: Option<Duration>) -> Execu
 }
 
 /// Run a process with timeout, capturing stdout/stderr.
+///
+/// Uses `wait_with_output` in a thread with a timeout mechanism.
+/// On timeout, the child process is killed.
 fn run_process(
     command: &str,
     args: &[String],
     working_dir: Option<&str>,
-    _timeout: Duration,
+    timeout: Duration,
 ) -> Result<Output, String> {
     let mut cmd = std::process::Command::new(command);
     cmd.args(args);
 
     if let Some(dir) = working_dir {
         let expanded = foundation_core::workload::expand_env_placeholder(dir);
-        let path = Path::new(&expanded);
+        let path = Path::new(expanded.as_ref());
         if path.is_dir() {
             cmd.current_dir(path);
         }
     }
 
-    cmd.output()
-        .map_err(|e| format!("failed to spawn {command}: {e}"))
+    let mut child = cmd
+        .stdout(std::process::Stdio::piped())
+        .stderr(std::process::Stdio::piped())
+        .spawn()
+        .map_err(|e| format!("failed to spawn {command}: {e}"))?;
+
+    let start = Instant::now();
+    loop {
+        match child.try_wait() {
+            Ok(Some(_)) => return child.wait_with_output().map_err(|e| e.to_string()),
+            Ok(None) => {
+                if start.elapsed() >= timeout {
+                    let _ = child.kill();
+                    let _ = child.wait();
+                    return Err(format!("timed out after {}s", timeout.as_secs()));
+                }
+                std::thread::sleep(Duration::from_millis(50));
+            }
+            Err(e) => return Err(format!("error waiting for {command}: {e}")),
+        }
+    }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use foundation_core::workload::{Workload, WorkloadExecution, WorkloadMetadata};
+    use foundation_core::workload::{
+        ExecType, SkipCondition, Workload, WorkloadExecution, WorkloadMetadata, WorkloadSkip,
+    };
 
     #[test]
     fn skip_when_binary_missing() {
@@ -151,15 +175,15 @@ mod tests {
                 spring: None,
             },
             execution: WorkloadExecution {
-                exec_type: String::from("native"),
+                exec_type: ExecType::Native,
                 command: String::from("/nonexistent/binary"),
                 args: vec![],
                 working_dir: None,
             },
             resources: None,
             security: None,
-            skip: Some(foundation_core::workload::WorkloadSkip {
-                when: String::from("binary_missing"),
+            skip: Some(WorkloadSkip {
+                when: SkipCondition::BinaryMissing,
                 binary: Some(String::from("/nonexistent/binary")),
                 reason: Some(String::from("test binary not built")),
             }),
@@ -183,7 +207,7 @@ mod tests {
                 spring: None,
             },
             execution: WorkloadExecution {
-                exec_type: String::from("native"),
+                exec_type: ExecType::Native,
                 command: String::from("echo"),
                 args: vec![String::from("hello foundation")],
                 working_dir: None,
@@ -197,5 +221,62 @@ mod tests {
         let result = execute_workload(&workload, None);
         assert!(result.success);
         assert!(result.stdout.contains("hello foundation"));
+    }
+
+    #[test]
+    fn timeout_kills_process() {
+        let workload = Workload {
+            metadata: WorkloadMetadata {
+                name: String::from("sleeper"),
+                description: None,
+                version: None,
+                thread: String::from("01"),
+                thread_name: None,
+                spring: None,
+            },
+            execution: WorkloadExecution {
+                exec_type: ExecType::Native,
+                command: String::from("sleep"),
+                args: vec![String::from("60")],
+                working_dir: None,
+            },
+            resources: None,
+            security: None,
+            skip: None,
+            provenance: None,
+        };
+
+        let result = execute_workload(&workload, Some(Duration::from_millis(200)));
+        assert!(!result.success);
+        assert!(result.stderr.contains("timed out"));
+    }
+
+    #[test]
+    fn nonexistent_command_fails_gracefully() {
+        let workload = Workload {
+            metadata: WorkloadMetadata {
+                name: String::from("missing-cmd"),
+                description: None,
+                version: None,
+                thread: String::from("01"),
+                thread_name: None,
+                spring: None,
+            },
+            execution: WorkloadExecution {
+                exec_type: ExecType::Native,
+                command: String::from("/nonexistent/binary/that/will/never/exist"),
+                args: vec![],
+                working_dir: None,
+            },
+            resources: None,
+            security: None,
+            skip: None,
+            provenance: None,
+        };
+
+        let result = execute_workload(&workload, None);
+        assert!(!result.success);
+        assert!(!result.skipped);
+        assert!(result.stderr.contains("failed to spawn"));
     }
 }

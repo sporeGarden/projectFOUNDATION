@@ -3,9 +3,57 @@
 
 use std::fmt::Write as _;
 use std::path::{Path, PathBuf};
+use std::time::SystemTime;
 
-use chrono::Utc;
 use foundation_core::CoreError;
+
+/// Format current UTC time as `YYYYMMDD-HHMMSS`.
+fn timestamp_compact() -> String {
+    format_system_time(SystemTime::now(), "%Y%m%d-%H%M%S")
+}
+
+/// Format current UTC time as `YYYY-MM-DD HH:MM:SS UTC`.
+fn timestamp_display() -> String {
+    format_system_time(SystemTime::now(), "%Y-%m-%d %H:%M:%S UTC")
+}
+
+/// Format current UTC time as ISO 8601 (`YYYY-MM-DDTHH:MM:SSZ`).
+fn timestamp_iso() -> String {
+    format_system_time(SystemTime::now(), "%Y-%m-%dT%H:%M:%SZ")
+}
+
+/// Minimal UTC time formatter using UNIX epoch math — no external crate.
+fn format_system_time(time: SystemTime, fmt: &str) -> String {
+    let secs = time
+        .duration_since(SystemTime::UNIX_EPOCH)
+        .unwrap_or_default()
+        .as_secs();
+
+    let days = secs / 86_400;
+    let time_of_day = secs % 86_400;
+    let hours = time_of_day / 3600;
+    let minutes = (time_of_day % 3600) / 60;
+    let seconds = time_of_day % 60;
+
+    // Civil date from days since epoch (algorithm from Howard Hinnant)
+    let z = days + 719_468;
+    let era = z / 146_097;
+    let doe = z - era * 146_097;
+    let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365;
+    let y = yoe + era * 400;
+    let doy = doe - (365 * yoe + yoe / 4 - yoe / 100);
+    let mp = (5 * doy + 2) / 153;
+    let d = doy - (153 * mp + 2) / 5 + 1;
+    let m = if mp < 10 { mp + 3 } else { mp - 9 };
+    let y = if m <= 2 { y + 1 } else { y };
+
+    fmt.replace("%Y", &format!("{y:04}"))
+        .replace("%m", &format!("{m:02}"))
+        .replace("%d", &format!("{d:02}"))
+        .replace("%H", &format!("{hours:02}"))
+        .replace("%M", &format!("{minutes:02}"))
+        .replace("%S", &format!("{seconds:02}"))
+}
 
 use crate::compare::ComparisonReport;
 use crate::executor::ExecutionResult;
@@ -31,7 +79,7 @@ impl ReportWriter {
     ///
     /// Returns [`CoreError::Io`] if the report cannot be written.
     pub fn write(&self, result: &ValidationResult) -> Result<PathBuf, CoreError> {
-        let timestamp = Utc::now().format("%Y%m%d-%H%M%S");
+        let timestamp = timestamp_compact();
         let run_dir = PathBuf::from(format!("run-{timestamp}"));
         std::fs::create_dir_all(&run_dir).map_err(|e| CoreError::io(&run_dir, e))?;
 
@@ -57,11 +105,7 @@ impl ReportWriter {
         let mut md = String::with_capacity(4096);
 
         md.push_str("# Validation Report\n\n");
-        let _ = writeln!(
-            md,
-            "**Generated:** {}",
-            Utc::now().format("%Y-%m-%d %H:%M:%S UTC")
-        );
+        let _ = writeln!(md, "**Generated:** {}", timestamp_display());
         let _ = writeln!(md, "**Gate:** {}", self.gate_name);
         let _ = writeln!(
             md,
@@ -95,11 +139,7 @@ fn render(result: &ValidationResult) -> String {
     let mut md = String::with_capacity(4096);
 
     md.push_str("# Validation Report\n\n");
-    let _ = writeln!(
-        md,
-        "**Generated:** {}",
-        Utc::now().format("%Y-%m-%d %H:%M:%S UTC")
-    );
+    let _ = writeln!(md, "**Generated:** {}", timestamp_display());
     let _ = writeln!(md, "**Duration:** {:.2}s", result.elapsed_secs);
     let _ = writeln!(
         md,
@@ -188,11 +228,7 @@ pub fn write_provenance_toml(
     let path = run_dir.join("provenance.toml");
 
     let mut content = String::from("# SPDX-License-Identifier: AGPL-3.0-or-later\n");
-    let _ = writeln!(
-        content,
-        "generated = \"{}\"",
-        Utc::now().format("%Y-%m-%dT%H:%M:%SZ")
-    );
+    let _ = writeln!(content, "generated = \"{}\"", timestamp_iso());
     content.push_str("\n[trio]\n");
 
     if let Some(id) = dag_session_id {
@@ -340,5 +376,35 @@ mod tests {
         assert!(content.contains("**Results:** 1/2 passed (50%)"));
         assert!(content.contains("| energy_drift | PASS |"));
         assert!(content.contains("| charge_neutrality | FAIL |"));
+    }
+
+    #[test]
+    fn timestamp_format_correctness() {
+        use std::time::{Duration as StdDuration, UNIX_EPOCH};
+
+        // 2026-05-28 12:00:00 UTC = 1779969600 seconds since epoch
+        let fixed_time = UNIX_EPOCH + StdDuration::from_secs(1_779_969_600);
+        let compact = format_system_time(fixed_time, "%Y%m%d-%H%M%S");
+        assert_eq!(compact, "20260528-120000");
+
+        let display = format_system_time(fixed_time, "%Y-%m-%d %H:%M:%S UTC");
+        assert_eq!(display, "2026-05-28 12:00:00 UTC");
+
+        let iso = format_system_time(fixed_time, "%Y-%m-%dT%H:%M:%SZ");
+        assert_eq!(iso, "2026-05-28T12:00:00Z");
+    }
+
+    #[test]
+    fn timestamp_functions_produce_valid_output() {
+        let compact = timestamp_compact();
+        assert_eq!(compact.len(), 15); // YYYYMMDD-HHMMSS
+
+        let display = timestamp_display();
+        assert!(display.ends_with(" UTC"));
+        assert!(display.len() >= 23);
+
+        let iso = timestamp_iso();
+        assert!(iso.ends_with('Z'));
+        assert!(iso.contains('T'));
     }
 }
