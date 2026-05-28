@@ -6,7 +6,7 @@ domain thread maps — so that projectNUCLEUS can grow on top and products
 can focus on what matters to their audiences.
 
 **Organization**: sporeGarden (products built on ecoPrimals)
-**Generation**: gen4 — composition and deployment (Wave 57, primalSpring v0.9.30)
+**Generation**: gen4 — composition and deployment (Wave 59b, primalSpring v0.9.30)
 **License**: AGPL-3.0-or-later (code), ORC (system mechanics), CC-BY-SA 4.0 (docs)
 
 ## What This Is
@@ -84,23 +84,37 @@ and presents them for a particular audience.
 
 ## Launch a Validation Run
 
-### Rust UniBin (foundation — Phase B)
+### Rust UniBin (`foundation` — Phase B complete, Phase C in progress)
 
 ```bash
 # Build the foundation binary (pure Rust, ecoBin-compliant, zero C deps)
 cargo build --release
 
 # Run the full validation pipeline (skip-fetch for local-only)
+# Phases 1-8: health → provenance open → fetch check → registry → execute → compare → commit → report
 target/release/foundation validate --skip-fetch
 
 # Check all targets against manifests
 target/release/foundation targets --check
 
-# Inspect health of discovered primals
+# Inspect health of discovered primals (graceful degradation)
 target/release/foundation health
+
+# Fetch all sources from manifests (BLAKE3 verified)
+target/release/foundation fetch
+
+# Backfill BLAKE3 hashes for local data
+target/release/foundation backfill
 ```
 
-### Bash pipeline (canonical — production)
+**Current state**: 5 crates, 118 tests, 6.4k lines, 3.0MB binary, zero library warnings.
+IPC phases wired with graceful degradation. Type-safe enums for execution, isolation,
+skip conditions. `Cow<str>` zero-copy env expansion. `chrono` eliminated (stdlib epoch math).
+
+**Phase C remaining**: NestGate registration, toadStool dispatch, full `ProvenanceSession`
+trio, `backfill --write` TOML mutation, database-specific fetch orchestration.
+
+### Bash pipeline (canonical — production, pre-Phase C cutover)
 
 ```bash
 # 1. Deploy NUCLEUS composition (via projectNUCLEUS)
@@ -139,7 +153,7 @@ data/               Data source manifests and validation targets
   sources/          Per-thread data source TOMLs (11 files, 165 sources, 10 BLAKE3-anchored)
   targets/          Per-thread validation target TOMLs (11 files, 185 targets)
 graphs/             Foundation-specific deploy graphs (references projectNUCLEUS)
-deploy/             Operational scripts (production — Phase C target: replace with UniBin)
+deploy/             Operational scripts (production-canonical until Phase C cutover)
   lib/              Sourced shell libraries (6 modules)
     env.sh              Centralized env bootstrap (ECOPRIMALS_ROOT, SPRINGS_ROOT, FAMILY_ID)
     primal_ipc.sh     Primal discovery, RPC clients, blake3_hash

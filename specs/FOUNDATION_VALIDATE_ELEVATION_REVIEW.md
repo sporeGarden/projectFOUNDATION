@@ -1,7 +1,7 @@
 # foundation_validate.sh — Rust Elevation Feasibility Review
 
-**Date:** 2026-05-16 (updated May 28 for Wave 57 — Phase B landed)
-**Status:** Phase A complete, Phase B substantially landed (5,076 lines, 93 tests, ecoBin compliant)
+**Date:** 2026-05-16 (updated May 28 for Wave 59b — Phase B complete, Phase C underway)
+**Status:** Phase B complete (6,416 lines, 118 tests, ecoBin compliant, IPC wired, type-safe)
 **Referenced by:** lithoSpore UPSTREAM_GAPS.md, primalSpring CROSS_SPRING_PARITY_SCORECARD
 
 ## Current State
@@ -164,24 +164,26 @@ current 4-call pattern with response validation is the correct interim.
 
 **Elevate in phases:**
 
-1. **Phase A (complete):** Bash script fixes — Phase 2 params, Phase 6
+1. **Phase A (complete, May 16 2026):** Bash script fixes — Phase 2 params, Phase 6
    schema alignment, trusted_directories, modularization, skip counting,
-   provenance response validation. Shipped May 16, 2026.
-2. **Phase B (next sprint — unblocked by Wave 46, aligned to Wave 56 VPS standard):**
-   Extract `foundation-core` types + `foundation-ipc` clients. These are reusable
-   across lithoSpore and other gardens. Use `CompositionContext` from primalSpring
-   for IPC. **Wave 56 provides:** `CompositionContext::from_live_discovery()` (UDS-only
-   VPS standard), `nucleus_launcher --uds-only` (zero TCP ports), `env_keys.rs`
-   (FAMILY_ID, socket/manifest discovery), `DispatchError` / `PhasedIpcError` typed
-   error system, 5-tier discovery chain (songbird → NeuralAPI → UDS → manifest →
-   TCP opt-in for desktop only). All spring cell graphs use `spawn=false` overlay
-   pattern. TCP bootstrap is dev/desktop only.
-3. **Phase C (following sprint):** Replace `foundation_validate.sh` with
-   `foundation validate` UniBin command. Adopt `ctx.dispatch("nest.store")`
-   and `ctx.dispatch("nest.commit")` for signal-based provenance (14 atomic
-   signals available). Use `primalspring::env_keys` for all env resolution.
-4. **Phase D:** Replace `fetch_sources.sh` with `foundation fetch`.
-   At this point the repo is pure Rust + TOML + Markdown.
+   provenance response validation.
+2. **Phase B (complete, May 28 2026 — Wave 59b):**
+   5-crate Rust workspace: `foundation-core` (types, TOML, config, env expansion),
+   `foundation-ipc` (JSON-RPC clients, health triad, provenance sessions),
+   `foundation-fetch` (manifest-driven fetch, BLAKE3, registry scan),
+   `foundation-validate` (8-phase pipeline with IPC graceful degradation),
+   `foundation-cli` (UniBin entry: validate, fetch, health, targets, backfill).
+   **Delivered:** 6,416 lines, 118 tests, zero library warnings, `PhasedIpcError`,
+   `primal_names` constants, `env_keys` centralized, type-safe enums (`ExecType`,
+   `IsolationLevel`, `SkipCondition`), `Cow<str>` zero-copy, `chrono` eliminated,
+   3.0MB ecoBin-compliant binary. IPC Phases 1/2/7 wired with graceful degradation.
+3. **Phase C (current — production parity):** Wire `SourceFetcher` into pipeline
+   Phase 3 with database-specific fetch. NestGate registration in Phase 4.
+   toadStool dispatch in Phase 5. Full `ProvenanceSession` trio in Phases 2/7.
+   `foundation backfill --write` TOML mutation. Adopt `ctx.dispatch()` for
+   signal-based provenance. At completion: bash pipeline deprecated.
+4. **Phase D (repo simplification):** Remove `deploy/*.sh` once Phase C is
+   validated. At this point the repo is pure Rust + TOML + Markdown.
 
 This progression lets the bash script keep working while Rust phases land
 incrementally. Each phase is independently useful and testable.

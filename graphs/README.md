@@ -48,9 +48,9 @@ The local graph is a **validation superset** of the primalSpring canonical
 | Per-node `security_model` | Graph-level only (`btsp_enforced`) | Per-node |
 
 The `by_capability` drift is cosmetic — toadStool resolves by songbird
-registry, not string matching. The graph will converge with Rust elevation
-(Phase B) when `CompositionContext` replaces the bash discovery layer.
+registry, not string matching. Phase B Rust elevation landed (Wave 59b);
+`PrimalClient::discover()` uses capability-based resolution.
 
 **Signal graphs** (`nest.store`, `nest.commit`) are not referenced locally.
-The bash pipeline uses 4-call RPC sequences as documented in the elevation
-review. Signal adoption targets Phase C (Rust UniBin).
+The Rust pipeline uses `dag.session.create/commit` RPC (Phase B graceful
+degradation). Full signal adoption via `ctx.dispatch()` targets Phase C.

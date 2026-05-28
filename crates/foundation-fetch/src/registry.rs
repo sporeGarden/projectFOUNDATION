@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
-//! Artifact registry — walk fetched data and register BLAKE3 hashes with `NestGate`.
+//! Artifact registry — walk fetched data and compute BLAKE3 content addresses.
+//!
+//! Currently performs local-only scanning. `NestGate` RPC registration is a Phase C target.
 
 use std::path::{Path, PathBuf};
 
