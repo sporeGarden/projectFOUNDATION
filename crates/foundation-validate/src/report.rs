@@ -59,6 +59,28 @@ use crate::compare::ComparisonReport;
 use crate::executor::ExecutionResult;
 use crate::pipeline::ValidationResult;
 
+/// Typed fetch availability result — replaces raw `(String, bool)` tuples.
+#[derive(Debug, Clone)]
+pub struct FetchStatus {
+    /// Source identifier from the sources manifest.
+    pub source_id: String,
+    /// Whether the source data is locally available.
+    pub available: bool,
+}
+
+/// Provenance session IDs for a completed validation run.
+#[derive(Debug, Clone, Default)]
+pub struct ProvenanceIds<'a> {
+    /// DAG session ID from `rhizoCrypt`.
+    pub dag_session_id: Option<&'a str>,
+    /// Spine entry ID from `loamSpine`.
+    pub spine_entry_id: Option<&'a str>,
+    /// Braid ID from `sweetGrass`.
+    pub braid_id: Option<&'a str>,
+    /// Merkle root hash.
+    pub merkle_root: Option<&'a str>,
+}
+
 /// Generates structured Markdown validation reports.
 pub struct ReportWriter {
     gate_name: String,
@@ -100,7 +122,7 @@ impl ReportWriter {
         path: &Path,
         comparison: Option<&ComparisonReport>,
         execution_results: &[ExecutionResult],
-        fetch_results: &[(String, bool)],
+        fetch_results: &[FetchStatus],
     ) -> Result<(), CoreError> {
         let mut md = String::with_capacity(4096);
 
@@ -119,7 +141,7 @@ impl ReportWriter {
 
         if !fetch_results.is_empty() {
             md.push_str("## Phase 3: Fetch\n\n");
-            let fetched = fetch_results.iter().filter(|(_, ok)| *ok).count();
+            let fetched = fetch_results.iter().filter(|f| f.available).count();
             let _ = writeln!(md, "{fetched}/{} sources available\n", fetch_results.len());
         }
 
@@ -218,29 +240,23 @@ fn render_comparison(md: &mut String, report: &ComparisonReport) {
 /// # Errors
 ///
 /// Returns [`CoreError::Io`] on write failure.
-pub fn write_provenance_toml(
-    run_dir: &Path,
-    dag_session_id: Option<&str>,
-    spine_entry_id: Option<&str>,
-    braid_id: Option<&str>,
-    merkle_root: Option<&str>,
-) -> Result<(), CoreError> {
+pub fn write_provenance_toml(run_dir: &Path, ids: &ProvenanceIds<'_>) -> Result<(), CoreError> {
     let path = run_dir.join("provenance.toml");
 
     let mut content = String::from("# SPDX-License-Identifier: AGPL-3.0-or-later\n");
     let _ = writeln!(content, "generated = \"{}\"", timestamp_iso());
     content.push_str("\n[trio]\n");
 
-    if let Some(id) = dag_session_id {
+    if let Some(id) = ids.dag_session_id {
         let _ = writeln!(content, "dag_session_id = \"{id}\"");
     }
-    if let Some(id) = spine_entry_id {
+    if let Some(id) = ids.spine_entry_id {
         let _ = writeln!(content, "spine_entry_id = \"{id}\"");
     }
-    if let Some(id) = braid_id {
+    if let Some(id) = ids.braid_id {
         let _ = writeln!(content, "braid_id = \"{id}\"");
     }
-    if let Some(root) = merkle_root {
+    if let Some(root) = ids.merkle_root {
         let _ = writeln!(content, "merkle_root = \"{root}\"");
     }
 
@@ -283,14 +299,13 @@ mod tests {
     #[test]
     fn write_provenance_toml_creates_file() {
         let dir = tempfile::tempdir().unwrap();
-        write_provenance_toml(
-            dir.path(),
-            Some("session-123"),
-            Some("entry-456"),
-            Some("braid-789"),
-            Some("abcdef0123456789"),
-        )
-        .unwrap();
+        let ids = super::ProvenanceIds {
+            dag_session_id: Some("session-123"),
+            spine_entry_id: Some("entry-456"),
+            braid_id: Some("braid-789"),
+            merkle_root: Some("abcdef0123456789"),
+        };
+        write_provenance_toml(dir.path(), &ids).unwrap();
 
         let path = dir.path().join("provenance.toml");
         assert!(path.exists());

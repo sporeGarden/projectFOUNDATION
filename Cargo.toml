@@ -6,6 +6,7 @@ members = [
     "crates/foundation-ipc",
     "crates/foundation-fetch",
     "crates/foundation-validate",
+    "crates/foundation-publish",
     "crates/foundation-cli",
 ]
 
@@ -22,7 +23,7 @@ clap = { version = "4", features = ["derive"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 thiserror = "2"
-tokio = { version = "1", features = ["rt-multi-thread", "net", "io-util", "fs", "time", "macros"] }
+tokio = { version = "1", features = ["rt-multi-thread", "net", "io-util", "time", "macros"] }
 toml = "0.8"
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
@@ -33,6 +34,7 @@ foundation-core = { path = "crates/foundation-core" }
 foundation-ipc = { path = "crates/foundation-ipc" }
 foundation-fetch = { path = "crates/foundation-fetch" }
 foundation-validate = { path = "crates/foundation-validate" }
+foundation-publish = { path = "crates/foundation-publish" }
 
 [workspace.lints.rust]
 unsafe_code = "deny"

@@ -221,17 +221,17 @@ pub async fn resolve_family_id_rpc(
 
 /// Ecosystem convention table for semantic domain prefixes.
 ///
-/// This maps primal names to their JSON-RPC method prefix as established
+/// Maps primal slugs to their JSON-RPC method prefix as established
 /// by wateringHole semantic guidelines. At runtime, primals can override
 /// this via `system.capabilities` response.
 const PRIMAL_DOMAIN_CONVENTION: &[(&str, &str)] = &[
-    ("nestgate", "storage"),
-    ("rhizocrypt", "dag"),
-    ("loamspine", "entry"),
-    ("sweetgrass", "braid"),
-    ("beardog", "crypto"),
-    ("toadstool", "workload"),
-    ("songbird", "network"),
+    (foundation_core::primal_names::slugs::NESTGATE, "storage"),
+    (foundation_core::primal_names::slugs::RHIZOCRYPT, "dag"),
+    (foundation_core::primal_names::slugs::LOAMSPINE, "entry"),
+    (foundation_core::primal_names::slugs::SWEETGRASS, "braid"),
+    (foundation_core::primal_names::slugs::BEARDOG, "crypto"),
+    (foundation_core::primal_names::slugs::TOADSTOOL, "workload"),
+    (foundation_core::primal_names::slugs::SONGBIRD, "network"),
 ];
 
 #[cfg(test)]

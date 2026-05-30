@@ -8,9 +8,10 @@
 
 pub mod compare;
 pub mod executor;
+pub mod phases;
 pub mod pipeline;
 pub mod report;
 
-pub use compare::compare_targets;
+pub use compare::{Observation, compare_targets};
 pub use pipeline::{PipelineConfig, ValidationPipeline, ValidationResult};
-pub use report::ReportWriter;
+pub use report::{FetchStatus, ProvenanceIds, ReportWriter};

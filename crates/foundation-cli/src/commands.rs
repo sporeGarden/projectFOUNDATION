@@ -1,5 +1,8 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 //! Command implementations for the foundation `UniBin`.
+//!
+//! Functions take `PathBuf`/`String` by value — they own the data from clap
+//! and this avoids lifetime complexity at the CLI boundary.
 
 use std::path::PathBuf;
 
@@ -8,12 +11,14 @@ use foundation_core::source::SourcesManifest;
 use foundation_core::target::TargetsManifest;
 use foundation_core::thread::ThreadIndex;
 use foundation_fetch::{FetchConfig, SourceFetcher, blake3_file};
+use foundation_publish::gallery::GalleryConfig;
+use foundation_publish::{GalleryGenerator, ProfileIndex, SporeRegistry};
 use foundation_validate::{PipelineConfig, ValidationPipeline};
 use tracing::{error, info};
 
-type CmdResult = Result<(), Box<dyn std::error::Error>>;
+pub type CmdResult = Result<(), Box<dyn std::error::Error>>;
 
-/// Run the 8-phase validation pipeline.
+/// Run the 8-phase validation pipeline (requires async for IPC phases).
 pub async fn validate(
     root: PathBuf,
     thread: Option<String>,
@@ -43,11 +48,7 @@ pub async fn validate(
 }
 
 /// Fetch data sources from manifests.
-#[expect(
-    clippy::unused_async,
-    reason = "SourceFetcher::fetch_manifest is sync; Phase C async streaming"
-)]
-pub async fn fetch(
+pub fn fetch(
     root: PathBuf,
     thread: Option<String>,
     data_dir: Option<PathBuf>,
@@ -90,12 +91,8 @@ pub async fn fetch(
     Ok(())
 }
 
-/// Check health triad of NUCLEUS primals.
-#[expect(
-    clippy::unused_async,
-    reason = "Phase C: call HealthTriad::check() per client (pipeline already does)"
-)]
-pub async fn health(root: PathBuf, verbose: bool) -> CmdResult {
+/// Check health triad of NUCLEUS primals (discovery only — sync).
+pub fn health(root: PathBuf, verbose: bool) -> CmdResult {
     use foundation_core::primal_names;
 
     let config_path = root.join("deploy/discovery_defaults.toml");
@@ -103,11 +100,10 @@ pub async fn health(root: PathBuf, verbose: bool) -> CmdResult {
 
     for &primal in primal_names::VALIDATION_PRIMALS {
         match foundation_ipc::PrimalClient::discover(primal, &config) {
-            Ok(client) => {
+            Ok(_) => {
                 if verbose {
                     info!(primal, transport = "discovered", "reachable");
                 }
-                let _ = client;
             }
             Err(e) => {
                 if verbose {
@@ -123,11 +119,7 @@ pub async fn health(root: PathBuf, verbose: bool) -> CmdResult {
 }
 
 /// Inspect and verify target manifests.
-#[expect(
-    clippy::unused_async,
-    reason = "Phase C: compare_targets via pipeline; currently manifest-only"
-)]
-pub async fn targets(root: PathBuf, thread: Option<String>, check: bool) -> CmdResult {
+pub fn targets(root: PathBuf, thread: Option<String>, check: bool) -> CmdResult {
     let index = ThreadIndex::from_file(&root.join("lineage/THREAD_INDEX.toml"))?;
 
     let threads_to_check: Vec<_> = if let Some(filter) = &thread {
@@ -170,12 +162,76 @@ pub async fn targets(root: PathBuf, thread: Option<String>, check: bool) -> CmdR
     Ok(())
 }
 
+/// Generate sporePrint gallery pages from pseudoSpore registry.
+pub fn publish(registry_path: PathBuf, output_dir: Option<PathBuf>, dry_run: bool) -> CmdResult {
+    let registry = SporeRegistry::from_file(&registry_path)?;
+    let complete = registry.complete_entries();
+
+    info!(
+        total = registry.entries.len(),
+        complete = complete.len(),
+        "loaded pseudoSpore registry"
+    );
+
+    if complete.is_empty() {
+        info!("no complete pseudoSpores to publish");
+        return Ok(());
+    }
+
+    let config = GalleryConfig {
+        output_dir: output_dir.unwrap_or_else(|| PathBuf::from("sporeprint/spores")),
+        ..GalleryConfig::default()
+    };
+
+    let generator = GalleryGenerator::new(config);
+
+    if dry_run {
+        for entry in &complete {
+            let content = generator.render_page(entry);
+            info!(slug = %entry.slug(), lines = content.lines().count(), "would generate");
+        }
+    } else {
+        let paths = generator.generate_all(&complete)?;
+        generator.generate_index(&complete)?;
+        info!(pages = paths.len(), "gallery pages written");
+    }
+
+    Ok(())
+}
+
+/// Scan and index `domain_profile.toml` files from a spring directory.
+pub fn profiles(scan_dir: PathBuf, spring: String, output: Option<PathBuf>) -> CmdResult {
+    let index = ProfileIndex::scan_directory(&scan_dir, &spring)?;
+
+    info!(
+        spring = %spring,
+        found = index.profiles.len(),
+        "domain profile scan complete"
+    );
+
+    for profile in &index.profiles {
+        info!(
+            id = %profile.id,
+            version = %profile.version,
+            tools = ?profile.tools,
+            path = %profile.path.display(),
+            "indexed"
+        );
+    }
+
+    if let Some(out_path) = output {
+        let json = serde_json::to_string_pretty(&index)?;
+        std::fs::write(&out_path, json).map_err(|e| {
+            Box::new(foundation_core::CoreError::io(&out_path, e)) as Box<dyn std::error::Error>
+        })?;
+        info!(path = %out_path.display(), "index written");
+    }
+
+    Ok(())
+}
+
 /// Populate BLAKE3 hashes in source manifests.
-#[expect(
-    clippy::unused_async,
-    reason = "Phase C: NestGate RPC registration + TOML write-back"
-)]
-pub async fn backfill(root: PathBuf, data_dir: Option<PathBuf>, dry_run: bool) -> CmdResult {
+pub fn backfill(root: PathBuf, data_dir: Option<PathBuf>, dry_run: bool) -> CmdResult {
     let index = ThreadIndex::from_file(&root.join("lineage/THREAD_INDEX.toml"))?;
     let fetch_dir = data_dir.unwrap_or_else(|| root.join("data/fetched"));
 
@@ -197,7 +253,10 @@ pub async fn backfill(root: PathBuf, data_dir: Option<PathBuf>, dry_run: bool) -
             let file_path = fetch_dir.join(format!(
                 "{}.{}",
                 source.id,
-                source.format.as_deref().unwrap_or("dat")
+                source
+                    .format
+                    .as_deref()
+                    .unwrap_or(foundation_fetch::DEFAULT_FILE_EXTENSION)
             ));
             if file_path.exists() {
                 match blake3_file(&file_path) {

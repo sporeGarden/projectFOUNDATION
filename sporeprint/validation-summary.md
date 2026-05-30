@@ -1,6 +1,6 @@
 +++
 title = "projectFOUNDATION Validation Summary"
-date = 2026-05-27
+date = 2026-05-30
 template = "page.html"
 [extra]
 entity = "projectfoundation"
@@ -14,16 +14,19 @@ Defines **what** to validate across 10 domain threads spanning whole-cell
 modeling, plasma physics, immunology, evolutionary biology, agricultural
 science, and more.
 
-## Coverage
+## Current State (Wave 63+)
 
 | Metric | Value |
 |--------|------:|
+| Rust workspace lines | 8,001 |
+| Tests (unit + integration) | 150 |
+| Binary size (ecoBin, zero C deps) | 3.2 MB |
 | Domain threads | 10 |
 | Data sources | 165 (across 11 manifests) |
 | BLAKE3-anchored sources | 10 |
 | Validation targets | 185 (across 11 manifests) |
 | Workloads | 29 |
-| CPU parity benchmarks | 6 |
+| CPU parity benchmarks | 6 scripts, 32 test cases |
 
 ## Thread Status
 
@@ -42,26 +45,48 @@ science, and more.
 
 ## Pipeline
 
-Foundation validation runs through an 8-phase pipeline orchestrated by
-`foundation_validate.sh`:
+Foundation validation runs through an 8-phase pipeline, implemented in both
+the `foundation` Rust UniBin and the canonical bash pipeline:
 
-1. Health-check NUCLEUS primals (graph-driven, UDS-first)
-2. Create provenance session (rhizoCrypt DAG + loamSpine spine)
-3. Fetch data sources (manifest-driven from `data/sources/*.toml`)
-4. Register artifacts in NestGate with BLAKE3
-5. Execute workloads through toadStool
-6. Compare results against validation targets
-7. Commit provenance (Merkle root + loamSpine + sweetGrass braid)
-8. Write `results.json`, `provenance.toml`, and `VALIDATION_REPORT.md`
+### Rust UniBin (`foundation validate`)
+
+Phase B complete, Phase C in progress. Type-safe, ecoBin-compliant, IPC
+wired with graceful degradation:
+
+1. **Health** — `HealthTriad` probes `VALIDATION_PRIMALS` via JSON-RPC
+2. **Provenance open** — `dag.session.create` via rhizoCrypt (degrades gracefully)
+3. **Fetch check** — Verifies source data availability from `ThreadIndex` manifests
+4. **Registry** — `ArtifactRegistry` BLAKE3 scan of fetched data
+5. **Execute** — Native subprocess with timeout enforcement
+6. **Compare** — Typed tolerance checking against target manifests
+7. **Provenance commit** — `dag.session.commit` finalization
+8. **Report** — Structured Markdown with per-workload and per-target results
+
+### Bash pipeline (`foundation_validate.sh`)
+
+Production-canonical until Phase C cutover. Full NestGate registration,
+toadStool dispatch, and provenance trio commit.
+
+## Crate Architecture
+
+```
+foundation-core      Types, TOML parsing, config, env_keys, primal_names
+foundation-ipc       JSON-RPC 2.0 clients, HealthTriad, ProvenanceSession
+foundation-fetch     Manifest-driven fetch, BLAKE3 content addressing
+foundation-validate  8-phase pipeline, executor, comparison, reporting
+foundation-cli       UniBin entry: validate, fetch, health, targets, backfill
+```
 
 ## Key Patterns
 
-- **Manifest-driven fetch**: `data/sources/*.toml` → dispatch by `database` field
-- **Cross-tier parity**: Python baseline → Rust validator → Primal composition
-- **Degradation behavior**: Science never gated behind primal availability
-- **Typed IPC**: JSON-RPC responses parsed via typed helpers, not grep
-- **Thread registry**: All thread metadata resolved from `lineage/THREAD_INDEX.toml`
+- **Manifest-driven**: All paths from `ThreadIndex` fields, not hardcoded
+- **Type-safe enums**: `ExecType`, `IsolationLevel`, `SkipCondition`, `IpcPhase`
+- **Zero-copy**: `Cow<str>` env expansion, `bytes::Bytes` in IPC transport
+- **Graceful degradation**: Unreachable primals → warnings, not abort
+- **ecoBin compliant**: Pure Rust, zero C dependencies, 3.0 MB stripped binary
+- **Centralized identity**: `env_keys` module, `primal_names` constants
 
 ## Source
 
 - [projectFOUNDATION on GitHub](https://github.com/sporeGarden/projectFOUNDATION)
+- [projectFOUNDATION on Forgejo](https://git.primals.eco/sporeGarden/projectFOUNDATION)

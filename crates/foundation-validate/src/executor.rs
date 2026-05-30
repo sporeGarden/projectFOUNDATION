@@ -89,8 +89,10 @@ pub fn execute_workload(workload: &Workload, timeout: Option<Duration>) -> Execu
                 name,
                 success,
                 exit_code,
-                stdout: String::from_utf8_lossy(&output.stdout).into_owned(),
-                stderr: String::from_utf8_lossy(&output.stderr).into_owned(),
+                stdout: String::from_utf8(output.stdout)
+                    .unwrap_or_else(|e| String::from_utf8_lossy(e.as_bytes()).into_owned()),
+                stderr: String::from_utf8(output.stderr)
+                    .unwrap_or_else(|e| String::from_utf8_lossy(e.as_bytes()).into_owned()),
                 elapsed,
                 skipped: false,
                 skip_reason: None,
@@ -278,5 +280,124 @@ mod tests {
         assert!(!result.success);
         assert!(!result.skipped);
         assert!(result.stderr.contains("failed to spawn"));
+    }
+
+    #[test]
+    fn captures_exit_code() {
+        let workload = Workload {
+            metadata: WorkloadMetadata {
+                name: String::from("exit-42"),
+                description: None,
+                version: None,
+                thread: String::from("01"),
+                thread_name: None,
+                spring: None,
+            },
+            execution: WorkloadExecution {
+                exec_type: ExecType::Native,
+                command: String::from("bash"),
+                args: vec![String::from("-c"), String::from("exit 42")],
+                working_dir: None,
+            },
+            resources: None,
+            security: None,
+            skip: None,
+            provenance: None,
+        };
+
+        let result = execute_workload(&workload, None);
+        assert!(!result.success);
+        assert_eq!(result.exit_code, Some(42));
+    }
+
+    #[test]
+    fn captures_stderr() {
+        let workload = Workload {
+            metadata: WorkloadMetadata {
+                name: String::from("stderr-test"),
+                description: None,
+                version: None,
+                thread: String::from("01"),
+                thread_name: None,
+                spring: None,
+            },
+            execution: WorkloadExecution {
+                exec_type: ExecType::Native,
+                command: String::from("bash"),
+                args: vec![
+                    String::from("-c"),
+                    String::from("echo error_msg >&2; exit 1"),
+                ],
+                working_dir: None,
+            },
+            resources: None,
+            security: None,
+            skip: None,
+            provenance: None,
+        };
+
+        let result = execute_workload(&workload, None);
+        assert!(!result.success);
+        assert!(result.stderr.contains("error_msg"));
+    }
+
+    #[test]
+    fn working_dir_is_honored() {
+        let workload = Workload {
+            metadata: WorkloadMetadata {
+                name: String::from("pwd-test"),
+                description: None,
+                version: None,
+                thread: String::from("01"),
+                thread_name: None,
+                spring: None,
+            },
+            execution: WorkloadExecution {
+                exec_type: ExecType::Native,
+                command: String::from("pwd"),
+                args: vec![],
+                working_dir: Some(String::from("/tmp")),
+            },
+            resources: None,
+            security: None,
+            skip: None,
+            provenance: None,
+        };
+
+        let result = execute_workload(&workload, None);
+        assert!(result.success);
+        assert!(result.stdout.trim().starts_with("/tmp"));
+    }
+
+    #[test]
+    fn skip_with_default_reason() {
+        let workload = Workload {
+            metadata: WorkloadMetadata {
+                name: String::from("default-skip"),
+                description: None,
+                version: None,
+                thread: String::from("01"),
+                thread_name: None,
+                spring: None,
+            },
+            execution: WorkloadExecution {
+                exec_type: ExecType::Native,
+                command: String::from("/nonexistent"),
+                args: vec![],
+                working_dir: None,
+            },
+            resources: None,
+            security: None,
+            skip: Some(WorkloadSkip {
+                when: SkipCondition::BinaryMissing,
+                binary: Some(String::from("/nonexistent")),
+                reason: None,
+            }),
+            provenance: None,
+        };
+
+        let result = execute_workload(&workload, None);
+        assert!(result.skipped);
+        assert_eq!(result.skip_reason.as_deref(), Some("skip condition met"));
     }
 }

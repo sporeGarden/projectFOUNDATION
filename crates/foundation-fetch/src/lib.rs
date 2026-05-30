@@ -10,6 +10,6 @@ pub mod fetcher;
 pub mod hasher;
 pub mod registry;
 
-pub use fetcher::{FetchConfig, FetchResult, SourceFetcher};
+pub use fetcher::{DEFAULT_FILE_EXTENSION, FetchConfig, FetchResult, SourceFetcher, domains};
 pub use hasher::blake3_file;
 pub use registry::ArtifactRegistry;

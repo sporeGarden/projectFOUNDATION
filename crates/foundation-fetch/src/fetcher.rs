@@ -23,6 +23,24 @@ const DEFAULT_MIN_FILE_SIZE: u64 = 100;
 /// Default delay for APIs without specific rate limits.
 const DEFAULT_GENERIC_DELAY: Duration = Duration::from_millis(200);
 
+/// Known API domain patterns for rate-limiting decisions.
+///
+/// Used by the fetcher to identify which rate-limit policy applies to a URL.
+/// These are domain conventions, not exhaustive — unrecognized domains use the
+/// generic delay. Sources declare their own URLs in manifests.
+pub mod domains {
+    /// NCBI Entrez utilities host fragment.
+    pub const NCBI: &str = "ncbi.nlm.nih.gov";
+    /// `UniProt` REST API host fragment.
+    pub const UNIPROT: &str = "uniprot.org";
+}
+
+/// Default file extension when source manifest doesn't specify a format.
+pub const DEFAULT_FILE_EXTENSION: &str = "dat";
+
+/// User agent string identifying foundation fetcher requests.
+const USER_AGENT: &str = "projectFOUNDATION/0.1 (scientific-validation)";
+
 /// Configuration for the fetch operation.
 #[derive(Debug, Clone)]
 pub struct FetchConfig {
@@ -204,7 +222,7 @@ impl SourceFetcher {
         let agent = ureq::Agent::new_with_config(
             ureq::config::Config::builder()
                 .timeout_global(Some(self.config.request_timeout))
-                .user_agent("projectFOUNDATION/0.1 (scientific-validation)")
+                .user_agent(USER_AGENT)
                 .build(),
         );
 
@@ -233,9 +251,9 @@ impl SourceFetcher {
 
     /// Determine rate-limit delay based on the URL's domain.
     fn delay_for_url(&self, url: &str) -> Duration {
-        if url.contains("ncbi.nlm.nih.gov") {
+        if url.contains(domains::NCBI) {
             self.config.ncbi_delay
-        } else if url.contains("uniprot.org") {
+        } else if url.contains(domains::UNIPROT) {
             self.config.uniprot_delay
         } else {
             DEFAULT_GENERIC_DELAY
@@ -247,7 +265,7 @@ impl SourceFetcher {
         let filename = format!(
             "{}.{}",
             source.id,
-            source.format.as_deref().unwrap_or("dat")
+            source.format.as_deref().unwrap_or(DEFAULT_FILE_EXTENSION)
         );
         self.config.data_dir.join(filename)
     }

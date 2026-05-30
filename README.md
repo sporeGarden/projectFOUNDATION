@@ -6,7 +6,7 @@ domain thread maps — so that projectNUCLEUS can grow on top and products
 can focus on what matters to their audiences.
 
 **Organization**: sporeGarden (products built on ecoPrimals)
-**Generation**: gen4 — composition and deployment (Wave 59b, primalSpring v0.9.30)
+**Generation**: gen4 — composition and deployment (Wave 63, primalSpring v0.9.30)
 **License**: AGPL-3.0-or-later (code), ORC (system mechanics), CC-BY-SA 4.0 (docs)
 
 ## What This Is
@@ -105,14 +105,24 @@ target/release/foundation fetch
 
 # Backfill BLAKE3 hashes for local data
 target/release/foundation backfill
+
+# Generate sporePrint gallery pages from lithoSpore pseudoSpore registry
+target/release/foundation publish --registry ../lithoSpore/pseudospores/registry.toml
+
+# Scan and index domain_profile.toml files from a spring
+target/release/foundation profiles --scan-dir ../../springs/hotSpring --spring hotSpring
 ```
 
-**Current state**: 5 crates, 118 tests, 6.4k lines, 3.0MB binary, zero library warnings.
+**Current state**: 6 crates, 150 tests, 8k lines, 3.2MB binary, zero library warnings.
 IPC phases wired with graceful degradation. Type-safe enums for execution, isolation,
-skip conditions. `Cow<str>` zero-copy env expansion. `chrono` eliminated (stdlib epoch math).
+skip conditions. `Cow<str>` zero-copy env expansion. Zero-copy `Observation` types for
+comparison. Typed `FetchStatus` and `ProvenanceIds`. Sync CLI with async isolated to
+`validate` only. sporePrint gallery generation from pseudoSpore registry. Domain profile
+indexing across springs.
 
 **Phase C remaining**: NestGate registration, toadStool dispatch, full `ProvenanceSession`
-trio, `backfill --write` TOML mutation, database-specific fetch orchestration.
+trio, `backfill --write` TOML mutation, database-specific fetch orchestration, sporePrint
+notify trigger from `publish`, bidirectional Forgejo mirror.
 
 ### Bash pipeline (canonical — production, pre-Phase C cutover)
 
@@ -141,7 +151,8 @@ crates/             Rust workspace — foundation UniBin (ecoBin-compliant)
   foundation-ipc/     JSON-RPC 2.0 clients, health triad, provenance sessions
   foundation-fetch/   Manifest-driven fetch, BLAKE3 content addressing, registry
   foundation-validate/ 8-phase pipeline, comparison, execution, reporting
-  foundation-cli/     UniBin entry point: validate, fetch, health, targets, backfill
+  foundation-publish/ sporePrint gallery generation, pseudoSpore catalog, domain profiles
+  foundation-cli/     UniBin entry: validate, fetch, health, targets, backfill, publish, profiles
 Cargo.toml          Workspace root (edition 2024, AGPL-3.0, clippy pedantic+nursery)
 lineage/            The unified lineage — master map and thread index
   THE_UNIFIED_LINEAGE.md    Master document: 10 threads, all papers/springs/contacts
@@ -165,7 +176,7 @@ deploy/             Operational scripts (production-canonical until Phase C cuto
   fetch_sources.sh  Fetch NCBI/UniProt/KEGG data, compute BLAKE3 hashes
   backfill_hashes.sh  Compute BLAKE3 hashes and update source TOMLs
   foundation_validate.sh  Full validation pipeline with provenance wrapping
-sporeprint/         Tier 2 content for sporePrint publishing (validation-summary.md)
+sporeprint/         sporePrint content — validation summary + generated pseudoSpore gallery
 workloads/          toadStool-executable workload definitions (29 workloads, 10 threads)
 benchmarks/         barraCuda CPU parity baselines (6 scripts, 32 test cases)
 specs/              Contracts and authoring guides

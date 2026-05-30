@@ -1,7 +1,7 @@
 # foundation_validate.sh — Rust Elevation Feasibility Review
 
-**Date:** 2026-05-16 (updated May 28 for Wave 59b — Phase B complete, Phase C underway)
-**Status:** Phase B complete (6,416 lines, 118 tests, ecoBin compliant, IPC wired, type-safe)
+**Date:** 2026-05-16 (updated May 30 for Wave 63+ — deep debt resolved, typed phases, sync CLI)
+**Status:** Phase B+ (8,001 lines, 150 tests, 6 crates, ecoBin compliant, deep debt cleared)
 **Referenced by:** lithoSpore UPSTREAM_GAPS.md, primalSpring CROSS_SPRING_PARITY_SCORECARD
 
 ## Current State
@@ -41,6 +41,8 @@ foundation fetch [--thread THREAD] [--data-dir DIR] [--register]
 foundation backfill [--data-dir DIR] [--dry-run]
 foundation health [--verbose]
 foundation targets [--thread THREAD] [--check]
+foundation publish --registry <PATH> [--output-dir DIR] [--dry-run]
+foundation profiles --scan-dir <PATH> --spring <NAME> [--output PATH]
 ```
 
 ### Crate Structure
@@ -51,7 +53,8 @@ crates/
   foundation-ipc/      typed JSON-RPC clients for all 7 primals
   foundation-fetch/    manifest-driven data fetch (replaces fetch_sources.sh)
   foundation-validate/ validation pipeline (replaces foundation_validate.sh)
-  foundation-cli/      UniBin CLI entry point
+  foundation-publish/  sporePrint gallery generation, pseudoSpore catalog, domain profiles
+  foundation-cli/      UniBin CLI entry point (7 subcommands)
 ```
 
 ### Dependencies (all pure Rust, ecoBin compliant)
@@ -177,12 +180,19 @@ current 4-call pattern with response validation is the correct interim.
    `primal_names` constants, `env_keys` centralized, type-safe enums (`ExecType`,
    `IsolationLevel`, `SkipCondition`), `Cow<str>` zero-copy, `chrono` eliminated,
    3.0MB ecoBin-compliant binary. IPC Phases 1/2/7 wired with graceful degradation.
-3. **Phase C (current — production parity):** Wire `SourceFetcher` into pipeline
+3. **Phase B+ (complete, May 30 2026 — Wave 63):**
+   Added `foundation-publish` crate (6th crate). pseudoSpore registry ingestion
+   from lithoSpore, sporePrint gallery page generation (Zola-compatible Markdown),
+   `domain_profile.toml` indexing across springs. CLI adds `publish` and `profiles`
+   subcommands. **Delivered:** 7,491 lines, 137 tests, 3.2MB binary. Foundation now
+   drives sporePrint content generation rather than ad-hoc auto-merge.
+4. **Phase C (current — production parity):** Wire `SourceFetcher` into pipeline
    Phase 3 with database-specific fetch. NestGate registration in Phase 4.
    toadStool dispatch in Phase 5. Full `ProvenanceSession` trio in Phases 2/7.
    `foundation backfill --write` TOML mutation. Adopt `ctx.dispatch()` for
-   signal-based provenance. At completion: bash pipeline deprecated.
-4. **Phase D (repo simplification):** Remove `deploy/*.sh` once Phase C is
+   signal-based provenance. sporePrint notify trigger post-publish.
+   At completion: bash pipeline deprecated.
+5. **Phase D (repo simplification):** Remove `deploy/*.sh` once Phase C is
    validated. At this point the repo is pure Rust + TOML + Markdown.
 
 This progression lets the bash script keep working while Rust phases land

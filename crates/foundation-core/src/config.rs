@@ -13,6 +13,16 @@ use serde::{Deserialize, Serialize};
 
 use crate::CoreError;
 
+/// Loopback address used as last-resort TCP fallback.
+///
+/// This is only reached when:
+/// 1. No environment variable sets a host
+/// 2. No `bootstrap_tcp.host` is configured
+///
+/// In production (VPS), UDS is preferred and TCP is never reached.
+/// On desktop/dev, `discovery_defaults.toml` should set the host explicitly.
+pub const LOOPBACK_FALLBACK: &str = "127.0.0.1";
+
 /// Top-level discovery configuration.
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct DiscoveryConfig {
@@ -50,7 +60,7 @@ pub struct TcpBootstrap {
 }
 
 fn default_host() -> String {
-    String::from("127.0.0.1")
+    String::from(LOOPBACK_FALLBACK)
 }
 
 /// Resolved transport endpoint for a primal.
@@ -101,7 +111,7 @@ impl DiscoveryConfig {
                 let host = std::env::var(&host_env).unwrap_or_else(|_| {
                     self.bootstrap_tcp
                         .as_ref()
-                        .map_or_else(|| String::from("127.0.0.1"), |tcp| tcp.host.clone())
+                        .map_or_else(|| String::from(LOOPBACK_FALLBACK), |tcp| tcp.host.clone())
                 });
                 return Some(Transport::Tcp { host, port });
             }

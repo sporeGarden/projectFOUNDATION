@@ -7,6 +7,17 @@
 use foundation_core::target::{ComparisonResult, TargetsManifest};
 use tracing::{debug, info, warn};
 
+/// A typed observation produced by a workload execution.
+///
+/// Borrows the target ID from the workload name, avoiding allocation.
+#[derive(Debug, Clone, Copy)]
+pub struct Observation<'a> {
+    /// Target/workload identifier (matches `Target::id` by convention).
+    pub id: &'a str,
+    /// Numeric value extracted from stdout.
+    pub value: f64,
+}
+
 /// Results of comparing all targets against observed workload outputs.
 #[derive(Debug, Clone)]
 pub struct ComparisonReport {
@@ -44,12 +55,12 @@ impl ComparisonReport {
 
 /// Compare observed workload outputs against a targets manifest.
 ///
-/// `observations` is a slice of `(target_id, observed_value)` pairs.
+/// Accepts typed `Observation` references (zero-copy from execution results).
 /// Targets without a corresponding observation are marked as skipped.
 #[must_use]
 pub fn compare_targets(
     manifest: &TargetsManifest,
-    observations: &[(String, f64)],
+    observations: &[Observation<'_>],
 ) -> ComparisonReport {
     let mut results = Vec::with_capacity(manifest.targets.len());
     let mut passed = 0;
@@ -95,11 +106,11 @@ pub fn compare_targets(
     }
 }
 
-fn find_observation(observations: &[(String, f64)], target_id: &str) -> Option<f64> {
+fn find_observation(observations: &[Observation<'_>], target_id: &str) -> Option<f64> {
     observations
         .iter()
-        .find(|(id, _)| id == target_id)
-        .map(|(_, v)| *v)
+        .find(|obs| obs.id == target_id)
+        .map(|obs| obs.value)
 }
 
 #[cfg(test)]
@@ -177,10 +188,19 @@ mod tests {
     #[test]
     fn all_pass() {
         let manifest = sample_manifest();
-        let observations = vec![
-            (String::from("energy_drift"), 0.001),
-            (String::from("rdf_convergence"), 0.001),
-            (String::from("diffusion_k0_g10"), 0.13),
+        let observations = [
+            Observation {
+                id: "energy_drift",
+                value: 0.001,
+            },
+            Observation {
+                id: "rdf_convergence",
+                value: 0.001,
+            },
+            Observation {
+                id: "diffusion_k0_g10",
+                value: 0.13,
+            },
         ];
         let report = compare_targets(&manifest, &observations);
         assert!(report.all_passed());
@@ -191,10 +211,19 @@ mod tests {
     #[test]
     fn one_fail() {
         let manifest = sample_manifest();
-        let observations = vec![
-            (String::from("energy_drift"), 0.001),
-            (String::from("rdf_convergence"), 0.05), // exceeds 0.02 tolerance
-            (String::from("diffusion_k0_g10"), 0.13),
+        let observations = [
+            Observation {
+                id: "energy_drift",
+                value: 0.001,
+            },
+            Observation {
+                id: "rdf_convergence",
+                value: 0.05,
+            },
+            Observation {
+                id: "diffusion_k0_g10",
+                value: 0.13,
+            },
         ];
         let report = compare_targets(&manifest, &observations);
         assert!(!report.all_passed());
@@ -205,7 +234,10 @@ mod tests {
     #[test]
     fn missing_observations() {
         let manifest = sample_manifest();
-        let observations = vec![(String::from("energy_drift"), 0.001)];
+        let observations = [Observation {
+            id: "energy_drift",
+            value: 0.001,
+        }];
         let report = compare_targets(&manifest, &observations);
         assert_eq!(report.passed, 1);
         assert_eq!(report.skipped, 2);
@@ -214,9 +246,15 @@ mod tests {
     #[test]
     fn pass_rate_calculation() {
         let manifest = sample_manifest();
-        let observations = vec![
-            (String::from("energy_drift"), 0.001),
-            (String::from("rdf_convergence"), 0.05), // fail
+        let observations = [
+            Observation {
+                id: "energy_drift",
+                value: 0.001,
+            },
+            Observation {
+                id: "rdf_convergence",
+                value: 0.05,
+            },
         ];
         let report = compare_targets(&manifest, &observations);
         assert!((report.pass_rate() - 0.5).abs() < f64::EPSILON);

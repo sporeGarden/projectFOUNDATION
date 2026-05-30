@@ -230,7 +230,9 @@ dependencies = [
  "foundation-core",
  "foundation-fetch",
  "foundation-ipc",
+ "foundation-publish",
  "foundation-validate",
+ "serde_json",
  "tokio",
  "tracing",
  "tracing-subscriber",
@@ -274,6 +276,19 @@ dependencies = [
  "tempfile",
  "thiserror",
  "tokio",
+ "toml",
+ "tracing",
+]
+
+[[package]]
+name = "foundation-publish"
+version = "0.1.0"
+dependencies = [
+ "foundation-core",
+ "serde",
+ "serde_json",
+ "tempfile",
+ "thiserror",
  "toml",
  "tracing",
 ]

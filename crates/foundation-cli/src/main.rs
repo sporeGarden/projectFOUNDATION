@@ -2,17 +2,20 @@
 //! `foundation` `UniBin` — scientific validation CLI for `projectFOUNDATION`.
 //!
 //! Subcommands:
-//! - `validate` — run the 8-phase validation pipeline
+//! - `validate` — run the 8-phase validation pipeline (async, IPC)
 //! - `fetch` — download data sources from manifests
 //! - `health` — check primal health triad
 //! - `targets` — inspect and verify target manifests
 //! - `backfill` — populate BLAKE3 hashes in source manifests
+//! - `publish` — generate sporePrint gallery from pseudoSpore registry
+//! - `profiles` — scan and index domain profiles from springs
 
 use std::path::PathBuf;
 
 use clap::{Parser, Subcommand};
 use tracing_subscriber::EnvFilter;
 
+#[allow(clippy::needless_pass_by_value)]
 mod commands;
 
 /// foundation — scientific validation for ecoPrimals.
@@ -81,10 +84,33 @@ enum Commands {
         #[arg(long)]
         dry_run: bool,
     },
+    /// Generate sporePrint gallery pages from pseudoSpore registry.
+    Publish {
+        /// Path to lithoSpore's `pseudospores/registry.toml`.
+        #[arg(long)]
+        registry: PathBuf,
+        /// Output directory for generated pages.
+        #[arg(long, default_value = "sporeprint/spores")]
+        output_dir: Option<PathBuf>,
+        /// Only render to stdout without writing files.
+        #[arg(long)]
+        dry_run: bool,
+    },
+    /// Scan and index `domain_profile.toml` files from spring directories.
+    Profiles {
+        /// Root directory to scan for profiles (e.g. `../../springs/`).
+        #[arg(long)]
+        scan_dir: PathBuf,
+        /// Spring name to associate with discovered profiles.
+        #[arg(long)]
+        spring: String,
+        /// Output index as JSON to this path.
+        #[arg(long)]
+        output: Option<PathBuf>,
+    },
 }
 
-#[tokio::main]
-async fn main() {
+fn main() {
     let cli = Cli::parse();
 
     let filter = match cli.verbose {
@@ -105,17 +131,36 @@ async fn main() {
             thread,
             skip_fetch,
             data_dir,
-        } => commands::validate(cli.root, thread, skip_fetch, data_dir).await,
+        } => {
+            let rt = tokio::runtime::Builder::new_multi_thread()
+                .enable_all()
+                .build()
+                .map_err(|e| Box::new(e) as Box<dyn std::error::Error>);
+            match rt {
+                Ok(runtime) => {
+                    runtime.block_on(commands::validate(cli.root, thread, skip_fetch, data_dir))
+                }
+                Err(e) => Err(e),
+            }
+        }
         Commands::Fetch {
             thread,
             data_dir,
             register,
-        } => commands::fetch(cli.root, thread, data_dir, register).await,
-        Commands::Health { verbose } => commands::health(cli.root, verbose).await,
-        Commands::Targets { thread, check } => commands::targets(cli.root, thread, check).await,
-        Commands::Backfill { data_dir, dry_run } => {
-            commands::backfill(cli.root, data_dir, dry_run).await
-        }
+        } => commands::fetch(cli.root, thread, data_dir, register),
+        Commands::Health { verbose } => commands::health(cli.root, verbose),
+        Commands::Targets { thread, check } => commands::targets(cli.root, thread, check),
+        Commands::Backfill { data_dir, dry_run } => commands::backfill(cli.root, data_dir, dry_run),
+        Commands::Publish {
+            registry,
+            output_dir,
+            dry_run,
+        } => commands::publish(registry, output_dir, dry_run),
+        Commands::Profiles {
+            scan_dir,
+            spring,
+            output,
+        } => commands::profiles(scan_dir, spring, output),
     };
 
     if let Err(e) = result {
