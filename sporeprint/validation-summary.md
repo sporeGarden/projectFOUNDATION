@@ -1,6 +1,6 @@
 +++
 title = "projectFOUNDATION Validation Summary"
-date = 2026-05-30
+date = 2026-06-03
 template = "page.html"
 [extra]
 entity = "projectfoundation"
@@ -14,14 +14,16 @@ Defines **what** to validate across 10 domain threads spanning whole-cell
 modeling, plasma physics, immunology, evolutionary biology, agricultural
 science, and more.
 
-## Current State (Wave 63+)
+## Current State (Wave 74)
 
 | Metric | Value |
 |--------|------:|
-| Rust workspace lines | 8,001 |
-| Tests (unit + integration) | 150 |
+| Rust workspace lines | 8,391 |
+| Tests (unit + integration) | 170 |
+| CLI subcommands | 8 |
 | Binary size (ecoBin, zero C deps) | 3.2 MB |
 | Domain threads | 10 |
+| Ecosystem checks (springs + primals) | 41,500+ |
 | Data sources | 165 (across 11 manifests) |
 | BLAKE3-anchored sources | 10 |
 | Validation targets | 185 (across 11 manifests) |

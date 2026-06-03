@@ -1,7 +1,7 @@
 # foundation_validate.sh — Rust Elevation Feasibility Review
 
-**Date:** 2026-05-16 (updated May 30 for Wave 63+ — deep debt resolved, typed phases, sync CLI)
-**Status:** Phase B+ (8,001 lines, 150 tests, 6 crates, ecoBin compliant, deep debt cleared)
+**Date:** 2026-05-16 (updated June 3, Wave 74 — drift detection, centralized constants, 8 subcommands)
+**Status:** Phase B++ (8,391 lines, 170 tests, 6 crates, ecoBin compliant, all debt cleared)
 **Referenced by:** lithoSpore UPSTREAM_GAPS.md, primalSpring CROSS_SPRING_PARITY_SCORECARD
 
 ## Current State
@@ -43,6 +43,7 @@ foundation health [--verbose]
 foundation targets [--thread THREAD] [--check]
 foundation publish --registry <PATH> [--output-dir DIR] [--dry-run]
 foundation profiles --scan-dir <PATH> --spring <NAME> [--output PATH]
+foundation check-versions [--eco-root PATH] [--json]
 ```
 
 ### Crate Structure
@@ -186,6 +187,11 @@ current 4-call pattern with response validation is the correct interim.
    `domain_profile.toml` indexing across springs. CLI adds `publish` and `profiles`
    subcommands. **Delivered:** 7,491 lines, 137 tests, 3.2MB binary. Foundation now
    drives sporePrint content generation rather than ad-hoc auto-merge.
+   **Phase B++ (complete, June 3 2026 — Wave 74):**
+   Drift detection (`check-versions`), ecosystem health dashboard data model,
+   guideStone boundary spec. All constants centralized (RPC methods, paths, primal
+   slugs, URLs, timeouts). All `#[allow]` → `#[expect(reason)]`. Zero hardcoded
+   literals in production code. **Delivered:** 8,391 lines, 170 tests, 3.2MB binary.
 4. **Phase C (current — production parity):** Wire `SourceFetcher` into pipeline
    Phase 3 with database-specific fetch. NestGate registration in Phase 4.
    toadStool dispatch in Phase 5. Full `ProvenanceSession` trio in Phases 2/7.

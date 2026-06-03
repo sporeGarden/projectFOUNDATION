@@ -116,13 +116,15 @@ target/release/foundation profiles --scan-dir ../../springs/hotSpring --spring h
 target/release/foundation check-versions --eco-root ../../ --json
 ```
 
-**Current state**: 6 crates, 157 tests, 8k+ lines, 3.1MB binary, zero clippy warnings.
+**Current state**: 6 crates, 170 tests, 8.4k lines, 3.2MB binary, zero clippy warnings.
+8 subcommands. All constants centralized (RPC methods, paths, primal slugs, URLs).
 IPC phases wired with graceful degradation. Type-safe enums for execution, isolation,
 skip conditions. `Cow<str>` zero-copy env expansion. Zero-copy `Observation` types for
 comparison. Typed `FetchStatus` and `ProvenanceIds`. Sync CLI with async isolated to
 `validate` only. sporePrint gallery generation from pseudoSpore registry. Domain profile
 indexing across springs. Automated drift detection via `check-versions`. Ecosystem health
 dashboard data model for JSON-RPC exposure (petalTongue/sporePrint consumption).
+GuideStone boundary specification for cross-gate validation ownership.
 
 **Phase C remaining**: NestGate registration, toadStool dispatch, full `ProvenanceSession`
 trio, `backfill --write` TOML mutation, database-specific fetch orchestration, sporePrint
