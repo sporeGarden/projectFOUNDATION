@@ -4,7 +4,12 @@
 //! Tests are serialized via `ENV_LOCK` because they mutate process-wide
 //! environment variables for discovery override testing. The guard is held
 //! across await points intentionally to prevent interleaving.
-#![allow(unsafe_code, clippy::await_holding_lock)]
+#![allow(
+    unsafe_code,
+    clippy::await_holding_lock,
+    clippy::unwrap_used,
+    clippy::expect_used
+)]
 
 use std::sync::Mutex;
 use std::time::Duration;
@@ -65,12 +70,13 @@ async fn health_triad_all_healthy() {
         .with_timeout(Duration::from_secs(5));
 
     let mut triad = HealthTriad::new();
-    let status = triad.check(&mut client).await;
+    let idx = triad.check(&mut client).await;
+    let status = &triad.results[idx];
 
     assert!(status.alive, "liveness check failed");
     assert!(status.ready, "readiness check failed");
     assert_eq!(status.version.as_deref(), Some("0.1.0"));
-    assert_eq!(status.level, "healthy");
+    assert_eq!(status.level, foundation_ipc::DegradationLevel::Healthy);
     assert!(triad.all_alive());
     assert!(triad.all_ready());
 
@@ -91,11 +97,12 @@ async fn health_triad_unreachable() {
         .with_timeout(Duration::from_millis(200));
 
     let mut triad = HealthTriad::new();
-    let status = triad.check(&mut client).await;
+    let idx = triad.check(&mut client).await;
+    let status = &triad.results[idx];
 
     assert!(!status.alive);
     assert!(!status.ready);
-    assert_eq!(status.level, "unreachable");
+    assert_eq!(status.level, foundation_ipc::DegradationLevel::Unreachable);
     assert!(!triad.all_alive());
 }
 

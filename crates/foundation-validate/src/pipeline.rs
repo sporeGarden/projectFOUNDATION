@@ -105,7 +105,7 @@ impl ValidationPipeline {
     /// Returns errors only for unrecoverable failures (missing config files,
     /// required primals unreachable). Individual phase degradation is recorded
     /// in the result rather than aborting.
-    pub async fn run(&self) -> Result<ValidationResult, Box<dyn std::error::Error>> {
+    pub async fn run(&self) -> Result<ValidationResult, foundation_core::CoreError> {
         let start = Instant::now();
 
         let discovery_config = DiscoveryConfig::from_file(&self.config.discovery_config_path)?;

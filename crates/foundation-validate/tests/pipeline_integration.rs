@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
+#![allow(clippy::unwrap_used, clippy::expect_used)]
 //! Integration tests for the validation pipeline with fixture data.
 
 use foundation_validate::pipeline::{PipelineConfig, ValidationPipeline};

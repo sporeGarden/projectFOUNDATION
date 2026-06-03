@@ -6,6 +6,7 @@
 
 use std::path::PathBuf;
 
+use foundation_core::CoreError;
 use foundation_core::config::DiscoveryConfig;
 use foundation_core::source::SourcesManifest;
 use foundation_core::target::TargetsManifest;
@@ -16,7 +17,23 @@ use foundation_publish::{GalleryGenerator, ProfileIndex, SporeRegistry};
 use foundation_validate::{PipelineConfig, ValidationPipeline};
 use tracing::{error, info};
 
-pub type CmdResult = Result<(), Box<dyn std::error::Error>>;
+/// Typed error enum for CLI commands — replaces `Box<dyn Error>`.
+#[derive(Debug, thiserror::Error)]
+pub enum CliError {
+    /// Core manifest/parsing/IO error.
+    #[error(transparent)]
+    Core(#[from] CoreError),
+
+    /// JSON serialization error (profile index output).
+    #[error("JSON serialization failed: {0}")]
+    Json(#[from] serde_json::Error),
+
+    /// Tokio runtime initialization failure.
+    #[error("async runtime: {0}")]
+    Runtime(#[from] std::io::Error),
+}
+
+pub type CmdResult = Result<(), CliError>;
 
 /// Run the 8-phase validation pipeline (requires async for IPC phases).
 pub async fn validate(
@@ -221,9 +238,7 @@ pub fn profiles(scan_dir: PathBuf, spring: String, output: Option<PathBuf>) -> C
 
     if let Some(out_path) = output {
         let json = serde_json::to_string_pretty(&index)?;
-        std::fs::write(&out_path, json).map_err(|e| {
-            Box::new(foundation_core::CoreError::io(&out_path, e)) as Box<dyn std::error::Error>
-        })?;
+        std::fs::write(&out_path, json).map_err(|e| CoreError::io(&out_path, e))?;
         info!(path = %out_path.display(), "index written");
     }
 

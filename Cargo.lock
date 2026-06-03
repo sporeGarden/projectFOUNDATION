@@ -233,6 +233,7 @@ dependencies = [
  "foundation-publish",
  "foundation-validate",
  "serde_json",
+ "thiserror",
  "tokio",
  "tracing",
  "tracing-subscriber",

@@ -126,23 +126,18 @@ fn main() {
         .compact()
         .init();
 
-    let result = match cli.command {
+    let result: commands::CmdResult = match cli.command {
         Commands::Validate {
             thread,
             skip_fetch,
             data_dir,
-        } => {
-            let rt = tokio::runtime::Builder::new_multi_thread()
-                .enable_all()
-                .build()
-                .map_err(|e| Box::new(e) as Box<dyn std::error::Error>);
-            match rt {
-                Ok(runtime) => {
-                    runtime.block_on(commands::validate(cli.root, thread, skip_fetch, data_dir))
-                }
-                Err(e) => Err(e),
-            }
-        }
+        } => match tokio::runtime::Builder::new_multi_thread()
+            .enable_all()
+            .build()
+        {
+            Ok(rt) => rt.block_on(commands::validate(cli.root, thread, skip_fetch, data_dir)),
+            Err(e) => Err(e.into()),
+        },
         Commands::Fetch {
             thread,
             data_dir,

@@ -18,8 +18,8 @@ pub struct HealthStatus {
     pub ready: bool,
     /// Optional version string from `health.check`.
     pub version: Option<String>,
-    /// Degradation assessment.
-    pub level: String,
+    /// Typed degradation assessment.
+    pub level: DegradationLevel,
 }
 
 /// Aggregated health of all primals required for a validation run.
@@ -43,8 +43,9 @@ impl HealthTriad {
     /// 2. `health.readiness` — is it ready to serve?
     /// 3. `health.check` — version and status metadata.
     ///
+    /// Returns the index into `results` for the just-recorded status.
     /// Unlike bash `|| true`, failures are recorded with context rather than silenced.
-    pub async fn check(&mut self, client: &mut PrimalClient) -> HealthStatus {
+    pub async fn check(&mut self, client: &mut PrimalClient) -> usize {
         let primal = client.name().to_owned();
 
         let alive = client
@@ -54,15 +55,14 @@ impl HealthTriad {
 
         if !alive {
             client.mark_unreachable();
-            let status = HealthStatus {
+            self.results.push(HealthStatus {
                 primal,
                 alive: false,
                 ready: false,
                 version: None,
-                level: String::from("unreachable"),
-            };
-            self.results.push(status.clone());
-            return status;
+                level: DegradationLevel::Unreachable,
+            });
+            return self.results.len() - 1;
         }
 
         let ready = client
@@ -83,15 +83,14 @@ impl HealthTriad {
             DegradationLevel::Degraded
         };
 
-        let status = HealthStatus {
+        self.results.push(HealthStatus {
             primal,
             alive,
             ready,
             version,
-            level: format!("{level:?}").to_lowercase(),
-        };
-        self.results.push(status.clone());
-        status
+            level,
+        });
+        self.results.len() - 1
     }
 
     /// Check whether all required primals are at least alive.
@@ -181,21 +180,21 @@ mod tests {
                     alive: true,
                     ready: true,
                     version: Some(String::from("1.0")),
-                    level: String::from("healthy"),
+                    level: DegradationLevel::Healthy,
                 },
                 HealthStatus {
                     primal: String::from("rhizocrypt"),
                     alive: true,
                     ready: false,
                     version: None,
-                    level: String::from("degraded"),
+                    level: DegradationLevel::Degraded,
                 },
                 HealthStatus {
                     primal: String::from("songbird"),
                     alive: false,
                     ready: false,
                     version: None,
-                    level: String::from("unreachable"),
+                    level: DegradationLevel::Unreachable,
                 },
             ],
         };
@@ -213,10 +212,11 @@ mod tests {
             alive: true,
             ready: true,
             version: Some(String::from("0.2.0")),
-            level: String::from("healthy"),
+            level: DegradationLevel::Healthy,
         };
         let json = serde_json::to_string(&status).unwrap();
         assert!(json.contains("\"primal\":\"nestgate\""));
         assert!(json.contains("\"version\":\"0.2.0\""));
+        assert!(json.contains("\"level\":\"healthy\""));
     }
 }

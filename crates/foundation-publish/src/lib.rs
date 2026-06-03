@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
+#![cfg_attr(test, allow(clippy::unwrap_used, clippy::expect_used))]
 //! sporePrint content generation from pseudoSpore registry and validation evidence.
 //!
 //! This crate bridges the gap between lithoSpore's pseudoSpore artifacts and

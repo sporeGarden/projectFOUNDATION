@@ -185,6 +185,9 @@ fn nix_uid() -> u32 {
 #[allow(unsafe_code)]
 mod tests {
     use super::*;
+    use std::sync::Mutex;
+
+    static ENV_LOCK: Mutex<()> = Mutex::new(());
 
     const SAMPLE_CONFIG: &str = r#"
 [metadata]
@@ -211,6 +214,9 @@ toadstool = 9400
 
     #[test]
     fn resolve_from_env() {
+        let _guard = ENV_LOCK
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
         // SAFETY: test-only env manipulation, serial test execution
         unsafe { std::env::set_var("BEARDOG_SOCKET", "/tmp/test-beardog.sock") };
         let config: DiscoveryConfig = toml::from_str(SAMPLE_CONFIG).unwrap();
@@ -224,6 +230,9 @@ toadstool = 9400
 
     #[test]
     fn resolve_tcp_fallback() {
+        let _guard = ENV_LOCK
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
         // SAFETY: test-only env manipulation
         unsafe { std::env::remove_var("TOADSTOOL_SOCKET") };
         unsafe { std::env::remove_var("TOADSTOOL_PORT") };
@@ -264,6 +273,9 @@ vps_standard = "tcp_allowed"
 
     #[test]
     fn expand_xdg_uses_env_var() {
+        let _guard = ENV_LOCK
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
         // SAFETY: test-only env manipulation
         let dir = tempfile::tempdir().unwrap();
         let runtime = dir.path().to_str().unwrap();
@@ -298,6 +310,9 @@ discovery = "${XDG_RUNTIME_DIR}/ecoPrimals/discovery.sock"
 
     #[test]
     fn expand_xdg_falls_back_to_run_user_uid() {
+        let _guard = ENV_LOCK
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
         let saved_xdg = std::env::var("XDG_RUNTIME_DIR").ok();
         // SAFETY: test-only env manipulation
         unsafe { std::env::remove_var("XDG_RUNTIME_DIR") };

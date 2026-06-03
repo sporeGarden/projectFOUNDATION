@@ -254,7 +254,8 @@ impl PhasedIpcError {
 }
 
 /// Degradation level for a primal that failed health checks.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+#[serde(rename_all = "lowercase")]
 pub enum DegradationLevel {
     /// Primal is fully healthy.
     Healthy,
@@ -262,6 +263,16 @@ pub enum DegradationLevel {
     Degraded,
     /// Primal is unreachable — operations will be skipped with warnings.
     Unreachable,
+}
+
+impl std::fmt::Display for DegradationLevel {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Healthy => f.write_str("healthy"),
+            Self::Degraded => f.write_str("degraded"),
+            Self::Unreachable => f.write_str("unreachable"),
+        }
+    }
 }
 
 #[cfg(test)]

@@ -258,10 +258,15 @@ fn expand_env_inner(input: &str) -> String {
 #[allow(unsafe_code)]
 mod tests {
     use super::*;
+    use std::sync::Mutex;
+
+    static ENV_LOCK: Mutex<()> = Mutex::new(());
 
     #[test]
     fn expand_simple_var() {
-        // SAFETY: test-only env manipulation, serial test execution
+        let _guard = ENV_LOCK
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
         unsafe { std::env::set_var("TEST_FOUNDATION_VAR", "/opt/springs") };
         let result = expand_env_placeholder("${TEST_FOUNDATION_VAR}/hotSpring");
         assert_eq!(result, "/opt/springs/hotSpring");
@@ -270,7 +275,9 @@ mod tests {
 
     #[test]
     fn expand_with_default() {
-        // SAFETY: test-only env manipulation
+        let _guard = ENV_LOCK
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
         unsafe { std::env::remove_var("NONEXISTENT_VAR_XYZ") };
         let result = expand_env_placeholder("${NONEXISTENT_VAR_XYZ:-/fallback}/bin");
         assert_eq!(result, "/fallback/bin");
@@ -278,7 +285,9 @@ mod tests {
 
     #[test]
     fn expand_nested_default() {
-        // SAFETY: test-only env manipulation, serial test execution
+        let _guard = ENV_LOCK
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
         unsafe { std::env::set_var("TEST_ECO_ROOT", "/eco") };
         unsafe { std::env::remove_var("TEST_SPRINGS_ROOT_MISSING") };
         let result = expand_env_placeholder(
