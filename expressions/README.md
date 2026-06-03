@@ -5,6 +5,12 @@ from the unified lineage with detailed paper-by-paper analysis, NUCLEUS
 composition blueprints, data target inventories, and petalTongue
 visualization maps.
 
+**Last reviewed**: Wave 71. Expression content (scientific lineage, paper
+coverage, validation targets) remains valid. Infrastructure capabilities
+added since Wave 63 (L4 routing, virtual relay, topology affinity) affect
+NUCLEUS composition deployment but not foundation-layer data relationships.
+Expressions reference primals by capability, not routing implementation.
+
 ## What Is an Expression?
 
 The unified lineage (`lineage/THE_UNIFIED_LINEAGE.md`) maps the complete
