@@ -15,7 +15,7 @@ thread_name = "Environmental Genomics & Field Science"
 
 [execution]
 type = "native"
-command = "${GROUNDSPRING_ROOT:-${SPRINGS_ROOT:-${ECOPRIMALS_ROOT}/springs}/groundSpring}/crates/groundspring-validate/target/release/validate_all"
+command = "${GROUNDSPRING_ROOT:-${SPRINGS_ROOT:-${ECOPRIMALS_ROOT}/springs}/groundSpring}/target/release/validate_all"
 args = ["--filter", "anderson_qs"]
 working_dir = "${GROUNDSPRING_ROOT:-${SPRINGS_ROOT:-${ECOPRIMALS_ROOT}/springs}/groundSpring}"
 
@@ -29,8 +29,8 @@ trusted_directories = ["${GROUNDSPRING_ROOT}", "${ECOPRIMALS_ROOT}"]
 
 [skip]
 when = "binary_missing"
-binary = "${GROUNDSPRING_ROOT:-${SPRINGS_ROOT:-${ECOPRIMALS_ROOT}/springs}/groundSpring}/crates/groundspring-validate/target/release/validate_all"
-reason = "groundSpring binary requires: cargo build --release -p groundspring-validate in groundSpring"
+binary = "${GROUNDSPRING_ROOT:-${SPRINGS_ROOT:-${ECOPRIMALS_ROOT}/springs}/groundSpring}/target/release/validate_all"
+reason = "groundSpring binary requires: cargo build --release in groundSpring"
 
 [provenance]
 chain = "rhizoCrypt"

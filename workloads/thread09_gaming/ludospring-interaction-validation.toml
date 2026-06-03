@@ -14,7 +14,7 @@ spring = "ludoSpring"
 
 [execution]
 type = "native"
-command = "${LUDOSPRING_ROOT:-${SPRINGS_ROOT:-${ECOPRIMALS_ROOT}/springs}/ludoSpring}/barracuda/target/release/validate_interaction"
+command = "${LUDOSPRING_ROOT:-${SPRINGS_ROOT:-${ECOPRIMALS_ROOT}/springs}/ludoSpring}/target/release/validate_interaction"
 working_dir = "${LUDOSPRING_ROOT:-${SPRINGS_ROOT:-${ECOPRIMALS_ROOT}/springs}/ludoSpring}"
 
 [resources]
@@ -27,8 +27,8 @@ trusted_directories = ["${LUDOSPRING_ROOT}", "${ECOPRIMALS_ROOT}"]
 
 [skip]
 when = "binary_missing"
-binary = "${LUDOSPRING_ROOT:-${SPRINGS_ROOT:-${ECOPRIMALS_ROOT}/springs}/ludoSpring}/barracuda/target/release/validate_interaction"
-reason = "ludoSpring binary requires: cargo build --release --features barracuda in ludoSpring/barracuda"
+binary = "${LUDOSPRING_ROOT:-${SPRINGS_ROOT:-${ECOPRIMALS_ROOT}/springs}/ludoSpring}/target/release/validate_interaction"
+reason = "ludoSpring binary requires: cargo build --release --features barracuda in ludoSpring"
 
 [provenance]
 chain = "rhizoCrypt"

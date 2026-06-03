@@ -8,7 +8,7 @@ thread_name = "Agricultural Science"
 
 [execution]
 type = "native"
-command = "${AIRSPRING_ROOT:-${SPRINGS_ROOT:-${ECOPRIMALS_ROOT}/springs}/airSpring}/target/release/airspring validate --scenario paper-chain"
+command = "${AIRSPRING_ROOT:-${SPRINGS_ROOT:-${ECOPRIMALS_ROOT}/springs}/airSpring}/barracuda/target/release/airspring validate --scenario paper-chain"
 working_dir = "${AIRSPRING_ROOT:-${SPRINGS_ROOT:-${ECOPRIMALS_ROOT}/springs}/airSpring}"
 
 [resources]
@@ -21,8 +21,8 @@ trusted_directories = ["${SPRINGS_ROOT}", "${ECOPRIMALS_ROOT}"]
 
 [skip]
 when = "binary_missing"
-binary = "${AIRSPRING_ROOT:-${SPRINGS_ROOT:-${ECOPRIMALS_ROOT}/springs}/airSpring}/target/release/airspring"
-reason = "airspring binary only exists after spring build (cargo build --release in airSpring)"
+binary = "${AIRSPRING_ROOT:-${SPRINGS_ROOT:-${ECOPRIMALS_ROOT}/springs}/airSpring}/barracuda/target/release/airspring"
+reason = "airspring binary only exists after spring build (cargo build --release in airSpring/barracuda)"
 
 [provenance]
 chain = "rhizoCrypt"

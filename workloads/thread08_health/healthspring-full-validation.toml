@@ -14,7 +14,7 @@ spring = "healthSpring"
 
 [execution]
 type = "native"
-command = "${HEALTHSPRING_ROOT:-${SPRINGS_ROOT:-${ECOPRIMALS_ROOT}/springs}/healthSpring}/ecoPrimal/target/release/healthspring_unibin"
+command = "${HEALTHSPRING_ROOT:-${SPRINGS_ROOT:-${ECOPRIMALS_ROOT}/springs}/healthSpring}/target/release/healthspring_unibin"
 args = ["validate"]
 working_dir = "${HEALTHSPRING_ROOT:-${SPRINGS_ROOT:-${ECOPRIMALS_ROOT}/springs}/healthSpring}"
 
@@ -28,8 +28,8 @@ trusted_directories = ["${HEALTHSPRING_ROOT}", "${ECOPRIMALS_ROOT}"]
 
 [skip]
 when = "binary_missing"
-binary = "${HEALTHSPRING_ROOT:-${SPRINGS_ROOT:-${ECOPRIMALS_ROOT}/springs}/healthSpring}/ecoPrimal/target/release/healthspring_unibin"
-reason = "healthSpring binary requires: cargo build --release in healthSpring/ecoPrimal"
+binary = "${HEALTHSPRING_ROOT:-${SPRINGS_ROOT:-${ECOPRIMALS_ROOT}/springs}/healthSpring}/target/release/healthspring_unibin"
+reason = "healthSpring binary requires: cargo build --release in healthSpring"
 
 [provenance]
 chain = "rhizoCrypt"

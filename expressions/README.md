@@ -5,11 +5,13 @@ from the unified lineage with detailed paper-by-paper analysis, NUCLEUS
 composition blueprints, data target inventories, and petalTongue
 visualization maps.
 
-**Last reviewed**: Wave 71. Expression content (scientific lineage, paper
+**Last reviewed**: Wave 72. Expression content (scientific lineage, paper
 coverage, validation targets) remains valid. Infrastructure capabilities
 added since Wave 63 (L4 routing, virtual relay, topology affinity) affect
 NUCLEUS composition deployment but not foundation-layer data relationships.
 Expressions reference primals by capability, not routing implementation.
+Product mappings (helixVision, blueFish, esotericWebb) describe which
+domain threads feed which product — unchanged by infrastructure evolution.
 
 ## What Is an Expression?
 
