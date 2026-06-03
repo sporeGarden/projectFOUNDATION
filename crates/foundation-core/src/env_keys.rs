@@ -29,6 +29,8 @@ pub const REPORT_DIR: &str = "FOUNDATION_REPORT_DIR";
 pub const TELEMETRY_PATH: &str = "FOUNDATION_TELEMETRY_PATH";
 /// Gate name for validation runs.
 pub const GATE_NAME: &str = "FOUNDATION_GATE";
+/// Default gate name when `FOUNDATION_GATE` is not set (development only).
+pub const DEFAULT_GATE: &str = "irongate";
 
 /// Resolve the family ID using the ecosystem priority chain:
 /// 1. `FAMILY_ID` env var (legacy)

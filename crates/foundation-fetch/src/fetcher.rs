@@ -63,7 +63,7 @@ pub struct FetchConfig {
 impl Default for FetchConfig {
     fn default() -> Self {
         Self {
-            data_dir: PathBuf::from("data/fetched"),
+            data_dir: PathBuf::from(foundation_core::paths::conventions::DATA_FETCHED),
             ncbi_delay: DEFAULT_NCBI_DELAY,
             uniprot_delay: DEFAULT_UNIPROT_DELAY,
             max_retries: DEFAULT_MAX_RETRIES,

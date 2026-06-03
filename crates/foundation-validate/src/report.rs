@@ -105,7 +105,7 @@ impl ReportWriter {
         let run_dir = PathBuf::from(format!("run-{timestamp}"));
         std::fs::create_dir_all(&run_dir).map_err(|e| CoreError::io(&run_dir, e))?;
 
-        let report_path = run_dir.join("VALIDATION_REPORT.md");
+        let report_path = run_dir.join(foundation_core::paths::conventions::VALIDATION_REPORT);
         let content = render(result);
         std::fs::write(&report_path, content).map_err(|e| CoreError::io(&report_path, e))?;
 
@@ -241,7 +241,7 @@ fn render_comparison(md: &mut String, report: &ComparisonReport) {
 ///
 /// Returns [`CoreError::Io`] on write failure.
 pub fn write_provenance_toml(run_dir: &Path, ids: &ProvenanceIds<'_>) -> Result<(), CoreError> {
-    let path = run_dir.join("provenance.toml");
+    let path = run_dir.join(foundation_core::paths::conventions::PROVENANCE_TOML);
 
     let mut content = String::from("# SPDX-License-Identifier: AGPL-3.0-or-later\n");
     let _ = writeln!(content, "generated = \"{}\"", timestamp_iso());

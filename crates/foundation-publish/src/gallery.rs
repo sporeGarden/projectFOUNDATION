@@ -27,9 +27,9 @@ pub struct GalleryConfig {
 impl Default for GalleryConfig {
     fn default() -> Self {
         Self {
-            output_dir: PathBuf::from("sporeprint/spores"),
-            download_base_url: String::from("https://primals.eco/lab/spores"),
-            forgejo_base_url: String::from("https://git.primals.eco"),
+            output_dir: PathBuf::from(foundation_core::paths::conventions::SPOREPRINT_SPORES),
+            download_base_url: String::from(crate::urls::DOWNLOAD_BASE),
+            forgejo_base_url: String::from(crate::urls::FORGEJO_BASE),
         }
     }
 }

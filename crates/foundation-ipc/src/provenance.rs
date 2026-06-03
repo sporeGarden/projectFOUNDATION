@@ -70,7 +70,7 @@ impl ProvenanceSession {
         if let Some(rc) = rhizocrypt {
             match rc
                 .call_raw(
-                    "dag.session.create",
+                    crate::methods::dag::SESSION_CREATE,
                     Some(json!({
                         "session_name": session_name,
                         "session_type": "foundation_validation"
@@ -95,7 +95,7 @@ impl ProvenanceSession {
         if let Some(ls) = loamspine {
             match ls
                 .call_raw(
-                    "entry.create",
+                    crate::methods::entry::CREATE,
                     Some(json!({
                         "entry_type": "foundation_validation",
                         "session_name": session_name
@@ -119,7 +119,7 @@ impl ProvenanceSession {
 
         if let Some(sg) = sweetgrass {
             session.available.attribution = sg
-                .call_raw("health.liveness", Some(json!({})))
+                .call_raw(crate::methods::health::LIVENESS, Some(json!({})))
                 .await
                 .is_ok();
             if !session.available.attribution {
@@ -146,7 +146,7 @@ impl ProvenanceSession {
         if let (Some(rc), Some(session_id)) = (rhizocrypt, &self.dag_session_id) {
             match rc
                 .call_raw(
-                    "dag.session.complete",
+                    crate::methods::dag::SESSION_COMPLETE,
                     Some(json!({
                         "session_id": session_id,
                         "merkle_root": merkle_root
@@ -166,7 +166,10 @@ impl ProvenanceSession {
 
         if let (Some(ls), Some(entry_id)) = (loamspine, &self.spine_entry_id) {
             let params = spine_commit_params(entry_id, merkle_root);
-            match ls.call_raw("entry.append", Some(params)).await {
+            match ls
+                .call_raw(crate::methods::entry::APPEND, Some(params))
+                .await
+            {
                 Ok(_) => {
                     result.spine_committed = true;
                     info!("spine entry committed");
@@ -181,7 +184,7 @@ impl ProvenanceSession {
             if self.available.attribution {
                 match sg
                     .call_raw(
-                        "braid.create",
+                        crate::methods::braid::CREATE,
                         Some(json!({
                             "session_id": self.dag_session_id,
                             "spine_entry_id": self.spine_entry_id,

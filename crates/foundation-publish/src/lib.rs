@@ -10,6 +10,7 @@
 pub mod domain_profile;
 pub mod gallery;
 pub mod registry;
+pub mod urls;
 
 pub use domain_profile::{DomainProfileHeader, ProfileIndex};
 pub use gallery::GalleryGenerator;

@@ -16,10 +16,10 @@ use crate::error::IpcError;
 use crate::protocol::{JsonRpcRequest, JsonRpcResponse};
 
 /// Default timeout for RPC calls.
-const DEFAULT_TIMEOUT: Duration = Duration::from_secs(30);
+pub const DEFAULT_TIMEOUT: Duration = Duration::from_secs(30);
 
 /// Maximum response size (64 KiB — matches bash `dd bs=65536`).
-const MAX_RESPONSE_SIZE: usize = 65_536;
+pub const MAX_RESPONSE_SIZE: usize = 65_536;
 
 /// Abstraction over UDS and TCP transports.
 #[derive(Debug, Clone)]

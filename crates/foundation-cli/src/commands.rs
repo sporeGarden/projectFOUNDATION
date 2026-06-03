@@ -71,8 +71,9 @@ pub fn fetch(
     data_dir: Option<PathBuf>,
     _register: bool,
 ) -> CmdResult {
-    let index = ThreadIndex::from_file(&root.join("lineage/THREAD_INDEX.toml"))?;
-    let data_base = data_dir.unwrap_or_else(|| root.join("data/fetched"));
+    use foundation_core::paths::conventions;
+    let index = ThreadIndex::from_file(&root.join(conventions::THREAD_INDEX))?;
+    let data_base = data_dir.unwrap_or_else(|| root.join(conventions::DATA_FETCHED));
 
     let threads_to_fetch: Vec<_> = if let Some(filter) = &thread {
         index
@@ -112,7 +113,7 @@ pub fn fetch(
 pub fn health(root: PathBuf, verbose: bool) -> CmdResult {
     use foundation_core::primal_names;
 
-    let config_path = root.join("deploy/discovery_defaults.toml");
+    let config_path = root.join(foundation_core::paths::conventions::DISCOVERY_DEFAULTS);
     let config = DiscoveryConfig::from_file(&config_path)?;
 
     for &primal in primal_names::VALIDATION_PRIMALS {
@@ -137,7 +138,8 @@ pub fn health(root: PathBuf, verbose: bool) -> CmdResult {
 
 /// Inspect and verify target manifests.
 pub fn targets(root: PathBuf, thread: Option<String>, check: bool) -> CmdResult {
-    let index = ThreadIndex::from_file(&root.join("lineage/THREAD_INDEX.toml"))?;
+    let index =
+        ThreadIndex::from_file(&root.join(foundation_core::paths::conventions::THREAD_INDEX))?;
 
     let threads_to_check: Vec<_> = if let Some(filter) = &thread {
         index
@@ -247,9 +249,10 @@ pub fn profiles(scan_dir: PathBuf, spring: String, output: Option<PathBuf>) -> C
 
 /// Check spring/primal version drift against `SPRING_VERSIONS.toml`.
 pub fn check_versions(root: PathBuf, eco_root: Option<PathBuf>, json: bool) -> CmdResult {
+    use foundation_core::paths::conventions;
     use foundation_core::versions::{self, VersionManifest};
 
-    let manifest_path = root.join("lineage/SPRING_VERSIONS.toml");
+    let manifest_path = root.join(conventions::SPRING_VERSIONS);
     let manifest = VersionManifest::from_file(&manifest_path)?;
 
     let effective_eco_root = eco_root.unwrap_or_else(|| {
@@ -303,8 +306,9 @@ pub fn check_versions(root: PathBuf, eco_root: Option<PathBuf>, json: bool) -> C
 
 /// Populate BLAKE3 hashes in source manifests.
 pub fn backfill(root: PathBuf, data_dir: Option<PathBuf>, dry_run: bool) -> CmdResult {
-    let index = ThreadIndex::from_file(&root.join("lineage/THREAD_INDEX.toml"))?;
-    let fetch_dir = data_dir.unwrap_or_else(|| root.join("data/fetched"));
+    use foundation_core::paths::conventions;
+    let index = ThreadIndex::from_file(&root.join(conventions::THREAD_INDEX))?;
+    let fetch_dir = data_dir.unwrap_or_else(|| root.join(conventions::DATA_FETCHED));
 
     for t in &index.threads {
         let manifest_path = root.join(&t.data_sources);

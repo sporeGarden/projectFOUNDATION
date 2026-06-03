@@ -10,6 +10,7 @@ pub mod client;
 pub mod dashboard;
 pub mod error;
 pub mod health;
+pub mod methods;
 pub mod protocol;
 pub mod provenance;
 pub mod transport;

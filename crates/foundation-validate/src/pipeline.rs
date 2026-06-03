@@ -47,15 +47,15 @@ impl PipelineConfig {
     /// Uses `env_keys` for resolution rather than bare env var names.
     #[must_use]
     pub fn from_project_root(root: PathBuf) -> Self {
-        use foundation_core::env_keys;
+        use foundation_core::{env_keys, paths::conventions};
 
         Self {
-            discovery_config_path: root.join("deploy/discovery_defaults.toml"),
-            thread_index_path: root.join("lineage/THREAD_INDEX.toml"),
+            discovery_config_path: root.join(conventions::DISCOVERY_DEFAULTS),
+            thread_index_path: root.join(conventions::THREAD_INDEX),
             data_dir: env_keys::resolve_data_dir(&root),
-            output_dir: root.join("validation"),
+            output_dir: root.join(conventions::VALIDATION),
             gate_name: std::env::var(env_keys::GATE_NAME)
-                .unwrap_or_else(|_| String::from("irongate")),
+                .unwrap_or_else(|_| String::from(env_keys::DEFAULT_GATE)),
             thread_filter: None,
             skip_fetch: false,
             project_root: root,
@@ -231,7 +231,10 @@ impl ValidationPipeline {
         threads: &[&foundation_core::thread::Thread],
     ) -> Vec<ExecutionResult> {
         let mut results = Vec::new();
-        let workloads_dir = self.config.project_root.join("workloads");
+        let workloads_dir = self
+            .config
+            .project_root
+            .join(foundation_core::paths::conventions::WORKLOADS);
 
         for thread in threads {
             let thread_dir = workloads_dir.join(format!("thread{:02}_{}", thread.id, thread.short));

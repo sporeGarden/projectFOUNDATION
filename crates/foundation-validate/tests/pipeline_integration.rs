@@ -4,7 +4,7 @@
 
 use foundation_validate::pipeline::{PipelineConfig, ValidationPipeline};
 
-#[allow(clippy::too_many_lines)]
+#[expect(clippy::too_many_lines, reason = "fixture setup is inherently verbose")]
 fn create_fixture_project(dir: &std::path::Path) {
     let deploy = dir.join("deploy");
     std::fs::create_dir_all(&deploy).unwrap();

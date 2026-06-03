@@ -282,4 +282,77 @@ wave_verified = 73
     fn read_cargo_version_nonexistent() {
         assert_eq!(read_cargo_version(&PathBuf::from("/no/such/file")), None);
     }
+
+    #[test]
+    fn read_cargo_version_from_temp_file() {
+        let dir = std::env::temp_dir().join("foundation_test_cargo_version");
+        std::fs::create_dir_all(&dir).unwrap();
+        let cargo_toml = dir.join("Cargo.toml");
+        std::fs::write(
+            &cargo_toml,
+            "[package]\nname = \"test\"\nversion = \"1.2.3\"\n",
+        )
+        .unwrap();
+        assert_eq!(read_cargo_version(&cargo_toml), Some("1.2.3".to_string()));
+        std::fs::remove_dir_all(&dir).unwrap();
+    }
+
+    #[test]
+    fn drift_detected_with_version_mismatch() {
+        let dir = std::env::temp_dir().join("foundation_test_drift");
+        let spring_dir = dir.join("springs/hotSpring/barracuda");
+        std::fs::create_dir_all(&spring_dir).unwrap();
+        std::fs::write(
+            spring_dir.join("Cargo.toml"),
+            "[package]\nname = \"hotSpring\"\nversion = \"0.7.0\"\n",
+        )
+        .unwrap();
+
+        let manifest: VersionManifest = toml::from_str(SAMPLE_MANIFEST).unwrap();
+        let report = check_drift(&manifest, &dir);
+
+        let hot = report
+            .entries
+            .iter()
+            .find(|e| e.name == "hotSpring")
+            .unwrap();
+        assert!(hot.version_drifted);
+        assert_eq!(hot.actual_version.as_deref(), Some("0.7.0"));
+
+        assert!(report.has_drift());
+        std::fs::remove_dir_all(&dir).unwrap();
+    }
+
+    #[test]
+    fn no_drift_when_versions_match() {
+        let dir = std::env::temp_dir().join("foundation_test_no_drift");
+        let spring_dir = dir.join("springs/hotSpring/barracuda");
+        std::fs::create_dir_all(&spring_dir).unwrap();
+        std::fs::write(
+            spring_dir.join("Cargo.toml"),
+            "[package]\nname = \"hotSpring\"\nversion = \"0.6.32\"\n",
+        )
+        .unwrap();
+
+        let manifest: VersionManifest = toml::from_str(SAMPLE_MANIFEST).unwrap();
+        let report = check_drift(&manifest, &dir);
+
+        let hot = report
+            .entries
+            .iter()
+            .find(|e| e.name == "hotSpring")
+            .unwrap();
+        assert!(!hot.version_drifted);
+        assert_eq!(hot.actual_version.as_deref(), Some("0.6.32"));
+
+        std::fs::remove_dir_all(&dir).unwrap();
+    }
+
+    #[test]
+    fn manifest_serializes_back_to_toml() {
+        let manifest: VersionManifest = toml::from_str(SAMPLE_MANIFEST).unwrap();
+        let serialized = toml::to_string_pretty(&manifest).unwrap();
+        assert!(serialized.contains("last_synced"));
+        assert!(serialized.contains("hotSpring"));
+    }
 }

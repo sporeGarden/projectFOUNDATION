@@ -27,6 +27,8 @@ pub mod slugs {
     pub const BIOMEOS: &str = "biomeos";
     /// Inference primal.
     pub const SQUIRREL: &str = "squirrel";
+    /// Meta-primal for family/composition identity resolution.
+    pub const DISCOVERY: &str = "discovery";
 }
 
 /// Display-friendly names for UI/logging output.
@@ -51,6 +53,7 @@ pub mod display {
         ("barracuda", "barraCuda"),
         ("biomeos", "biomeOS"),
         ("squirrel", "squirrel"),
+        ("discovery", "discovery"),
     ];
 }
 
@@ -84,6 +87,7 @@ const ALL_SLUGS: &[&str] = &[
     slugs::BARRACUDA,
     slugs::BIOMEOS,
     slugs::SQUIRREL,
+    slugs::DISCOVERY,
 ];
 
 #[cfg(test)]
@@ -114,6 +118,31 @@ mod tests {
         assert_eq!(PROVENANCE_PRIMALS.len(), 3);
         for p in PROVENANCE_PRIMALS {
             assert!(is_known(p));
+        }
+    }
+
+    #[test]
+    fn discovery_slug_is_known() {
+        assert!(is_known(slugs::DISCOVERY));
+        assert_eq!(display::for_slug(slugs::DISCOVERY), "discovery");
+    }
+
+    #[test]
+    fn all_slugs_have_display_names() {
+        for slug in ALL_SLUGS {
+            let display = display::for_slug(slug);
+            assert!(!display.is_empty(), "slug '{slug}' has empty display name");
+        }
+    }
+
+    #[test]
+    fn slugs_are_lowercase() {
+        for slug in ALL_SLUGS {
+            assert_eq!(
+                *slug,
+                slug.to_lowercase(),
+                "slug '{slug}' must be lowercase"
+            );
         }
     }
 }

@@ -70,7 +70,7 @@ pub struct DriftSummary {
 }
 
 /// The JSON-RPC method name for ecosystem health queries.
-pub const METHOD_ECOSYSTEM_HEALTH: &str = "foundation.ecosystem_health";
+pub const METHOD_ECOSYSTEM_HEALTH: &str = crate::methods::foundation::ECOSYSTEM_HEALTH;
 
 impl EcosystemHealth {
     /// Build an ecosystem health response from a version manifest.

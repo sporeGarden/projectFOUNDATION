@@ -182,7 +182,10 @@ fn nix_uid() -> u32 {
 }
 
 #[cfg(test)]
-#[allow(unsafe_code)]
+#[expect(
+    unsafe_code,
+    reason = "env::set_var/remove_var required for discovery config tests"
+)]
 mod tests {
     use super::*;
     use std::sync::Mutex;

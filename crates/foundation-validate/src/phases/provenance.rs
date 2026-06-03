@@ -62,7 +62,7 @@ pub async fn open_session(config: &DiscoveryConfig, gate_name: &str) -> SessionS
 
     match client
         .call_raw(
-            "dag.session.create",
+            foundation_ipc::methods::dag::SESSION_CREATE,
             Some(serde_json::json!({
                 "gate": gate_name,
                 "purpose": "validation"
@@ -108,7 +108,7 @@ pub async fn commit_session(
 
     match client
         .call_raw(
-            "dag.session.commit",
+            foundation_ipc::methods::dag::SESSION_COMMIT,
             Some(serde_json::json!({
                 "session_id": session_id,
                 "gate": gate_name,

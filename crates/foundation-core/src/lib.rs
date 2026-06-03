@@ -9,6 +9,7 @@
 pub mod config;
 pub mod env_keys;
 pub mod error;
+pub mod paths;
 pub mod primal_names;
 pub mod source;
 pub mod target;

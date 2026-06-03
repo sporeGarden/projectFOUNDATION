@@ -71,7 +71,7 @@ impl PrimalClient {
         Ok(Self {
             name,
             transport,
-            timeout: Duration::from_secs(30),
+            timeout: crate::transport::DEFAULT_TIMEOUT,
             degradation: DegradationLevel::Healthy,
         })
     }
@@ -208,9 +208,9 @@ pub async fn resolve_family_id_rpc(
         return Ok(env_id);
     }
 
-    let client = PrimalClient::discover("discovery", config)?;
+    let client = PrimalClient::discover(foundation_core::primal_names::slugs::DISCOVERY, config)?;
     let result = client
-        .call_raw("family.id", Some(serde_json::json!({})))
+        .call_raw(crate::methods::family::ID, Some(serde_json::json!({})))
         .await?;
     Ok(result
         .get("family_id")

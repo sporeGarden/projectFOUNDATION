@@ -255,7 +255,10 @@ fn expand_env_inner(input: &str) -> String {
 }
 
 #[cfg(test)]
-#[allow(unsafe_code)]
+#[expect(
+    unsafe_code,
+    reason = "env::set_var/remove_var required for env expansion tests"
+)]
 mod tests {
     use super::*;
     use std::sync::Mutex;

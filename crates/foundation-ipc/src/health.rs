@@ -49,7 +49,7 @@ impl HealthTriad {
         let primal = client.name().to_owned();
 
         let alive = client
-            .call_raw("health.liveness", Some(json!({})))
+            .call_raw(crate::methods::health::LIVENESS, Some(json!({})))
             .await
             .is_ok();
 
@@ -66,12 +66,12 @@ impl HealthTriad {
         }
 
         let ready = client
-            .call_raw("health.readiness", Some(json!({})))
+            .call_raw(crate::methods::health::READINESS, Some(json!({})))
             .await
             .is_ok();
 
         let version = client
-            .call_raw("health.check", Some(json!({})))
+            .call_raw(crate::methods::health::CHECK, Some(json!({})))
             .await
             .ok()
             .and_then(|v| v.get("version").and_then(|s| s.as_str()).map(String::from));
@@ -150,7 +150,7 @@ pub async fn check_required_primals(
     if let Some(first) = unreachable.first() {
         return Err(IpcError::Connection {
             primal: (*first).to_owned(),
-            transport: String::from("discovery"),
+            transport: String::from(foundation_core::primal_names::slugs::DISCOVERY),
             message: format!("required primal(s) unreachable: {}", unreachable.join(", ")),
         });
     }
