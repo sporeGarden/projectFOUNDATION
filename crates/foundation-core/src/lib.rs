@@ -13,6 +13,7 @@ pub mod primal_names;
 pub mod source;
 pub mod target;
 pub mod thread;
+pub mod versions;
 pub mod workload;
 
 pub use config::DiscoveryConfig;
@@ -20,4 +21,5 @@ pub use error::CoreError;
 pub use source::Source;
 pub use target::{Target, Tolerance};
 pub use thread::Thread;
+pub use versions::VersionManifest;
 pub use workload::Workload;

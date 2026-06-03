@@ -9,6 +9,7 @@
 //! - `backfill` — populate BLAKE3 hashes in source manifests
 //! - `publish` — generate sporePrint gallery from pseudoSpore registry
 //! - `profiles` — scan and index domain profiles from springs
+//! - `check-versions` — detect drift in `SPRING_VERSIONS.toml`
 
 use std::path::PathBuf;
 
@@ -111,6 +112,15 @@ enum Commands {
         #[arg(long)]
         output: Option<PathBuf>,
     },
+    /// Check spring/primal versions for drift against `SPRING_VERSIONS.toml`.
+    CheckVersions {
+        /// Path to the ecoPrimals root (containing springs/ and primals/).
+        #[arg(long)]
+        eco_root: Option<PathBuf>,
+        /// Output drift report as JSON.
+        #[arg(long)]
+        json: bool,
+    },
 }
 
 fn main() {
@@ -159,6 +169,9 @@ fn main() {
             spring,
             output,
         } => commands::profiles(scan_dir, spring, output),
+        Commands::CheckVersions { eco_root, json } => {
+            commands::check_versions(cli.root, eco_root, json)
+        }
     };
 
     if let Err(e) = result {

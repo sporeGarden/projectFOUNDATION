@@ -111,14 +111,18 @@ target/release/foundation publish --registry ../lithoSpore/pseudospores/registry
 
 # Scan and index domain_profile.toml files from a spring
 target/release/foundation profiles --scan-dir ../../springs/hotSpring --spring hotSpring
+
+# Check spring/primal versions for drift (machine-readable JSON output)
+target/release/foundation check-versions --eco-root ../../ --json
 ```
 
-**Current state**: 6 crates, 150 tests, 8k lines, 3.2MB binary, zero library warnings.
+**Current state**: 6 crates, 157 tests, 8k+ lines, 3.1MB binary, zero clippy warnings.
 IPC phases wired with graceful degradation. Type-safe enums for execution, isolation,
 skip conditions. `Cow<str>` zero-copy env expansion. Zero-copy `Observation` types for
 comparison. Typed `FetchStatus` and `ProvenanceIds`. Sync CLI with async isolated to
 `validate` only. sporePrint gallery generation from pseudoSpore registry. Domain profile
-indexing across springs.
+indexing across springs. Automated drift detection via `check-versions`. Ecosystem health
+dashboard data model for JSON-RPC exposure (petalTongue/sporePrint consumption).
 
 **Phase C remaining**: NestGate registration, toadStool dispatch, full `ProvenanceSession`
 trio, `backfill --write` TOML mutation, database-specific fetch orchestration, sporePrint
@@ -152,7 +156,7 @@ crates/             Rust workspace — foundation UniBin (ecoBin-compliant)
   foundation-fetch/   Manifest-driven fetch, BLAKE3 content addressing, registry
   foundation-validate/ 8-phase pipeline, comparison, execution, reporting
   foundation-publish/ sporePrint gallery generation, pseudoSpore catalog, domain profiles
-  foundation-cli/     UniBin entry: validate, fetch, health, targets, backfill, publish, profiles
+  foundation-cli/     UniBin entry: validate, fetch, health, targets, backfill, publish, profiles, check-versions
 Cargo.toml          Workspace root (edition 2024, AGPL-3.0, clippy pedantic+nursery)
 lineage/            The unified lineage — master map and thread index
   THE_UNIFIED_LINEAGE.md    Master document: 10 threads, all papers/springs/contacts

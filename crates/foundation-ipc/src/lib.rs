@@ -7,6 +7,7 @@
 //! methods using semantic `domain.verb` naming.
 
 pub mod client;
+pub mod dashboard;
 pub mod error;
 pub mod health;
 pub mod protocol;
@@ -14,6 +15,7 @@ pub mod provenance;
 pub mod transport;
 
 pub use client::PrimalClient;
+pub use dashboard::EcosystemHealth;
 pub use error::{DegradationLevel, IpcError, IpcPhase, PhasedIpcError};
 pub use health::{HealthStatus, HealthTriad};
 pub use provenance::ProvenanceSession;

@@ -4,7 +4,7 @@
 //! Functions take `PathBuf`/`String` by value — they own the data from clap
 //! and this avoids lifetime complexity at the CLI boundary.
 
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 use foundation_core::CoreError;
 use foundation_core::config::DiscoveryConfig;
@@ -240,6 +240,62 @@ pub fn profiles(scan_dir: PathBuf, spring: String, output: Option<PathBuf>) -> C
         let json = serde_json::to_string_pretty(&index)?;
         std::fs::write(&out_path, json).map_err(|e| CoreError::io(&out_path, e))?;
         info!(path = %out_path.display(), "index written");
+    }
+
+    Ok(())
+}
+
+/// Check spring/primal version drift against `SPRING_VERSIONS.toml`.
+pub fn check_versions(root: PathBuf, eco_root: Option<PathBuf>, json: bool) -> CmdResult {
+    use foundation_core::versions::{self, VersionManifest};
+
+    let manifest_path = root.join("lineage/SPRING_VERSIONS.toml");
+    let manifest = VersionManifest::from_file(&manifest_path)?;
+
+    let effective_eco_root = eco_root.unwrap_or_else(|| {
+        root.ancestors()
+            .find(|p| p.join("springs").is_dir() && p.join("primals").is_dir())
+            .map_or_else(|| root.join("../.."), Path::to_path_buf)
+    });
+
+    info!(
+        eco_root = %effective_eco_root.display(),
+        wave = manifest.meta.wave,
+        "checking version drift"
+    );
+
+    let report = versions::check_drift(&manifest, &effective_eco_root);
+
+    if json {
+        let output = serde_json::to_string_pretty(&report)?;
+        println!("{output}");
+    } else {
+        info!(summary = %report.summary(), "drift check complete");
+
+        for entry in &report.entries {
+            let status = if entry.version_drifted {
+                "DRIFTED"
+            } else if entry.actual_version.is_none() {
+                "UNREADABLE"
+            } else {
+                "OK"
+            };
+            info!(
+                name = %entry.name,
+                manifest = %entry.manifest_version,
+                actual = entry.actual_version.as_deref().unwrap_or("?"),
+                checks = entry.manifest_checks,
+                status,
+                "entry"
+            );
+        }
+
+        if report.has_drift() {
+            error!(
+                drifted = report.drifted,
+                "version drift detected — lineage counts may be stale"
+            );
+        }
     }
 
     Ok(())
