@@ -14,7 +14,7 @@ can focus on what matters to their audiences.
 projectFOUNDATION is the scientific knowledge layer of the ecoPrimals ecosystem.
 It maps the complete validated lineage — 26 baseCamp companion papers
 (28 including companion hardware and coordination notes),
-8 springs with 17,600+ quantitative checks, 70+ reproduced papers, and
+8 springs + 14 primals with 41,500+ quantitative checks, 70+ reproduced papers, and
 16 faculty and community contacts — as one unified whole, organized into
 10 interconnected domain threads.
 

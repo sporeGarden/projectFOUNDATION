@@ -15,7 +15,10 @@ use std::path::PathBuf;
 use clap::{Parser, Subcommand};
 use tracing_subscriber::EnvFilter;
 
-#[allow(clippy::needless_pass_by_value)]
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "CLI fns own PathBuf/String from clap"
+)]
 mod commands;
 
 /// foundation — scientific validation for ecoPrimals.

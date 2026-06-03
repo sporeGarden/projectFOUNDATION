@@ -1,0 +1,82 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Spring and primal version manifest — tracks the versions against which
+# FOUNDATION's lineage counts were last verified.
+#
+# When a spring bumps its version, the counts in THE_UNIFIED_LINEAGE.md
+# may need updating. This file enables drift detection:
+#   foundation validate --check-versions
+#
+# The `checks` field records the last-known quantitative check count.
+# The `wave` field records when this was last verified.
+
+[meta]
+last_synced = "2026-06-03"
+wave = 73
+
+# --- Springs ---
+
+[springs.hotSpring]
+version = "0.6.32"
+workspace = "barracuda"
+checks = 1234
+wave_verified = 73
+
+[springs.wetSpring]
+version = "V119+"
+workspace = "."
+checks = 5967
+wave_verified = 73
+
+[springs.neuralSpring]
+version = "V176+"
+workspace = "."
+checks = 4900
+wave_verified = 73
+
+[springs.groundSpring]
+version = "V146+"
+workspace = "."
+checks = 1578
+wave_verified = 73
+
+[springs.airSpring]
+version = "0.8.7"
+workspace = "barracuda"
+checks = 902
+wave_verified = 73
+
+[springs.healthSpring]
+version = "V65c"
+workspace = "."
+checks = 1056
+wave_verified = 73
+
+[springs.ludoSpring]
+version = "V80"
+workspace = "."
+checks = 982
+wave_verified = 73
+
+[springs.primalSpring]
+version = "0.9.31"
+workspace = "ecoPrimal"
+checks = 836
+wave_verified = 73
+
+# --- Primals (infrastructure validation) ---
+
+[primals.biomeOS]
+version = "3.98"
+checks = 595
+wave_verified = 73
+
+[primals.bearDog]
+version = "w130"
+checks = 14974
+wave_verified = 73
+
+[primals.songBird]
+version = "0.2.5"
+checks = 8530
+wave_verified = 73

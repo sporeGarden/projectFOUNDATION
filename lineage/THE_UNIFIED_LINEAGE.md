@@ -2,7 +2,7 @@
 
 **One Foundation, Many Expressions: The Complete Validated Scientific Lineage**
 
-**Date**: June 2, 2026 (counts synced Wave 71)
+**Date**: June 3, 2026 (counts synced Wave 73)
 **Status**: Active — mapping and expression authoring
 **License**: scyBorg triple — AGPL-3.0-or-later (code), ORC (system mechanics), CC-BY-SA 4.0 (this document)
 
@@ -10,10 +10,11 @@
 
 ## 1. The Argument
 
-gen3 asked "does it work?" and proved yes — 17,600+ quantitative checks
+gen3 asked "does it work?" and proved yes — 41,500+ quantitative checks
 across 70+ reproduced papers in 8 scientific domains, produced in ~69
 days by 8 springs, 14 primals, and a constrained evolution methodology
-formalized in a PhD thesis.
+formalized in a PhD thesis. (17,400+ spring checks + 24,000+ primal
+infrastructure checks.)
 
 gen4 asks "who uses it?" and answers with products (esotericWebb,
 helixVision, blueFish) that compose primals into tools where the
@@ -98,13 +99,21 @@ node to the lineage graph. The foundation grows as the ecosystem grows.
 | Spring | Domain | Checks | Key Reproductions | Threads |
 |--------|--------|--------|-------------------|---------|
 | **hotSpring** | Plasma physics, lattice QCD, GPU compute | 1,234 tests, 176+ experiments | Murillo (195), Chuna (41), Bazavov (29+), Kachkovskiy spectral (45) | 2, 7 |
-| **wetSpring** | Life science, PFAS, metagenomics, immunology | 2,153 tests, 260+ experiments | Gonzales (359), Waters QS (7 papers), Anderson R. (6 papers), Jones PFAS (40), Liu phylo (6 papers) | 1, 3, 4, 5, 7 |
-| **neuralSpring** | ML primitives, reservoir computing, NLP | 1,576 tests | Dolson evo-comp (46), Liu HMM (26), Waters game theory (23), Kachkovskiy spectral (16) | 5, 7 |
-| **groundSpring** | Geospatial, uncertainty, measurement | 1,286 tests | Dong precision agriculture, spectral reconstruction, inverse problems | 6, 7 |
-| **airSpring** | Precision agriculture, IoT, biosensors | 1,479 tests | Dong irrigation (326), Gonzales barrier (94) | 3, 6 |
-| **healthSpring** | PK/PD, clinical, microbiome-endocrine | 1,057 tests | Mok TRT (233), kinetic modeling, population PK | 8 |
-| **ludoSpring** | Game science, composition, HCI | 6,222 tests, 15 IPC methods | HCI laws, BYOB deploy graphs, trio composition | 9, 10 |
-| **primalSpring** | Structural validation, NUCLEUS | 2,630 tests, 22+ deploy graphs | Tower/Nest/Node/NUCLEUS composition | Infra |
+| **wetSpring** | Life science, PFAS, metagenomics, immunology | 5,967+ validation checks, 2,085 tests | Gonzales (359), Waters QS (7 papers), Anderson R. (6 papers), Jones PFAS (40), Liu phylo (6 papers) | 1, 3, 4, 5, 7 |
+| **neuralSpring** | ML primitives, reservoir computing, NLP | 4,900+ checks (739+ Rust + GPU) | Dolson evo-comp (46), Liu HMM (26), Waters game theory (23), Kachkovskiy spectral (16) | 5, 7 |
+| **groundSpring** | Geospatial, uncertainty, measurement | 1,578 tests (1,123 Rust + 455 Python) | Dong precision agriculture, spectral reconstruction, inverse problems | 6, 7 |
+| **airSpring** | Precision agriculture, IoT, biosensors | 902+ tests (880 lib + 22 property) | Dong irrigation (326), Gonzales barrier (94) | 3, 6 |
+| **healthSpring** | PK/PD, clinical, microbiome-endocrine | 1,056 tests, 113 parity checks | Mok TRT (233), kinetic modeling, population PK | 8 |
+| **ludoSpring** | Game science, composition, HCI | 982 tests, 10 validation scenarios | HCI laws, BYOB deploy graphs, trio composition | 9, 10 |
+| **primalSpring** | Structural validation, NUCLEUS | 836 tests, 46 cross-arch binaries | Tower/Nest/Node/NUCLEUS composition | Infra |
+
+### 2.2b Primals (infrastructure validation)
+
+| Primal | Role | Tests | Wave |
+|--------|------|-------|------|
+| **biomeOS** | Composition kernel, NUCLEUS orchestration | 595+ | v3.98 |
+| **bearDog** | Chaos engineering, fault injection, security | 14,974 | w130 |
+| **songBird** | Event bus, pub/sub, distributed messaging | 8,530+ | v0.2.5 |
 
 ### 2.3 Faculty and Community Network (12+ contacts)
 
