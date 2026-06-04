@@ -278,6 +278,8 @@ pub fn check_versions(root: PathBuf, eco_root: Option<PathBuf>, json: bool) -> C
         for entry in &report.entries {
             let status = if entry.version_drifted {
                 "DRIFTED"
+            } else if entry.uses_internal_tag {
+                "INTERNAL_TAG"
             } else if entry.actual_version.is_none() {
                 "UNREADABLE"
             } else {

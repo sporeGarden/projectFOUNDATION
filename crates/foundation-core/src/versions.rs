@@ -70,6 +70,8 @@ pub struct DriftEntry {
     pub actual_version: Option<String>,
     /// Whether versions differ.
     pub version_drifted: bool,
+    /// Whether the manifest uses a non-semver tag (V-prefix, w-prefix).
+    pub uses_internal_tag: bool,
     /// Last-verified check count.
     pub manifest_checks: u64,
     /// Wave when last verified.
@@ -136,6 +138,17 @@ impl DriftReport {
     }
 }
 
+/// Whether a version string uses an internal tag scheme.
+///
+/// V-prefix or w-prefix tags are wave/build counters that don't correspond
+/// to Cargo.toml versions and should not trigger automated drift alerts.
+#[must_use]
+pub fn is_internal_version_tag(version: &str) -> bool {
+    version.starts_with('V')
+        || version.starts_with('v') && version.len() > 1 && version.as_bytes()[1].is_ascii_digit()
+        || version.starts_with('w') && version.len() > 1 && version.as_bytes()[1].is_ascii_digit()
+}
+
 /// Read the `version` field from a Cargo.toml at the given path.
 ///
 /// Returns `None` if the file can't be read or doesn't contain a version.
@@ -167,9 +180,11 @@ pub fn check_drift(manifest: &VersionManifest, eco_root: &Path) -> DriftReport {
             .join("Cargo.toml");
 
         let actual_version = read_cargo_version(&cargo_path);
-        let version_drifted = actual_version
-            .as_ref()
-            .is_some_and(|actual| !sv.version.contains(actual) && *actual != sv.version);
+        let uses_internal_tag = is_internal_version_tag(&sv.version);
+        let version_drifted = !uses_internal_tag
+            && actual_version
+                .as_ref()
+                .is_some_and(|actual| !sv.version.contains(actual) && *actual != sv.version);
 
         entries.push(DriftEntry {
             name: name.clone(),
@@ -177,6 +192,7 @@ pub fn check_drift(manifest: &VersionManifest, eco_root: &Path) -> DriftReport {
             manifest_version: sv.version.clone(),
             actual_version,
             version_drifted,
+            uses_internal_tag,
             manifest_checks: sv.checks,
             wave_verified: sv.wave_verified,
         });
@@ -186,9 +202,11 @@ pub fn check_drift(manifest: &VersionManifest, eco_root: &Path) -> DriftReport {
         let cargo_path = eco_root.join("primals").join(name).join("Cargo.toml");
 
         let actual_version = read_cargo_version(&cargo_path);
-        let version_drifted = actual_version
-            .as_ref()
-            .is_some_and(|actual| !pv.version.contains(actual) && *actual != pv.version);
+        let uses_internal_tag = is_internal_version_tag(&pv.version);
+        let version_drifted = !uses_internal_tag
+            && actual_version
+                .as_ref()
+                .is_some_and(|actual| !pv.version.contains(actual) && *actual != pv.version);
 
         entries.push(DriftEntry {
             name: name.clone(),
@@ -196,6 +214,7 @@ pub fn check_drift(manifest: &VersionManifest, eco_root: &Path) -> DriftReport {
             manifest_version: pv.version.clone(),
             actual_version,
             version_drifted,
+            uses_internal_tag,
             manifest_checks: pv.checks,
             wave_verified: pv.wave_verified,
         });
@@ -354,5 +373,61 @@ wave_verified = 73
         let serialized = toml::to_string_pretty(&manifest).unwrap();
         assert!(serialized.contains("last_synced"));
         assert!(serialized.contains("hotSpring"));
+    }
+
+    #[test]
+    fn internal_version_tags_detected() {
+        assert!(is_internal_version_tag("V176+"));
+        assert!(is_internal_version_tag("V65c"));
+        assert!(is_internal_version_tag("V119+"));
+        assert!(is_internal_version_tag("V80"));
+        assert!(is_internal_version_tag("w130"));
+        assert!(is_internal_version_tag("w135"));
+    }
+
+    #[test]
+    fn semver_not_internal_tag() {
+        assert!(!is_internal_version_tag("0.6.32"));
+        assert!(!is_internal_version_tag("0.8.7"));
+        assert!(!is_internal_version_tag("3.98"));
+        assert!(!is_internal_version_tag("0.2.5"));
+        assert!(!is_internal_version_tag("0.9.31"));
+    }
+
+    #[test]
+    fn internal_tags_skip_drift_detection() {
+        let manifest_str = r#"
+[meta]
+last_synced = "2026-06-03"
+wave = 76
+
+[springs.neuralSpring]
+version = "V176+"
+workspace = "."
+checks = 4900
+wave_verified = 73
+"#;
+        let dir = std::env::temp_dir().join("foundation_test_vtag_no_drift");
+        let spring_dir = dir.join("springs/neuralSpring");
+        std::fs::create_dir_all(&spring_dir).unwrap();
+        std::fs::write(
+            spring_dir.join("Cargo.toml"),
+            "[package]\nname = \"neuralSpring\"\nversion = \"0.1.0\"\n",
+        )
+        .unwrap();
+
+        let manifest: VersionManifest = toml::from_str(manifest_str).unwrap();
+        let report = check_drift(&manifest, &dir);
+
+        let neural = report
+            .entries
+            .iter()
+            .find(|e| e.name == "neuralSpring")
+            .unwrap();
+        assert!(!neural.version_drifted, "V-tag should not trigger drift");
+        assert!(neural.uses_internal_tag);
+        assert!(!report.has_drift());
+
+        std::fs::remove_dir_all(&dir).unwrap();
     }
 }
