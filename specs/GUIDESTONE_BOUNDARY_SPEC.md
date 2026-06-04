@@ -1,6 +1,6 @@
 # guideStone / FOUNDATION Validation Boundary Specification
 
-**Date**: June 3, 2026 (Wave 74, updated Wave 76 for trust infrastructure)
+**Date**: June 3, 2026 (Wave 74, updated Wave 76+ for BTSP trust levels)
 **Status**: Specification — defines validation responsibilities
 **Upstream**: primalSpring (owns guideStone)
 **Local**: projectFOUNDATION (owns scientific validation)
@@ -49,9 +49,9 @@ guideStone does **not** validate:
 - Whether the binary is healthy/alive (that's NUCLEUS)
 - Data source integrity or availability
 
-### Trust Infrastructure (Wave 76)
+### Trust Infrastructure (Wave 76+)
 
-bearDog w135 introduces multi-issuer authentication and cross-gate trust
+bearDog w135+ introduces multi-issuer authentication and cross-gate trust
 via Ed25519 key exchange. This affects guideStone's certification model:
 
 - **Certification is now signed**: When guideStone certifies a spring on a
@@ -66,6 +66,78 @@ via Ed25519 key exchange. This affects guideStone's certification model:
 FOUNDATION's role is unchanged: produce lineage records. But the shared
 schema (below) now includes optional trust fields that guideStone populates
 when certifying cross-gate.
+
+### BTSP Trust Levels and Certification Scope
+
+guideStone certifications operate within the ecosystem's bonding model.
+The bond type between gates determines what certification data crosses
+the boundary and at what fidelity:
+
+| Bond Type | Trust Model | Certification Data Shared | BTSP Cipher |
+|-----------|-------------|---------------------------|-------------|
+| **Covalent** | GeneticLineage | Full lineage records + raw actual values + BLAKE3 provenance | `BTSP_NULL` (same family) |
+| **Metallic** | Organizational | Full lineage records + values (fleet compute, shared org) | `BTSP_HMAC_PLAIN` |
+| **Ionic** | Contractual | Scoped results: pass/fail per target, no raw values | `BTSP_CHACHA20_POLY1305` |
+| **Weak** | ZeroTrust | Summary only: certified/not-certified per spring version | `BTSP_CHACHA20_POLY1305` |
+
+#### Covalent Certification (same-family gates)
+
+Gates sharing a family seed (e.g., ironGate ↔ eastGate ↔ strandGate) have
+covalent bonds. guideStone certifications between covalent-bonded gates:
+
+- Share full `[record]` data including raw `actual` values and tolerances
+- Ed25519 signature verified via `TrustedIssuerRegistry` (local fast path)
+- No braid inspection at boundary (pass-through policy)
+- Enable bitwise parity verification across architectures
+
+#### Ionic Certification (cross-family partners)
+
+A university lab or ABG ionic compute partner consuming validation results:
+
+- Receives only pass/fail status per target (raw values stripped)
+- Method-level capability filtering: `validation.results` allowed,
+  `validation.raw_data` denied
+- BLAKE3 provenance hash shared for audit, but braid metadata blocked
+- guideStone reports scoped to contracted spring/thread subset
+
+#### Weak Certification (public consumers)
+
+sporePrint, public APIs, or extracellular consumers:
+
+- Binary certified/not-certified status only
+- No lineage records cross the boundary
+- No provenance data (braid stripped per weak bond policy)
+- Suitable for sporePrint gallery "certified" badges
+
+### Certification × Bond Type Flow
+
+```
+FOUNDATION produces lineage records (always covalent-internal)
+                         ↓
+guideStone certifies on same gate (covalent — full access)
+                         ↓
+guideStone cross-gate comparison:
+  ├─ Covalent peer → full record exchange, bitwise parity check
+  ├─ Metallic fleet → full exchange within organization
+  ├─ Ionic partner → scoped results only (capability filtered)
+  └─ Weak edge → certified/not-certified badge only
+```
+
+### Token Claims for Lineage Queries
+
+When external systems query FOUNDATION lineage via JSON-RPC, bearDog's
+`IonicTokenPayload` determines access scope:
+
+| Token field | Purpose |
+|-------------|---------|
+| `gate_id` | Identifies requesting gate for audit |
+| `family_id` | Determines bond type (same family = covalent) |
+| `scope` | Method-level access (`validation.*`, `lineage.read`) |
+| `verification_source` | "local" / "remote" / "adhoc" — trust provenance |
+
+FOUNDATION's health dashboard endpoint (`foundation.ecosystem_health`)
+respects bond type: covalent consumers see full drift data, ionic see
+summary counts, weak see only aggregate health status.
 
 ### What NUCLEUS Validates
 
@@ -111,9 +183,12 @@ timestamp = "2026-06-03T14:00:00Z"
 # Trust fields (populated by guideStone when certifying cross-gate)
 [record.trust]
 issuer = "ironGate"                    # gate that produced this record
+bond_type = "covalent"                 # covalent | metallic | ionic | weak
+trust_model = "GeneticLineage"         # GeneticLineage | Organizational | Contractual | ZeroTrust
 signature = ""                         # Ed25519 signature (bearDog w135+)
 issuer_key_id = ""                     # key ID in TrustedIssuerRegistry
 federation_hash = ""                   # NestGate s90 federated BLAKE3
+verification_source = ""               # local | remote | adhoc
 ```
 
 FOUNDATION produces records **without** the `[record.trust]` section.
@@ -148,11 +223,13 @@ The interface is considered stable when:
 |-----------|--------|-------|
 | FOUNDATION lineage records | Active | THE_UNIFIED_LINEAGE.md + SPRING_VERSIONS.toml |
 | FOUNDATION drift detection | Active (Wave 74) | `check-versions` subcommand |
-| Trust infrastructure | Active upstream (Wave 76) | bearDog w135 multi-issuer, NestGate s90 federation |
+| Trust infrastructure | Active upstream (Wave 76+) | bearDog w135+ multi-issuer, NestGate s90 federation |
+| BTSP bond-type schema | Defined (Wave 76+) | `bond_type` + `trust_model` in `[record.trust]` |
+| Bond-scoped data filtering | Designed | Covalent=full, ionic=scoped, weak=badge |
 | guideStone consumption | Not yet built | guideStone spec pending upstream |
 | Cross-gate comparison | Not yet built | Blocked on guideStone + trust wiring |
 | JSON-RPC lineage query | Planned (P3) | Health dashboard data model ready |
-| Trust field schema | Defined (Wave 76) | Optional `[record.trust]` section |
+| Token-scoped access | Designed | `IonicTokenPayload` determines response scope |
 
 ## Coordination Notes
 
@@ -160,7 +237,11 @@ The interface is considered stable when:
 - FOUNDATION defines the lineage schema that guideStone will consume
 - No code changes in FOUNDATION are needed until guideStone is built
 - Trust fields are additive — FOUNDATION ignores them, guideStone populates them
+- Bond-type scoping is enforced at the IPC boundary (cellMembrane/bearDog),
+  not within FOUNDATION itself — FOUNDATION always produces full records
 - When guideStone becomes active, FOUNDATION may expose lineage via JSON-RPC
   (see P3: ecosystem health dashboard)
-- Wave 76 trust infrastructure (bearDog w135, NestGate s90) enables signed
-  cross-gate certifications — the schema above is forward-compatible
+- Wave 76+ trust infrastructure (bearDog w135+, NestGate s90) enables signed
+  cross-gate certifications with BTSP bond-type enforcement
+- `BONDING_MODEL_STANDARD.md` in wateringHole is the canonical reference
+  for bond types; this spec references it for guideStone-specific application

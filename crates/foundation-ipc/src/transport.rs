@@ -104,66 +104,48 @@ impl TransportLayer {
     }
 
     async fn uds_send_recv(path: &Path, request_bytes: &[u8]) -> Result<Bytes, IpcError> {
-        let stream = UnixStream::connect(path).await.map_err(|e| IpcError::Io {
-            transport: format!("UDS:{}", path.display()),
+        let label = format!("UDS:{}", path.display());
+        let io_err = |e: std::io::Error| IpcError::Io {
+            transport: label.clone(),
             source: e,
-        })?;
+        };
+
+        let stream = UnixStream::connect(path).await.map_err(io_err)?;
 
         let (reader, mut writer) = stream.into_split();
-        writer
-            .write_all(request_bytes)
-            .await
-            .map_err(|e| IpcError::Io {
-                transport: format!("UDS:{}", path.display()),
-                source: e,
-            })?;
-        writer.shutdown().await.map_err(|e| IpcError::Io {
-            transport: format!("UDS:{}", path.display()),
-            source: e,
-        })?;
+        writer.write_all(request_bytes).await.map_err(io_err)?;
+        writer.shutdown().await.map_err(io_err)?;
 
         let mut buf_reader = BufReader::new(reader);
         let mut line = Vec::with_capacity(MAX_RESPONSE_SIZE);
         buf_reader
             .read_until(b'\n', &mut line)
             .await
-            .map_err(|e| IpcError::Io {
-                transport: format!("UDS:{}", path.display()),
-                source: e,
-            })?;
+            .map_err(io_err)?;
 
         Ok(Bytes::from(line))
     }
 
     async fn tcp_send_recv(host: &str, port: u16, request_bytes: &[u8]) -> Result<Bytes, IpcError> {
         let addr = format!("{host}:{port}");
-        let stream = TcpStream::connect(&addr).await.map_err(|e| IpcError::Io {
-            transport: format!("TCP:{addr}"),
+        let label = format!("TCP:{addr}");
+        let io_err = |e: std::io::Error| IpcError::Io {
+            transport: label.clone(),
             source: e,
-        })?;
+        };
+
+        let stream = TcpStream::connect(&addr).await.map_err(io_err)?;
 
         let (reader, mut writer) = stream.into_split();
-        writer
-            .write_all(request_bytes)
-            .await
-            .map_err(|e| IpcError::Io {
-                transport: format!("TCP:{addr}"),
-                source: e,
-            })?;
-        writer.shutdown().await.map_err(|e| IpcError::Io {
-            transport: format!("TCP:{addr}"),
-            source: e,
-        })?;
+        writer.write_all(request_bytes).await.map_err(io_err)?;
+        writer.shutdown().await.map_err(io_err)?;
 
         let mut buf_reader = BufReader::new(reader);
         let mut line = Vec::with_capacity(MAX_RESPONSE_SIZE);
         buf_reader
             .read_until(b'\n', &mut line)
             .await
-            .map_err(|e| IpcError::Io {
-                transport: format!("TCP:{addr}"),
-                source: e,
-            })?;
+            .map_err(io_err)?;
 
         Ok(Bytes::from(line))
     }
