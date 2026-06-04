@@ -1,7 +1,7 @@
 # foundation_validate.sh — Rust Elevation Feasibility Review
 
-**Date:** 2026-05-16 (updated June 3, Wave 74 — drift detection, centralized constants, 8 subcommands)
-**Status:** Phase B++ (8,391 lines, 170 tests, 6 crates, ecoBin compliant, all debt cleared)
+**Date:** 2026-05-16 (updated June 3, Wave 76 — typed errors, Display impls, zero debt)
+**Status:** Phase B++ (9,179 lines, 173 tests, 6 crates, ecoBin compliant, all debt cleared)
 **Referenced by:** lithoSpore UPSTREAM_GAPS.md, primalSpring CROSS_SPRING_PARITY_SCORECARD
 
 ## Current State

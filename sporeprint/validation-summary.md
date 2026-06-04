@@ -14,14 +14,14 @@ Defines **what** to validate across 10 domain threads spanning whole-cell
 modeling, plasma physics, immunology, evolutionary biology, agricultural
 science, and more.
 
-## Current State (Wave 74)
+## Current State (Wave 76)
 
 | Metric | Value |
 |--------|------:|
-| Rust workspace lines | 8,391 |
-| Tests (unit + integration) | 170 |
+| Rust workspace lines | 9,179 |
+| Tests (unit + integration) | 173 |
 | CLI subcommands | 8 |
-| Binary size (ecoBin, zero C deps) | 3.2 MB |
+| Binary size (ecoBin, zero C deps) | 3.1 MB |
 | Domain threads | 10 |
 | Ecosystem checks (springs + primals) | 41,500+ |
 | Data sources | 165 (across 11 manifests) |
