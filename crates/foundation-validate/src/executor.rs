@@ -8,6 +8,26 @@ use std::time::{Duration, Instant};
 use foundation_core::workload::Workload;
 use tracing::{debug, info, warn};
 
+/// Typed errors for process execution.
+#[derive(Debug, thiserror::Error)]
+enum ProcessError {
+    /// Process could not be spawned.
+    #[error("failed to spawn {command}: {source}")]
+    Spawn {
+        command: String,
+        source: std::io::Error,
+    },
+    /// Process exceeded its time budget.
+    #[error("timed out after {timeout_secs}s")]
+    Timeout { timeout_secs: u64 },
+    /// Error while waiting for the process to complete.
+    #[error("error waiting for {command}: {source}")]
+    Wait {
+        command: String,
+        source: std::io::Error,
+    },
+}
+
 /// Default workload execution timeout.
 const DEFAULT_WORKLOAD_TIMEOUT: Duration = Duration::from_secs(300);
 
@@ -105,7 +125,7 @@ pub fn execute_workload(workload: &Workload, timeout: Option<Duration>) -> Execu
                 success: false,
                 exit_code: None,
                 stdout: String::new(),
-                stderr: e,
+                stderr: e.to_string(),
                 elapsed,
                 skipped: false,
                 skip_reason: None,
@@ -123,7 +143,7 @@ fn run_process(
     args: &[String],
     working_dir: Option<&str>,
     timeout: Duration,
-) -> Result<Output, String> {
+) -> Result<Output, ProcessError> {
     let mut cmd = std::process::Command::new(command);
     cmd.args(args);
 
@@ -139,21 +159,36 @@ fn run_process(
         .stdout(std::process::Stdio::piped())
         .stderr(std::process::Stdio::piped())
         .spawn()
-        .map_err(|e| format!("failed to spawn {command}: {e}"))?;
+        .map_err(|e| ProcessError::Spawn {
+            command: command.to_owned(),
+            source: e,
+        })?;
 
     let start = Instant::now();
     loop {
         match child.try_wait() {
-            Ok(Some(_)) => return child.wait_with_output().map_err(|e| e.to_string()),
+            Ok(Some(_)) => {
+                return child.wait_with_output().map_err(|e| ProcessError::Wait {
+                    command: command.to_owned(),
+                    source: e,
+                });
+            }
             Ok(None) => {
                 if start.elapsed() >= timeout {
                     let _ = child.kill();
                     let _ = child.wait();
-                    return Err(format!("timed out after {}s", timeout.as_secs()));
+                    return Err(ProcessError::Timeout {
+                        timeout_secs: timeout.as_secs(),
+                    });
                 }
                 std::thread::sleep(Duration::from_millis(50));
             }
-            Err(e) => return Err(format!("error waiting for {command}: {e}")),
+            Err(e) => {
+                return Err(ProcessError::Wait {
+                    command: command.to_owned(),
+                    source: e,
+                });
+            }
         }
     }
 }

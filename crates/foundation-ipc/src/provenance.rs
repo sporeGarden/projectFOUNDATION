@@ -247,20 +247,33 @@ impl CommitResult {
     /// Human-readable summary.
     #[must_use]
     pub fn summary(&self) -> String {
-        let parts: Vec<&str> = [
+        self.to_string()
+    }
+}
+
+impl std::fmt::Display for CommitResult {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let parts: &[Option<&str>] = &[
             self.dag_committed.then_some("DAG"),
             self.spine_committed.then_some("spine"),
             self.braid_created.then_some("braid"),
-        ]
-        .into_iter()
-        .flatten()
-        .collect();
+        ];
 
-        if parts.is_empty() {
-            String::from("no provenance committed")
-        } else {
-            format!("committed: {}", parts.join(" + "))
+        let mut first = true;
+        for part in parts.iter().flatten() {
+            if first {
+                f.write_str("committed: ")?;
+                first = false;
+            } else {
+                f.write_str(" + ")?;
+            }
+            f.write_str(part)?;
         }
+
+        if first {
+            f.write_str("no provenance committed")?;
+        }
+        Ok(())
     }
 }
 

@@ -74,6 +74,49 @@ impl Default for FetchConfig {
     }
 }
 
+/// Typed errors for fetch operations.
+#[derive(Debug, thiserror::Error)]
+pub enum FetchError {
+    /// HTTP request failed.
+    #[error("HTTP request failed for {url}: {source}")]
+    Http {
+        /// URL that was attempted.
+        url: String,
+        /// Underlying error.
+        source: Box<ureq::Error>,
+    },
+    /// File I/O failed during fetch.
+    #[error("I/O error at {path}: {source}")]
+    Io {
+        /// Path involved.
+        path: PathBuf,
+        /// Underlying I/O error.
+        source: std::io::Error,
+    },
+    /// Downloaded file is below minimum size (likely an error page).
+    #[error("file too small ({actual} bytes, minimum {minimum})")]
+    FileTooSmall {
+        /// Actual file size.
+        actual: u64,
+        /// Required minimum.
+        minimum: u64,
+    },
+    /// BLAKE3 hash computation failed.
+    #[error("hash computation failed: {0}")]
+    Hash(#[from] foundation_core::CoreError),
+    /// All retry attempts exhausted.
+    #[error("failed after {attempts} attempts: {last_error}")]
+    RetriesExhausted {
+        /// Number of attempts made.
+        attempts: u32,
+        /// Last error encountered.
+        last_error: Box<Self>,
+    },
+    /// Source manifest has no URL defined.
+    #[error("no URL in source manifest")]
+    NoUrl,
+}
+
 /// Result of fetching a single source.
 #[derive(Debug, Clone)]
 pub struct FetchResult {
@@ -85,7 +128,7 @@ pub struct FetchResult {
     pub output_path: Option<PathBuf>,
     /// Computed BLAKE3 hash (if successful).
     pub blake3: Option<String>,
-    /// Error message (if failed).
+    /// Error description (if failed).
     pub error: Option<String>,
     /// Whether this was skipped (already existed).
     pub skipped: bool,
@@ -160,7 +203,7 @@ impl SourceFetcher {
                 success: false,
                 output_path: None,
                 blake3: None,
-                error: Some(String::from("no URL in source manifest")),
+                error: Some(FetchError::NoUrl.to_string()),
                 skipped: false,
             };
         };
@@ -179,21 +222,21 @@ impl SourceFetcher {
                 success: false,
                 output_path: None,
                 blake3: None,
-                error: Some(e),
+                error: Some(e.to_string()),
                 skipped: false,
             },
         }
     }
 
     /// Fetch a URL with configurable retry logic.
-    fn fetch_with_retry(&self, url: &str, output: &Path) -> Result<String, String> {
+    fn fetch_with_retry(&self, url: &str, output: &Path) -> Result<String, FetchError> {
         let delay = self.delay_for_url(url);
+        let mut last_error = None;
 
         for attempt in 1..=self.config.max_retries {
             match self.do_fetch(url, output) {
                 Ok(()) => {
-                    let hash =
-                        hasher::blake3_file(output).map_err(|e| format!("hash failed: {e}"))?;
+                    let hash = hasher::blake3_file(output)?;
                     return Ok(hash);
                 }
                 Err(e) if attempt < self.config.max_retries => {
@@ -203,22 +246,23 @@ impl SourceFetcher {
                         error = %e,
                         "fetch failed, retrying"
                     );
+                    last_error = Some(e);
                     std::thread::sleep(delay * attempt);
                 }
                 Err(e) => {
-                    return Err(format!(
-                        "failed after {} attempts: {e}",
-                        self.config.max_retries
-                    ));
+                    last_error = Some(e);
                 }
             }
         }
 
-        unreachable!("loop always returns on max_retries")
+        Err(FetchError::RetriesExhausted {
+            attempts: self.config.max_retries,
+            last_error: Box::new(last_error.unwrap_or(FetchError::NoUrl)),
+        })
     }
 
     /// Perform a single HTTP GET and write to a file.
-    fn do_fetch(&self, url: &str, output: &Path) -> Result<(), String> {
+    fn do_fetch(&self, url: &str, output: &Path) -> Result<(), FetchError> {
         let agent = ureq::Agent::new_with_config(
             ureq::config::Config::builder()
                 .timeout_global(Some(self.config.request_timeout))
@@ -226,24 +270,31 @@ impl SourceFetcher {
                 .build(),
         );
 
-        let response = agent
-            .get(url)
-            .call()
-            .map_err(|e| format!("HTTP request failed: {e}"))?;
+        let response = agent.get(url).call().map_err(|e| FetchError::Http {
+            url: url.to_owned(),
+            source: Box::new(e),
+        })?;
 
         let mut reader = response.into_body().into_reader();
-        let mut file = std::fs::File::create(output)
-            .map_err(|e| format!("cannot create {}: {e}", output.display()))?;
+        let mut file = std::fs::File::create(output).map_err(|e| FetchError::Io {
+            path: output.to_path_buf(),
+            source: e,
+        })?;
 
-        std::io::copy(&mut reader, &mut file).map_err(|e| format!("write failed: {e}"))?;
+        std::io::copy(&mut reader, &mut file).map_err(|e| FetchError::Io {
+            path: output.to_path_buf(),
+            source: e,
+        })?;
 
-        let meta = std::fs::metadata(output).map_err(|e| format!("stat failed: {e}"))?;
+        let meta = std::fs::metadata(output).map_err(|e| FetchError::Io {
+            path: output.to_path_buf(),
+            source: e,
+        })?;
         if meta.len() < self.config.min_file_size {
-            return Err(format!(
-                "file too small ({} bytes, minimum {})",
-                meta.len(),
-                self.config.min_file_size
-            ));
+            return Err(FetchError::FileTooSmall {
+                actual: meta.len(),
+                minimum: self.config.min_file_size,
+            });
         }
 
         Ok(())

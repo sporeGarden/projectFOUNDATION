@@ -118,10 +118,16 @@ impl HealthTriad {
     /// Produce a human-readable summary for logging.
     #[must_use]
     pub fn summary(&self) -> String {
+        self.to_string()
+    }
+}
+
+impl std::fmt::Display for HealthTriad {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let total = self.results.len();
         let alive = self.results.iter().filter(|r| r.alive).count();
         let ready = self.results.iter().filter(|r| r.ready).count();
-        format!("{ready}/{total} ready, {alive}/{total} alive")
+        write!(f, "{ready}/{total} ready, {alive}/{total} alive")
     }
 }
 

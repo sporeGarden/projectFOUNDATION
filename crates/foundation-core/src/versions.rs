@@ -128,7 +128,14 @@ impl DriftReport {
     /// Summary line for logging.
     #[must_use]
     pub fn summary(&self) -> String {
-        format!(
+        self.to_string()
+    }
+}
+
+impl std::fmt::Display for DriftReport {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
             "{}/{} checked, {} drifted, {} unreadable",
             self.total_checked,
             self.entries.len(),
@@ -170,7 +177,7 @@ pub fn read_cargo_version(cargo_toml_path: &Path) -> Option<String> {
 /// `springs/` and `primals/` subdirectories.
 #[must_use]
 pub fn check_drift(manifest: &VersionManifest, eco_root: &Path) -> DriftReport {
-    let mut entries = Vec::new();
+    let mut entries = Vec::with_capacity(manifest.springs.len() + manifest.primals.len());
 
     for (name, sv) in &manifest.springs {
         let cargo_path = eco_root

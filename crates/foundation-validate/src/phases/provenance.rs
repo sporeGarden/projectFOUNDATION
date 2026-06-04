@@ -40,9 +40,15 @@ impl SessionStatus {
     /// Human-readable summary for reporting.
     #[must_use]
     pub fn summary(&self) -> String {
+        self.to_string()
+    }
+}
+
+impl std::fmt::Display for SessionStatus {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            Self::Active(id) => format!("{SESSION_PREFIX}{id}"),
-            Self::Degraded(reason) => format!("degraded: {reason}"),
+            Self::Active(id) => write!(f, "{SESSION_PREFIX}{id}"),
+            Self::Degraded(reason) => write!(f, "degraded: {reason}"),
         }
     }
 }

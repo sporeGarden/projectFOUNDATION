@@ -212,11 +212,14 @@ pub async fn resolve_family_id_rpc(
     let result = client
         .call_raw(crate::methods::family::ID, Some(serde_json::json!({})))
         .await?;
-    Ok(result
+    let family_id = result
         .get("family_id")
         .and_then(|v| v.as_str())
-        .unwrap_or_default()
-        .to_owned())
+        .unwrap_or_else(|| {
+            warn!("discovery RPC returned no family_id field — using empty default");
+            ""
+        });
+    Ok(family_id.to_owned())
 }
 
 /// Ecosystem convention table for semantic domain prefixes.

@@ -79,7 +79,7 @@ pub fn fetch(
         index
             .threads
             .iter()
-            .filter(|t| t.short == *filter || t.id.to_string() == *filter)
+            .filter(|t| t.short == *filter || filter.parse::<u32>().ok() == Some(t.id))
             .collect()
     } else {
         index.threads.iter().collect()
@@ -145,7 +145,7 @@ pub fn targets(root: PathBuf, thread: Option<String>, check: bool) -> CmdResult 
         index
             .threads
             .iter()
-            .filter(|t| t.short == *filter || t.id.to_string() == *filter)
+            .filter(|t| t.short == *filter || filter.parse::<u32>().ok() == Some(t.id))
             .collect()
     } else {
         index.threads.iter().collect()
