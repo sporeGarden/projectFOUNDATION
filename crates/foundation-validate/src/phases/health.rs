@@ -26,8 +26,8 @@ pub struct HealthPhaseResult {
 /// Never fails — unreachable primals are recorded as degraded.
 pub async fn run(config: &DiscoveryConfig) -> HealthPhaseResult {
     let mut triad = HealthTriad::new();
-    let mut clients: Vec<PrimalClient> = Vec::new();
-    let mut unreachable = Vec::new();
+    let mut clients: Vec<PrimalClient> = Vec::with_capacity(primal_names::VALIDATION_PRIMALS.len());
+    let mut unreachable: Vec<String> = Vec::new();
 
     for &primal in primal_names::VALIDATION_PRIMALS {
         match PrimalClient::discover(primal, config) {

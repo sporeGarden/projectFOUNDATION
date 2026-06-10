@@ -120,7 +120,7 @@ impl DiscoveryConfig {
         // Tier 2: Config socket paths
         if let Some(socket_template) = self.sockets.get(primal) {
             let expanded = expand_xdg(socket_template);
-            let path = PathBuf::from(&expanded);
+            let path = PathBuf::from(expanded.as_ref());
             if path.exists() {
                 return Some(Transport::Uds(path));
             }
@@ -158,13 +158,15 @@ impl DiscoveryConfig {
 }
 
 /// Expand `${XDG_RUNTIME_DIR}` in a socket path template.
-fn expand_xdg(template: &str) -> String {
+///
+/// Returns borrowed input when no substitution is needed (zero-copy fast path).
+fn expand_xdg(template: &str) -> std::borrow::Cow<'_, str> {
     if template.contains("${XDG_RUNTIME_DIR}") {
         let xdg = std::env::var(crate::env_keys::XDG_RUNTIME_DIR)
             .unwrap_or_else(|_| format!("/run/user/{}", nix_uid()));
-        template.replace("${XDG_RUNTIME_DIR}", &xdg)
+        std::borrow::Cow::Owned(template.replace("${XDG_RUNTIME_DIR}", &xdg))
     } else {
-        template.to_owned()
+        std::borrow::Cow::Borrowed(template)
     }
 }
 

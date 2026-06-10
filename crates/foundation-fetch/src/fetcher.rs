@@ -443,4 +443,40 @@ mod tests {
         assert!(result.output_path.is_none());
         assert_eq!(result.error.as_deref(), Some("no URL in source manifest"));
     }
+
+    #[test]
+    fn fetch_error_no_url_display() {
+        let err = FetchError::NoUrl;
+        assert_eq!(err.to_string(), "no URL in source manifest");
+    }
+
+    #[test]
+    fn fetch_error_file_too_small_display() {
+        let err = FetchError::FileTooSmall {
+            actual: 42,
+            minimum: 100,
+        };
+        assert_eq!(err.to_string(), "file too small (42 bytes, minimum 100)");
+    }
+
+    #[test]
+    fn fetch_error_retries_exhausted_display() {
+        let inner = FetchError::NoUrl;
+        let err = FetchError::RetriesExhausted {
+            attempts: 3,
+            last_error: Box::new(inner),
+        };
+        assert!(err.to_string().contains("failed after 3 attempts"));
+    }
+
+    #[test]
+    fn fetch_error_io_display() {
+        let io_err = std::io::Error::new(std::io::ErrorKind::NotFound, "gone");
+        let err = FetchError::Io {
+            path: PathBuf::from("/tmp/missing.dat"),
+            source: io_err,
+        };
+        assert!(err.to_string().contains("/tmp/missing.dat"));
+        assert!(err.to_string().contains("gone"));
+    }
 }

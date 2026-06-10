@@ -435,4 +435,32 @@ mod tests {
         assert!(result.skipped);
         assert_eq!(result.skip_reason.as_deref(), Some("skip condition met"));
     }
+
+    #[test]
+    fn process_error_spawn_display() {
+        let err = ProcessError::Spawn {
+            command: String::from("/usr/bin/fake"),
+            source: std::io::Error::new(std::io::ErrorKind::NotFound, "not found"),
+        };
+        let msg = err.to_string();
+        assert!(msg.contains("/usr/bin/fake"));
+        assert!(msg.contains("not found"));
+    }
+
+    #[test]
+    fn process_error_timeout_display() {
+        let err = ProcessError::Timeout { timeout_secs: 300 };
+        assert_eq!(err.to_string(), "timed out after 300s");
+    }
+
+    #[test]
+    fn process_error_wait_display() {
+        let err = ProcessError::Wait {
+            command: String::from("cargo"),
+            source: std::io::Error::other("broken pipe"),
+        };
+        let msg = err.to_string();
+        assert!(msg.contains("cargo"));
+        assert!(msg.contains("broken pipe"));
+    }
 }
