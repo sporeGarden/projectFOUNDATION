@@ -21,6 +21,9 @@ pub const DEFAULT_TIMEOUT: Duration = Duration::from_secs(30);
 /// Maximum response size (64 KiB — matches bash `dd bs=65536`).
 pub const MAX_RESPONSE_SIZE: usize = 65_536;
 
+/// Error detail for unparseable JSON-RPC responses.
+const MALFORMED_JSON_DETAIL: &str = "response is not valid JSON";
+
 /// Abstraction over UDS and TCP transports.
 #[derive(Debug, Clone)]
 pub enum TransportLayer {
@@ -91,7 +94,7 @@ impl TransportLayer {
         JsonRpcResponse::from_bytes(&response_bytes).map_err(|_| IpcError::MalformedResponse {
             primal: String::new(),
             method: request.method.clone(),
-            detail: String::from("response is not valid JSON"),
+            detail: String::from(MALFORMED_JSON_DETAIL),
         })
     }
 

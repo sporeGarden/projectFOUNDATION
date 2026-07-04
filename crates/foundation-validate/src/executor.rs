@@ -31,6 +31,9 @@ enum ProcessError {
 /// Default workload execution timeout.
 const DEFAULT_WORKLOAD_TIMEOUT: Duration = Duration::from_secs(300);
 
+/// Default reason when a workload skip has no explicit explanation.
+const DEFAULT_SKIP_REASON: &str = "skip condition met";
+
 /// Result of executing a single workload.
 #[derive(Debug, Clone)]
 pub struct ExecutionResult {
@@ -64,7 +67,7 @@ pub fn execute_workload(workload: &Workload, timeout: Option<Duration>) -> Execu
             .skip
             .as_ref()
             .and_then(|s| s.reason.clone())
-            .unwrap_or_else(|| String::from("skip condition met"));
+            .unwrap_or_else(|| String::from(DEFAULT_SKIP_REASON));
 
         info!(workload = %name, %reason, "skipping workload");
         return ExecutionResult {

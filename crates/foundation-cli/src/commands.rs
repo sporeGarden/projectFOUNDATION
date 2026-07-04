@@ -33,6 +33,7 @@ pub enum CliError {
     Runtime(#[from] std::io::Error),
 }
 
+/// Unified result type for CLI subcommand handlers.
 pub type CmdResult = Result<(), CliError>;
 
 /// Run the 8-phase validation pipeline (requires async for IPC phases).

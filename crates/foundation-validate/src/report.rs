@@ -6,53 +6,21 @@ use std::path::{Path, PathBuf};
 use std::time::SystemTime;
 
 use foundation_core::CoreError;
+use foundation_core::time::CivilDateTime;
 
 /// Format current UTC time as `YYYYMMDD-HHMMSS`.
 fn timestamp_compact() -> String {
-    format_system_time(SystemTime::now(), "%Y%m%d-%H%M%S")
+    CivilDateTime::from_system_time(SystemTime::now()).to_compact()
 }
 
 /// Format current UTC time as `YYYY-MM-DD HH:MM:SS UTC`.
 fn timestamp_display() -> String {
-    format_system_time(SystemTime::now(), "%Y-%m-%d %H:%M:%S UTC")
+    CivilDateTime::from_system_time(SystemTime::now()).to_display()
 }
 
 /// Format current UTC time as ISO 8601 (`YYYY-MM-DDTHH:MM:SSZ`).
 fn timestamp_iso() -> String {
-    format_system_time(SystemTime::now(), "%Y-%m-%dT%H:%M:%SZ")
-}
-
-/// Minimal UTC time formatter using UNIX epoch math — no external crate.
-fn format_system_time(time: SystemTime, fmt: &str) -> String {
-    let secs = time
-        .duration_since(SystemTime::UNIX_EPOCH)
-        .unwrap_or_default()
-        .as_secs();
-
-    let days = secs / 86_400;
-    let time_of_day = secs % 86_400;
-    let hours = time_of_day / 3600;
-    let minutes = (time_of_day % 3600) / 60;
-    let seconds = time_of_day % 60;
-
-    // Civil date from days since epoch (algorithm from Howard Hinnant)
-    let z = days + 719_468;
-    let era = z / 146_097;
-    let doe = z - era * 146_097;
-    let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365;
-    let y = yoe + era * 400;
-    let doy = doe - (365 * yoe + yoe / 4 - yoe / 100);
-    let mp = (5 * doy + 2) / 153;
-    let d = doy - (153 * mp + 2) / 5 + 1;
-    let m = if mp < 10 { mp + 3 } else { mp - 9 };
-    let y = if m <= 2 { y + 1 } else { y };
-
-    fmt.replace("%Y", &format!("{y:04}"))
-        .replace("%m", &format!("{m:02}"))
-        .replace("%d", &format!("{d:02}"))
-        .replace("%H", &format!("{hours:02}"))
-        .replace("%M", &format!("{minutes:02}"))
-        .replace("%S", &format!("{seconds:02}"))
+    CivilDateTime::from_system_time(SystemTime::now()).to_iso()
 }
 
 use crate::compare::ComparisonReport;
@@ -399,14 +367,10 @@ mod tests {
 
         // 2026-05-28 12:00:00 UTC = 1779969600 seconds since epoch
         let fixed_time = UNIX_EPOCH + StdDuration::from_secs(1_779_969_600);
-        let compact = format_system_time(fixed_time, "%Y%m%d-%H%M%S");
-        assert_eq!(compact, "20260528-120000");
-
-        let display = format_system_time(fixed_time, "%Y-%m-%d %H:%M:%S UTC");
-        assert_eq!(display, "2026-05-28 12:00:00 UTC");
-
-        let iso = format_system_time(fixed_time, "%Y-%m-%dT%H:%M:%SZ");
-        assert_eq!(iso, "2026-05-28T12:00:00Z");
+        let dt = foundation_core::time::CivilDateTime::from_system_time(fixed_time);
+        assert_eq!(dt.to_compact(), "20260528-120000");
+        assert_eq!(dt.to_display(), "2026-05-28 12:00:00 UTC");
+        assert_eq!(dt.to_iso(), "2026-05-28T12:00:00Z");
     }
 
     #[test]

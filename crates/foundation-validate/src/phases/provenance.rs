@@ -12,6 +12,12 @@ use tracing::{info, warn};
 /// Sentinel prefix indicating a live session was opened.
 const SESSION_PREFIX: &str = "session:";
 
+/// Degradation reason: rhizoCrypt could not be discovered.
+const DEGRADED_UNREACHABLE: &str = "rhizoCrypt unreachable";
+
+/// Degradation reason: rhizoCrypt RPC call failed.
+const DEGRADED_RPC_FAILED: &str = "rhizoCrypt RPC failed";
+
 /// Status of a provenance session throughout the pipeline.
 #[derive(Debug, Clone)]
 pub enum SessionStatus {
@@ -62,7 +68,7 @@ pub async fn open_session(config: &DiscoveryConfig, gate_name: &str) -> SessionS
         Ok(c) => c,
         Err(e) => {
             warn!(error = %e, "rhizoCrypt unreachable — provenance degraded");
-            return SessionStatus::Degraded(String::from("rhizoCrypt unreachable"));
+            return SessionStatus::Degraded(String::from(DEGRADED_UNREACHABLE));
         }
     };
 
@@ -87,7 +93,7 @@ pub async fn open_session(config: &DiscoveryConfig, gate_name: &str) -> SessionS
         }
         Err(e) => {
             warn!(error = %e, "provenance session open failed — degraded");
-            SessionStatus::Degraded(String::from("rhizoCrypt RPC failed"))
+            SessionStatus::Degraded(String::from(DEGRADED_RPC_FAILED))
         }
     }
 }

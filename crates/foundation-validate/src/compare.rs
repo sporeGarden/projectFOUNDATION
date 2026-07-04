@@ -7,6 +7,9 @@
 use foundation_core::target::{ComparisonResult, TargetsManifest};
 use tracing::{debug, info, warn};
 
+/// Explanation string for targets with no workload observation.
+const NO_OBSERVATION: &str = "no observed value";
+
 /// A typed observation produced by a workload execution.
 ///
 /// Borrows the target ID from the workload name, avoiding allocation.
@@ -92,7 +95,7 @@ pub fn compare_targets(
                 observed: None,
                 expected: target.expected_value,
                 delta: None,
-                explanation: String::from("no observed value"),
+                explanation: String::from(NO_OBSERVATION),
             });
         }
     }

@@ -185,46 +185,26 @@ pub fn check_drift(manifest: &VersionManifest, eco_root: &Path) -> DriftReport {
             .join(name)
             .join(&sv.workspace)
             .join("Cargo.toml");
-
-        let actual_version = read_cargo_version(&cargo_path);
-        let uses_internal_tag = is_internal_version_tag(&sv.version);
-        let version_drifted = !uses_internal_tag
-            && actual_version
-                .as_ref()
-                .is_some_and(|actual| !sv.version.contains(actual) && *actual != sv.version);
-
-        entries.push(DriftEntry {
-            name: name.clone(),
-            kind: DriftKind::Spring,
-            manifest_version: sv.version.clone(),
-            actual_version,
-            version_drifted,
-            uses_internal_tag,
-            manifest_checks: sv.checks,
-            wave_verified: sv.wave_verified,
-        });
+        entries.push(build_drift_entry(
+            name,
+            DriftKind::Spring,
+            &sv.version,
+            sv.checks,
+            sv.wave_verified,
+            &cargo_path,
+        ));
     }
 
     for (name, pv) in &manifest.primals {
         let cargo_path = eco_root.join("primals").join(name).join("Cargo.toml");
-
-        let actual_version = read_cargo_version(&cargo_path);
-        let uses_internal_tag = is_internal_version_tag(&pv.version);
-        let version_drifted = !uses_internal_tag
-            && actual_version
-                .as_ref()
-                .is_some_and(|actual| !pv.version.contains(actual) && *actual != pv.version);
-
-        entries.push(DriftEntry {
-            name: name.clone(),
-            kind: DriftKind::Primal,
-            manifest_version: pv.version.clone(),
-            actual_version,
-            version_drifted,
-            uses_internal_tag,
-            manifest_checks: pv.checks,
-            wave_verified: pv.wave_verified,
-        });
+        entries.push(build_drift_entry(
+            name,
+            DriftKind::Primal,
+            &pv.version,
+            pv.checks,
+            pv.wave_verified,
+            &cargo_path,
+        ));
     }
 
     let drifted = entries.iter().filter(|e| e.version_drifted).count();
@@ -240,6 +220,34 @@ pub fn check_drift(manifest: &VersionManifest, eco_root: &Path) -> DriftReport {
         drifted,
         unreadable,
         entries,
+    }
+}
+
+/// Construct a single drift entry by reading the Cargo.toml at `cargo_path`.
+fn build_drift_entry(
+    name: &str,
+    kind: DriftKind,
+    manifest_version: &str,
+    manifest_checks: u64,
+    wave_verified: u32,
+    cargo_path: &Path,
+) -> DriftEntry {
+    let actual_version = read_cargo_version(cargo_path);
+    let uses_internal_tag = is_internal_version_tag(manifest_version);
+    let version_drifted = !uses_internal_tag
+        && actual_version.as_ref().is_some_and(|actual| {
+            !manifest_version.contains(actual) && *actual != manifest_version
+        });
+
+    DriftEntry {
+        name: name.to_owned(),
+        kind,
+        manifest_version: manifest_version.to_owned(),
+        actual_version,
+        version_drifted,
+        uses_internal_tag,
+        manifest_checks,
+        wave_verified,
     }
 }
 

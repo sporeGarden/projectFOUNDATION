@@ -7,6 +7,9 @@ use serde::{Deserialize, Serialize};
 
 use crate::CoreError;
 
+/// Default explanation when a target has no numeric tolerance defined.
+const QUALITATIVE_FALLBACK: &str = "no numeric tolerance defined";
+
 /// How close a measured value must be to the expected value.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(untagged)]
@@ -223,7 +226,7 @@ impl Target {
                 self.tolerance_pct.map_or_else(
                     || {
                         Tolerance::Typed(TypedTolerance::Qualitative {
-                            description: String::from("no numeric tolerance defined"),
+                            description: String::from(QUALITATIVE_FALLBACK),
                         })
                     },
                     |pct| Tolerance::Typed(TypedTolerance::Percentage { value: pct }),
