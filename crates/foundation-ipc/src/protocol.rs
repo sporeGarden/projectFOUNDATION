@@ -133,4 +133,33 @@ mod tests {
         let err = resp.into_result().unwrap_err();
         assert_eq!(err.0, -32601);
     }
+
+    #[test]
+    fn from_bytes_parses_valid_json() {
+        let bytes = br#"{"jsonrpc":"2.0","result":42,"id":7}"#;
+        let resp = JsonRpcResponse::from_bytes(bytes).unwrap();
+        assert_eq!(resp.into_result().unwrap(), serde_json::json!(42));
+    }
+
+    #[test]
+    fn from_bytes_rejects_invalid_json() {
+        let bytes = b"not json at all";
+        assert!(JsonRpcResponse::from_bytes(bytes).is_err());
+    }
+
+    #[test]
+    fn response_null_result_when_no_result_field() {
+        let json = r#"{"jsonrpc":"2.0","id":1}"#;
+        let resp: JsonRpcResponse = serde_json::from_str(json).unwrap();
+        assert_eq!(resp.into_result().unwrap(), serde_json::Value::Null);
+    }
+
+    #[test]
+    fn error_codes_match_json_rpc_spec() {
+        assert_eq!(error_codes::PARSE_ERROR, -32700);
+        assert_eq!(error_codes::INVALID_REQUEST, -32600);
+        assert_eq!(error_codes::METHOD_NOT_FOUND, -32601);
+        assert_eq!(error_codes::INVALID_PARAMS, -32602);
+        assert_eq!(error_codes::INTERNAL_ERROR, -32603);
+    }
 }

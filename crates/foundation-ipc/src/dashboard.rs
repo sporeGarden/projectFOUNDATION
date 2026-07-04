@@ -197,4 +197,54 @@ mod tests {
     fn method_name_follows_convention() {
         assert!(METHOD_ECOSYSTEM_HEALTH.starts_with("foundation."));
     }
+
+    #[test]
+    fn with_drift_marks_degraded() {
+        use foundation_core::versions::{DriftEntry, DriftKind, DriftReport};
+
+        let health = EcosystemHealth::from_manifest(&sample_manifest());
+        assert_eq!(health.status, DegradationLevel::Healthy);
+
+        let report = DriftReport {
+            manifest_wave: 73,
+            total_checked: 1,
+            drifted: 1,
+            unreadable: 0,
+            entries: vec![DriftEntry {
+                name: String::from("hotSpring"),
+                kind: DriftKind::Spring,
+                manifest_version: String::from("0.6.32"),
+                actual_version: Some(String::from("0.6.33")),
+                version_drifted: true,
+                uses_internal_tag: false,
+                manifest_checks: 1234,
+                wave_verified: 73,
+            }],
+        };
+
+        let enriched = health.with_drift(&report);
+        assert_eq!(enriched.status, DegradationLevel::Degraded);
+        assert!(enriched.drift.is_some());
+        let drift = enriched.drift.unwrap();
+        assert_eq!(drift.drifted, 1);
+        assert!(enriched.springs[0].drifted);
+    }
+
+    #[test]
+    fn with_drift_no_drift_stays_healthy() {
+        use foundation_core::versions::DriftReport;
+
+        let health = EcosystemHealth::from_manifest(&sample_manifest());
+        let report = DriftReport {
+            manifest_wave: 73,
+            total_checked: 2,
+            drifted: 0,
+            unreadable: 0,
+            entries: vec![],
+        };
+
+        let enriched = health.with_drift(&report);
+        assert_eq!(enriched.status, DegradationLevel::Healthy);
+        assert_eq!(enriched.drift.unwrap().drifted, 0);
+    }
 }

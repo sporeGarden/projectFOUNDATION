@@ -183,4 +183,18 @@ mod tests {
         let result = commit_session(&config, &session, "test-gate").await;
         assert!(result.starts_with("degraded:"));
     }
+
+    #[test]
+    fn display_matches_summary() {
+        let active = SessionStatus::Active(String::from("xyz"));
+        assert_eq!(active.to_string(), active.summary());
+        let degraded = SessionStatus::Degraded(String::from("unreachable"));
+        assert_eq!(degraded.to_string(), degraded.summary());
+    }
+
+    #[test]
+    fn degradation_constants_used() {
+        let status = SessionStatus::Degraded(String::from(DEGRADED_UNREACHABLE));
+        assert_eq!(status.summary(), "degraded: rhizoCrypt unreachable");
+    }
 }
