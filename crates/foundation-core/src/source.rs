@@ -162,4 +162,59 @@ paper = "07"
         assert!(manifest.sources[0].is_hashed());
         assert!(!manifest.sources[1].is_hashed());
     }
+
+    #[test]
+    fn count_mismatch_returns_validation_error() {
+        let dir = tempfile::tempdir().unwrap();
+        let path = dir.path().join("bad.toml");
+        std::fs::write(
+            &path,
+            r#"
+[meta]
+thread = 1
+thread_name = "Test"
+total_sources = 5
+
+[[sources]]
+id = "only_one"
+database = "Test"
+description = "test"
+"#,
+        )
+        .unwrap();
+
+        let err = SourcesManifest::from_file(&path).unwrap_err();
+        let msg = err.to_string();
+        assert!(msg.contains("total_sources=5"));
+        assert!(msg.contains("found 1"));
+    }
+
+    #[test]
+    fn from_file_missing_path() {
+        let result = SourcesManifest::from_file(Path::new("/nonexistent/sources.toml"));
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn source_default_fields() {
+        let toml_str = r#"
+[meta]
+thread = 1
+thread_name = "Test"
+total_sources = 1
+
+[[sources]]
+id = "minimal"
+database = "Test"
+description = "bare minimum fields"
+"#;
+        let manifest: SourcesManifest = toml::from_str(toml_str).unwrap();
+        let s = &manifest.sources[0];
+        assert!(!s.is_hashed());
+        assert!(!s.is_retrieved());
+        assert!(s.url.is_none());
+        assert!(s.format.is_none());
+        assert!(s.paper.is_none());
+        assert!(s.accessions.is_empty());
+    }
 }

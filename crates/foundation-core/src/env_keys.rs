@@ -100,4 +100,27 @@ mod tests {
         let root = resolve_foundation_root();
         assert!(!root.as_os_str().is_empty());
     }
+
+    #[test]
+    fn resolve_data_dir_uses_root_fallback() {
+        let root = std::path::Path::new("/tmp/test-foundation");
+        let data = resolve_data_dir(root);
+        assert!(
+            data.to_str().unwrap().contains("test-foundation")
+                || data.to_str().unwrap().contains("FOUNDATION_DATA_DIR"),
+        );
+    }
+
+    #[test]
+    fn resolve_telemetry_path_returns_valid_path() {
+        let path = resolve_telemetry_path();
+        assert!(!path.as_os_str().is_empty());
+        let s = path.to_string_lossy();
+        assert!(s.contains("foundation_telemetry") || s.contains("FOUNDATION_TELEMETRY"));
+    }
+
+    #[test]
+    fn default_gate_is_lowercase() {
+        assert_eq!(DEFAULT_GATE, DEFAULT_GATE.to_lowercase());
+    }
 }
